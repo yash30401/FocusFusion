@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.yash.focusfusion.feature_pomodoro.data.local.entity.SessionEntity
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SessionDao {
@@ -25,7 +26,7 @@ interface SessionDao {
     fun getSessionById(id:Int):SessionEntity?
 
     @Query("select * from sessions")
-    fun getAllSessions():List<SessionEntity>
+    fun getAllSessions(): Flow<List<SessionEntity>>
 
     // Aggregated Queries
 
@@ -36,15 +37,15 @@ interface SessionDao {
     fun getTotalMinutesForMonth(month:String,year:String):Int
 
     @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%Y', startTime / 1000, 'unixepoch') = :year")
-    suspend fun getTotalMinutesForYear(year: String): Int
+    fun getTotalMinutesForYear(year: String): Int
 
     @Query("SELECT * FROM sessions WHERE DATE(startTime / 1000, 'unixepoch') = DATE(:date / 1000, 'unixepoch')")
-    suspend fun getSessionsForDate(date: Long): List<SessionEntity>
+    fun getSessionsForDate(date: Long): Flow<List<SessionEntity>>
 
     @Query("SELECT * FROM sessions WHERE strftime('%m', startTime / 1000, 'unixepoch') = :month AND strftime('%Y', startTime / 1000, 'unixepoch') = :year")
-    suspend fun getSessionsForMonth(month: String, year: String): List<SessionEntity>
+    fun getSessionsForMonth(month: String, year: String): Flow<List<SessionEntity>>
 
     // Retrieve sessions for a specific year
     @Query("SELECT * FROM sessions WHERE strftime('%Y', startTime / 1000, 'unixepoch') = :year")
-    suspend fun getSessionsForYear(year: String): List<SessionEntity>
+    fun getSessionsForYear(year: String): Flow<List<SessionEntity>>
 }
