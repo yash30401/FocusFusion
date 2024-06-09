@@ -4,8 +4,9 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 
-class GetSessionsForYearUseCase(private val repository: SessionRepository) {
+class GetSessionsForYearUseCase @Inject constructor(private val repository: SessionRepository) {
 
     suspend operator fun invoke(year:String): Flow<List<Session>> {
         if(year.isBlank()){
