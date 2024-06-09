@@ -17,44 +17,80 @@ import javax.inject.Inject
 @HiltViewModel
 class SessionViewModel @Inject constructor(
     private val sessionsUseCases: SessionUseCases
-):ViewModel() {
+) : ViewModel() {
 
     var sessionState = mutableStateOf(SessionState())
         private set
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
-    fun onEvent(event:SessionEvent){
-        when(event) {
-            is SessionEvent.StopSession -> {
+    fun onEvent(event: SessionEvent) {
+        when (event) {
+            is SessionEvent.InsertSession -> {
                 viewModelScope.launch {
-                    try{
+                    try {
                         sessionsUseCases.insertSessionUseCase(event.session)
                         sessionState.value = SessionState(
                             session = event.session,
                             sessionEventType = SessionEventType.INSERTED,
                         )
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         sessionState.value = SessionState(
                             session = event.session,
                             sessionEventType = SessionEventType.ERROR,
                             errorMessage = e.message
                         )
                     }
+                    _eventFlow.emit(UIEvent.ShowSnackbar("Nice work! You crushed your ${event.session.duration}-minute focus session"))
                 }
-                _eventFlow.emit(UIEvent.StopSession)
             }
-            is SessionEvent.UpdateSessionTag -> {
 
+            is SessionEvent.StopSession -> {
+                viewModelScope.launch {
+                    try {
+                        sessionsUseCases.insertSessionUseCase(event.session)
+                        sessionState.value = SessionState(
+                            session = event.session,
+                            sessionEventType = SessionEventType.INSERTED,
+                        )
+                    } catch (e: Exception) {
+                        sessionState.value = SessionState(
+                            session = event.session,
+                            sessionEventType = SessionEventType.ERROR,
+                            errorMessage = e.message
+                        )
+                    }
+                    _eventFlow.emit(UIEvent.ShowSnackbar("Focus session interrupted. Record created"))
+                }
             }
+
+            is SessionEvent.UpdateSessionTag -> {
+                viewModelScope.launch {
+                    try {
+                        sessionsUseCases.updateSessionUseCase(event.session)
+                        sessionState.value = SessionState(
+                            session = event.session,
+                            sessionEventType = SessionEventType.UPDATED
+                        )
+                    }catch (e:Exception){
+                        sessionsUseCases.updateSessionUseCase(event.session)
+                        sessionState.value = SessionState(
+                            session = event.session,
+                            sessionEventType = SessionEventType.ERROR,
+                            errorMessage = e.message
+                        )
+                    }
+                    _eventFlow.emit(UIEvent.ShowSnackbar("Your Focus Tag Updated"))
+                }
+            }
+
+
         }
     }
 
 
 }
 
-sealed class UIEvent(){
-    data class ShowSnackbar(val message:String):UIEvent()
-    data class StopSession(val session: Session):UIEvent()
-    data class  UpdateSessionTag(val session: Session,val taskTag: TaskTag):UIEvent()
+sealed class UIEvent() {
+    data class ShowSnackbar(val message: String) : UIEvent()
 }
