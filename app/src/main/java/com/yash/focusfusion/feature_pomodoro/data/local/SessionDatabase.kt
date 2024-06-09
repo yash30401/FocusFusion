@@ -1,4 +1,4 @@
-package com.yash.focusfusion.feature_pomodoro.data
+package com.yash.focusfusion.feature_pomodoro.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
