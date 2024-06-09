@@ -2,5 +2,6 @@ package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating
 
 enum class SessionEventType {
     INSERTED,
-    UPDATED
+    UPDATED,
+    ERROR
 }

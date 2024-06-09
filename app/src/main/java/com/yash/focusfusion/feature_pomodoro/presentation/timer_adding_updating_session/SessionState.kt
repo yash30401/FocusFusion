@@ -5,6 +5,6 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 
 data class SessionState(
     val session: Session?=null,
-    val sessionEventType: SessionEventType,
+    val sessionEventType: SessionEventType = SessionEventType.INSERTED,
     val errorMessage: String?=null
 )
