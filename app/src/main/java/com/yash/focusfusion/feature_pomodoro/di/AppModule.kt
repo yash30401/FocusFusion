@@ -21,10 +21,11 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.UpdateSessionUseCas
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
-@InstallIn
+@InstallIn(SingletonComponent::class)
 object AppModule {
 
     @Provides
