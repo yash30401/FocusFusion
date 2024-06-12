@@ -40,7 +40,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSessionRepository(database: SessionDatabase): SessionRepositoryImpl {
+    fun provideSessionRepository(database: SessionDatabase): SessionRepository {
         return SessionRepositoryImpl(database.dao)
     }
 
