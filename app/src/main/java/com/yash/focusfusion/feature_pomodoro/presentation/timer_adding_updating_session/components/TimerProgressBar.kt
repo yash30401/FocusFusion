@@ -101,7 +101,6 @@ fun TimerProgressBar(
     )
 
     Box(contentAlignment = Alignment.Center, modifier = modifier
-        .fillMaxSize()
         .padding(8.dp)
         .background(Color(0xFFFFFDFC))
         .clickable {
