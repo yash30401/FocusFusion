@@ -29,6 +29,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,16 +47,38 @@ import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import okhttp3.internal.concurrent.Task
+import java.util.Timer
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
+    timer: Int= 1
 ) {
     var isTimerRunning by remember { mutableStateOf(false) }
     var isTimerStarted by remember {
         mutableStateOf(false)
+    }
+    var timeLeft by remember { mutableStateOf(timer * 60) }
+
+    var cancelTime by remember { mutableStateOf(10) }
+    LaunchedEffect(isTimerRunning) {
+        while (isTimerRunning && timeLeft > 0) {
+            delay(1000)
+            timeLeft--
+        }
+    }
+
+    LaunchedEffect(isTimerRunning) {
+        if (isTimerRunning) {
+            while (cancelTime > 0) {
+                delay(1000)
+                cancelTime--
+            }
+        }
     }
     Column(
         modifier = modifier
@@ -74,8 +97,11 @@ fun TimerScreen(
             fontFamily = fontFamily
         )
 
-        TimerProgressBar(timeInMinutes = 1, isTimerRunning, isTimerStarted) {
-            isTimerRunning = false
+        TimerProgressBar(
+            timeInMinutes = 1, isTimerRunning,
+            isTimerStarted, timeLeft
+        ) { newTimeLeft ->
+            timeLeft = newTimeLeft
         }
 
         if (isTimerRunning == false) {
@@ -91,7 +117,7 @@ fun TimerScreen(
                     .clip(CircleShape)
                     .background(Color(0xFFFF8D61))
                     .clickable {
-                        isTimerRunning = !isTimerRunning
+                        isTimerRunning = true
                         isTimerStarted = true
                     },
                 verticalArrangement = Arrangement.Center,
@@ -107,7 +133,14 @@ fun TimerScreen(
         } else {
 
             Button(
-                onClick = {},
+                onClick = {
+                    if (cancelTime > 0) {
+                        isTimerRunning = false
+                        isTimerStarted = false
+                        cancelTime = 10
+                        timeLeft = timer*60
+                    }
+                },
                 modifier = Modifier.width(150.dp),
                 colors = ButtonDefaults.buttonColors(Color.White),
                 border = BorderStroke(1.2.dp, color = Color(0xFFF45B5B)),
@@ -115,7 +148,12 @@ fun TimerScreen(
                 elevation = ButtonDefaults.buttonElevation(5.dp)
             ) {
                 Text(
-                    text = "Give Up!", color = Color(0xFFF45B5B),
+                    text = if (cancelTime > 0) {
+                        "Cancel $cancelTime"
+                    } else {
+                        "Give Up!"
+                    },
+                    color = Color(0xFFF45B5B),
                     fontSize = 20.sp,
                     style = MaterialTheme.typography.bodyLarge
                 )

@@ -70,24 +70,19 @@ fun TimerProgressBar(
     timeInMinutes: Int,
     isTimerRunning: Boolean,
     isTimerStarted: Boolean,
+    timeLeft: Int,
     task: TaskTag = TaskTag.STUDY,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
-    onTimeUp: () -> Unit,
+    onTimeLeftChange: (Int) -> Unit,
 ) {
 
-    var timeLeft by remember {
-        mutableIntStateOf(timeInMinutes * 60) // 25 minutes in seconds
-    }
-
-
-    LaunchedEffect(isTimerRunning) {
+    LaunchedEffect(true) {
         if (isTimerRunning) {
             while (timeLeft > 0) {
                 delay(1000L)
-                timeLeft--
+                onTimeLeftChange(timeLeft - 1)
             }
-            onTimeUp()
         }
     }
 
@@ -189,6 +184,7 @@ fun TimerProgressBar(
 @Composable
 private fun TimerCircularBarPreview() {
 
-    TimerProgressBar(25, false, false) {}
+    TimerProgressBar(25, false, false,
+        25) {}
 
 }
