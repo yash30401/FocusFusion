@@ -63,21 +63,17 @@ import kotlin.math.sin
 @Composable
 fun TimerProgressBar(
     timeInMinutes: Int,
+    isTimerRunning: Boolean,
+    isTimerStarted: Boolean,
     strokeWidth: Dp = 4.dp,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTimeUp: () -> Unit,
 ) {
 
     var timeLeft by remember {
         mutableIntStateOf(timeInMinutes * 60) // 25 minutes in seconds
     }
 
-    var isTimerRunning by remember {
-        mutableStateOf(false)
-    }
-
-    var isTimerStarted by remember {
-        mutableStateOf(false)
-    }
 
     LaunchedEffect(isTimerRunning) {
         if (isTimerRunning) {
@@ -85,7 +81,7 @@ fun TimerProgressBar(
                 delay(1000L)
                 timeLeft--
             }
-            isTimerRunning = false
+            onTimeUp()
         }
     }
 
@@ -100,13 +96,11 @@ fun TimerProgressBar(
         animationSpec = tween(durationMillis = 1000)
     )
 
-    Box(contentAlignment = Alignment.Center, modifier = modifier
-        .padding(8.dp)
-        .background(Color(0xFFFFFDFC))
-        .clickable {
-            isTimerRunning = !isTimerRunning
-            isTimerStarted = true
-        }) {
+    Box(
+        contentAlignment = Alignment.Center, modifier = modifier
+            .padding(8.dp)
+            .background(Color(0xFFFFFDFC))
+    ) {
         Canvas(modifier = Modifier.size(220.dp)) {
             Brush.sweepGradient(
                 0.0f to Color(0xFFBC9FF1), // Dark color
@@ -189,6 +183,6 @@ fun TimerProgressBar(
 @Composable
 private fun TimerCircularBarPreview() {
 
-    TimerProgressBar(25)
+    TimerProgressBar(25, false, false) {}
 
 }
