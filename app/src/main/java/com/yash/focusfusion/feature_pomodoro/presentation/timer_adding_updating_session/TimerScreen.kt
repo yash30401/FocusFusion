@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
@@ -47,15 +48,15 @@ import com.yash.focusfusion.ui.theme.fontFamily
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
-    ) {
+) {
     var isTimerRunning by remember { mutableStateOf(false) }
     var isTimerStarted by remember {
         mutableStateOf(false)
     }
     Column(
         modifier = modifier
-            .padding(8.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(Color(0xFFFFFDFC)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround
     ) {
@@ -73,7 +74,7 @@ fun TimerScreen(
             isTimerRunning = false
         }
 
-        if(isTimerRunning == true) {
+        if (isTimerRunning == false) {
             Column(
                 modifier = Modifier
                     .size(70.dp)
@@ -93,10 +94,22 @@ fun TimerScreen(
                     tint = Color.White
                 )
             }
-        }else{
-            Column(modifier = Modifier.border(width = 1.dp,
-                color = Color(0xFF))) {
-                Text(text = "Give Up!")
+        } else {
+            Column(
+                modifier = Modifier
+                    .shadow(5.dp)
+                    .border(
+                        width = 1.2.dp,
+                        color = Color(0xFFF45B5B), shape = RoundedCornerShape(7.dp)
+                    )
+                    .padding(vertical = 5.dp, horizontal = 25.dp)
+            ) {
+                Text(
+                    text = "Give Up!",
+                    fontSize = 20.sp,
+                    color = Color(0xFFF45B5B),
+                    style = MaterialTheme.typography.bodyLarge
+                )
             }
         }
     }

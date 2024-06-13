@@ -99,7 +99,7 @@ fun TimerProgressBar(
     Box(
         contentAlignment = Alignment.Center, modifier = modifier
             .padding(8.dp)
-            .background(Color(0xFFFFFDFC))
+
     ) {
         Canvas(modifier = Modifier.size(220.dp)) {
             Brush.sweepGradient(
