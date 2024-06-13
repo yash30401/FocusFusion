@@ -2,6 +2,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,8 +43,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
+import okhttp3.internal.concurrent.Task
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -78,6 +82,12 @@ fun TimerScreen(
             Column(
                 modifier = Modifier
                     .size(70.dp)
+                    .shadow(
+                        elevation = 5.dp,
+                        shape = CircleShape,
+                        spotColor = Color.Black,
+                        ambientColor = Color.Black
+                    )
                     .clip(CircleShape)
                     .background(Color(0xFFFF8D61))
                     .clickable {
@@ -95,22 +105,22 @@ fun TimerScreen(
                 )
             }
         } else {
-            Column(
-                modifier = Modifier
-                    .shadow(5.dp)
-                    .border(
-                        width = 1.2.dp,
-                        color = Color(0xFFF45B5B), shape = RoundedCornerShape(7.dp)
-                    )
-                    .padding(vertical = 5.dp, horizontal = 25.dp)
+
+            Button(
+                onClick = {},
+                modifier = Modifier.width(150.dp),
+                colors = ButtonDefaults.buttonColors(Color.White),
+                border = BorderStroke(1.2.dp, color = Color(0xFFF45B5B)),
+                shape = RoundedCornerShape(10.dp),
+                elevation = ButtonDefaults.buttonElevation(5.dp)
             ) {
                 Text(
-                    text = "Give Up!",
+                    text = "Give Up!", color = Color(0xFFF45B5B),
                     fontSize = 20.sp,
-                    color = Color(0xFFF45B5B),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
+
         }
     }
 

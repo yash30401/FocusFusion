@@ -45,17 +45,22 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.Typeface
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.delay
+import okhttp3.internal.concurrent.Task
+import java.util.Locale
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -65,6 +70,7 @@ fun TimerProgressBar(
     timeInMinutes: Int,
     isTimerRunning: Boolean,
     isTimerStarted: Boolean,
+    task: TaskTag = TaskTag.STUDY,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
     onTimeUp: () -> Unit,
@@ -166,7 +172,7 @@ fun TimerProgressBar(
                 modifier = Modifier.width(90.dp)
             ) {
                 Text(
-                    text = "Study",
+                    text = task.name.toLowerCase().replaceFirstChar { it.uppercase() },
                     color = Color(0xFFFF8D61),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
