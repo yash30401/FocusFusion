@@ -56,7 +56,7 @@ import java.util.Timer
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
-    timer: Int= 1
+    timer: Int = 1
 ) {
     var isTimerRunning by remember { mutableStateOf(false) }
     var isTimerStarted by remember {
@@ -65,6 +65,7 @@ fun TimerScreen(
     var timeLeft by remember { mutableStateOf(timer * 60) }
 
     var cancelTime by remember { mutableStateOf(10) }
+
     LaunchedEffect(isTimerRunning) {
         while (isTimerRunning && timeLeft > 0) {
             delay(1000)
@@ -138,7 +139,7 @@ fun TimerScreen(
                         isTimerRunning = false
                         isTimerStarted = false
                         cancelTime = 10
-                        timeLeft = timer*60
+                        timeLeft = timer * 60
                     }
                 },
                 modifier = Modifier.width(150.dp),
