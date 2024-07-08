@@ -89,7 +89,7 @@ fun TimerScreen(
         verticalArrangement = Arrangement.SpaceAround
     ) {
         Text(
-            text = "You Can do it!",
+            text = if ((timeLeft * 100) / 60 > 25) "You Can do it!" else "Just few minutes left",
             color = Color(0xFF212121),
             fontSize = 35.sp,
             modifier = Modifier.fillMaxWidth(),
