@@ -74,7 +74,7 @@ fun TimerProgressBar(
     timeLeft: Int,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
-    onTaskTagChanged: (TaskTag) -> Unit,
+    onTaskTagChanged: (String) -> Unit,
     onTimeLeftChange: (Int) -> Unit,
 ) {
 
@@ -110,6 +110,8 @@ fun TimerProgressBar(
         TaskTagEditDialog(setShowDialog = {
             showDialog = it
         }) { newTaskTagValue ->
+            onTaskTagChanged(newTaskTagValue)
+
             if (newTaskTagValue == "Work") {
                 taskTag = TaskTag.WORK
             }else if(newTaskTagValue == "Study"){
@@ -205,7 +207,7 @@ fun TimerProgressBar(
                 Text(
                     text = taskTag.name.toLowerCase().replaceFirstChar { it.uppercase() },
                     color = Color(0xFFFF8D61),
-                    fontSize = 24.sp,
+                    fontSize = if(taskTag.name.length>6) 18.sp else 24.sp,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.clickable {
