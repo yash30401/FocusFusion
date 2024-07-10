@@ -32,11 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.yash.focusfusion.R
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.ui.theme.fontFamily
 
 @Composable
 fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) -> Unit,
-                      tagSelectedName:(String)->Unit) {
+                      tagSelectedName:(TaskTag)->Unit) {
 
     var tagSelected by remember {
         mutableStateOf("")
@@ -88,12 +89,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Study"
-                                    tagSelectedName("Study")
+                                    tagSelectedName(TaskTag.STUDY)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Study"
-                                tagSelectedName("Study")
+                                tagSelectedName(TaskTag.STUDY)
                             }
                         })
 
@@ -111,12 +112,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Work"
-                                    tagSelectedName("Work")
+                                    tagSelectedName(TaskTag.WORK)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Work"
-                                tagSelectedName("Work")
+                                tagSelectedName(TaskTag.WORK)
 
                             }
                         })
@@ -135,12 +136,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Exercise"
-                                    tagSelectedName("Exercise")
+                                    tagSelectedName(TaskTag.EXERCISE)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Exercise"
-                                tagSelectedName("Exercise")
+                                tagSelectedName(TaskTag.EXERCISE)
 
                             }
                         })
@@ -160,12 +161,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Sport"
-                                    tagSelectedName("Sport")
+                                    tagSelectedName(TaskTag.SPORT)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Sport"
-                                tagSelectedName("Sport")
+                                tagSelectedName(TaskTag.SPORT)
 
                             }
                         })
@@ -185,12 +186,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Relax"
-                                    tagSelectedName("Relax")
+                                    tagSelectedName(TaskTag.RELAX)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Relax"
-                                tagSelectedName("Relax")
+                                tagSelectedName(TaskTag.RELAX)
 
                             }
                         })
@@ -210,12 +211,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Entertainment"
-                                    tagSelectedName("Entertainment")
+                                    tagSelectedName(TaskTag.ENTERTAINMENT)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Entertainment"
-                                tagSelectedName("Entertainment")
+                                tagSelectedName(TaskTag.ENTERTAINMENT)
 
                             }
                         })
@@ -235,12 +236,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Social"
-                                    tagSelectedName("Social")
+                                    tagSelectedName(TaskTag.SOCIAL)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Social"
-                                tagSelectedName("Social")
+                                tagSelectedName(TaskTag.SOCIAL)
 
                             }
                         })
@@ -260,12 +261,12 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                                 .fillMaxWidth()
                                 .clickable {
                                     tagSelected = "Other"
-                                    tagSelectedName("Other")
+                                    tagSelectedName(TaskTag.OTHER)
                                 }
                         }else{
                             Modifier.clickable {
                                 tagSelected = "Other"
-                                tagSelectedName("Other")
+                                tagSelectedName(TaskTag.OTHER)
 
                             }
                         })

@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,8 +55,10 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,8 +82,10 @@ fun TimerScreen(
     }
 
     var taskTag by remember {
-        mutableStateOf("")
+        mutableStateOf(TaskTag.STUDY)
     }
+
+    var scope = rememberCoroutineScope()
 
     var scaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(isTimerRunning) {
@@ -99,14 +104,14 @@ fun TimerScreen(
         }
     }
 
-    LaunchedEffect(key1 = true) {
-//        viewModel.eventFlow.collect{event->
-//            when(event){
-//                is UIEvent.ShowSnackbar -> scaffoldState.snackbarHostState.showSnackbar(
-//                    message = event.message
-//                )
-//            }
-//        }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.eventFlow.collect{event->
+            when(event){
+                is UIEvent.ShowSnackbar -> scaffoldState.snackbarHostState.showSnackbar(
+                    message = event.message
+                )
+            }
+        }
     }
     Column(
         modifier = modifier
@@ -173,9 +178,6 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
                     } else {
-//                        viewModel.onEvent(SessionEvent.InsertSession(
-//                            Session(System.currentTimeMillis(),timeLeft*1000L,)
-//                        ))
 
                         val endTime = System.currentTimeMillis()
                         val duration = endTime - startTime
@@ -184,13 +186,20 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
-
+                        scope.launch(Dispatchers.IO) {
+                            viewModel.onEvent(SessionEvent.InsertSession(
+                                Session(startTime,endTime,TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
+                                    taskTag)
+                            ))
+                        }
                         Log.d(
-                            CHECKINGSESSIONDATA, "Current Time:- ${System.currentTimeMillis()}\n" +
-                                    "End Time:- ${TimeUnit.MINUTES.toMillis(timeLeft.toLong())}\n" +
-                                    "Duration:- ${TimeUnit.MILLISECONDS.toMinutes(duration)}\n" +
-                                    "Session Tag:- ${taskTag}"
+                            CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
+                                    "End Time:- ${endTime}\n" +
+                                    "Duration:- ${TimeUnit.MILLISECONDS.toMinutes(duration).toInt()}\n" +
+                                    "Session Tag:- ${taskTag.name}"
                         )
+
+                        Log.d("CHECKINGSESSIONDATA" ,"Session:- ${viewModel.sessionState.value.errorMessage.toString()}")
                     }
                 },
                 modifier = Modifier.width(150.dp),

@@ -6,4 +6,5 @@ object Constants {
 
     // Logs
     const val CHECKINGSESSIONDATA = "CHECKINGSESSIONDATA"
+    const val CHECKINGVIEWMODEL = "CHECKINGVIEWMODEL"
 }

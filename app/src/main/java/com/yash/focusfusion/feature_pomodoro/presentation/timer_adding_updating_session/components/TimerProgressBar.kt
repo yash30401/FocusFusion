@@ -74,7 +74,7 @@ fun TimerProgressBar(
     timeLeft: Int,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
-    onTaskTagChanged: (String) -> Unit,
+    onTaskTagChanged: (TaskTag) -> Unit,
     onTimeLeftChange: (Int) -> Unit,
 ) {
 
@@ -112,25 +112,27 @@ fun TimerProgressBar(
         }) { newTaskTagValue ->
             onTaskTagChanged(newTaskTagValue)
 
-            if (newTaskTagValue == "Work") {
+            if (newTaskTagValue == TaskTag.WORK) {
                 taskTag = TaskTag.WORK
-            }else if(newTaskTagValue == "Study"){
+            }else if(newTaskTagValue == TaskTag.STUDY){
                 taskTag = TaskTag.STUDY
             }
-            else if(newTaskTagValue == "Sport"){
+            else if(newTaskTagValue == TaskTag.SPORT){
                 taskTag = TaskTag.SPORT
             }
-            else if(newTaskTagValue == "Relax"){
+            else if(newTaskTagValue == TaskTag.RELAX){
                 taskTag = TaskTag.RELAX
             }
-            else if(newTaskTagValue == "Entertainment"){
+            else if(newTaskTagValue == TaskTag.ENTERTAINMENT){
                 taskTag = TaskTag.ENTERTAINMENT
             }
-            else if(newTaskTagValue == "Exercise"){
+            else if(newTaskTagValue == TaskTag.EXERCISE){
                 taskTag = TaskTag.EXERCISE
             }
-            else if(newTaskTagValue == "Social"){
+            else if(newTaskTagValue == TaskTag.SOCIAL){
                 taskTag = TaskTag.SOCIAL
+            }else if(newTaskTagValue == TaskTag.OTHER){
+                taskTag = TaskTag.OTHER
             }
         }
     }

@@ -1,13 +1,16 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yash.focusfusion.core.util.Constants.CHECKINGVIEWMODEL
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.SessionUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -27,19 +30,21 @@ class SessionViewModel @Inject constructor(
     fun onEvent(event: SessionEvent) {
         when (event) {
             is SessionEvent.InsertSession -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     try {
                         sessionsUseCases.insertSessionUseCase(event.session)
                         sessionState.value = SessionState(
                             session = event.session,
                             sessionEventType = SessionEventType.INSERTED,
                         )
+                        Log.d(CHECKINGVIEWMODEL,"Entering InsertSession")
                     } catch (e: Exception) {
                         sessionState.value = SessionState(
                             session = event.session,
                             sessionEventType = SessionEventType.ERROR,
                             errorMessage = e.message
                         )
+                        Log.d(CHECKINGVIEWMODEL,"Error:- ${e.message}")
                     }
                     _eventFlow.emit(UIEvent.ShowSnackbar("Nice work! You crushed your ${event.session.duration}-minute focus session"))
                 }
