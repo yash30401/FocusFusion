@@ -78,6 +78,10 @@ fun TimerScreen(
         mutableStateOf(0L)
     }
 
+    var taskTag by remember {
+        mutableStateOf("")
+    }
+
     var scaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(isTimerRunning) {
         while (isTimerRunning && timeLeft > 0) {
@@ -125,7 +129,7 @@ fun TimerScreen(
             timeInMinutes = timer, isTimerRunning = isTimerRunning,
             isTimerStarted = isTimerStarted, timeLeft = timeLeft,
             onTaskTagChanged = {
-
+                taskTag = it
             }
         ) { newTimeLeft ->
             timeLeft = newTimeLeft
@@ -168,7 +172,7 @@ fun TimerScreen(
                         isTimerStarted = false
                         cancelTime = 10
                         timeLeft = timer * 60
-                    }else{
+                    } else {
 //                        viewModel.onEvent(SessionEvent.InsertSession(
 //                            Session(System.currentTimeMillis(),timeLeft*1000L,)
 //                        ))
@@ -181,10 +185,12 @@ fun TimerScreen(
                         timeLeft = timer * 60
 
 
-                        Log.d(CHECKINGSESSIONDATA,"Current Time:- ${System.currentTimeMillis()}\n" +
-                                "End Time:- ${TimeUnit.MINUTES.toMillis(timeLeft.toLong())}\n" +
-                                "Duration:- ${TimeUnit.MILLISECONDS.toMinutes(duration)}\n" +
-                                "Session Tag:- ${viewModel.sessionState.value.session?.taskTag}")
+                        Log.d(
+                            CHECKINGSESSIONDATA, "Current Time:- ${System.currentTimeMillis()}\n" +
+                                    "End Time:- ${TimeUnit.MINUTES.toMillis(timeLeft.toLong())}\n" +
+                                    "Duration:- ${TimeUnit.MILLISECONDS.toMinutes(duration)}\n" +
+                                    "Session Tag:- ${taskTag}"
+                        )
                     }
                 },
                 modifier = Modifier.width(150.dp),
