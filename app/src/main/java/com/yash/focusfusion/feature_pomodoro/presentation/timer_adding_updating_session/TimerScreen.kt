@@ -30,6 +30,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -58,6 +61,7 @@ import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
@@ -87,7 +91,11 @@ fun TimerScreen(
 
     var scope = rememberCoroutineScope()
 
-    var scaffoldState = rememberBottomSheetScaffoldState()
+    var snackbarHostState = remember {
+        SnackbarHostState()
+    }
+
+
     LaunchedEffect(isTimerRunning) {
         while (isTimerRunning && timeLeft > 0) {
             delay(1000)
@@ -104,12 +112,14 @@ fun TimerScreen(
         }
     }
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.eventFlow.collect{event->
-            when(event){
-                is UIEvent.ShowSnackbar -> scaffoldState.snackbarHostState.showSnackbar(
-                    message = event.message
-                )
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UIEvent.ShowSnackbar -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.message)
+                    }
+                }
             }
         }
     }
@@ -187,19 +197,30 @@ fun TimerScreen(
                         timeLeft = timer * 60
 
                         scope.launch(Dispatchers.IO) {
-                            viewModel.onEvent(SessionEvent.InsertSession(
-                                Session(startTime,endTime,TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
-                                    taskTag)
-                            ))
+                            viewModel.onEvent(
+                                SessionEvent.InsertSession(
+                                    Session(
+                                        startTime,
+                                        endTime,
+                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
+                                        taskTag
+                                    )
+                                )
+                            )
                         }
                         Log.d(
                             CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
                                     "End Time:- ${endTime}\n" +
-                                    "Duration:- ${TimeUnit.MILLISECONDS.toMinutes(duration).toInt()}\n" +
+                                    "Duration:- ${
+                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt()
+                                    }\n" +
                                     "Session Tag:- ${taskTag.name}"
                         )
 
-                        Log.d("CHECKINGSESSIONDATA" ,"Session:- ${viewModel.sessionState.value.errorMessage.toString()}")
+                        Log.d(
+                            "CHECKINGSESSIONDATA",
+                            "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
+                        )
                     }
                 },
                 modifier = Modifier.width(150.dp),
@@ -221,6 +242,10 @@ fun TimerScreen(
             }
 
         }
+        SnackbarHost(hostState = snackbarHostState,
+            snackbar = { data ->
+                Snackbar(snackbarData = data)
+            })
     }
 
 }

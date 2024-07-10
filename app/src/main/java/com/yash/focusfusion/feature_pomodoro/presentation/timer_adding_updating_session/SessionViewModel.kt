@@ -34,7 +34,7 @@ class SessionViewModel @Inject constructor(
                     try {
                         sessionsUseCases.insertSessionUseCase(event.session)
                         sessionState.value = SessionState(
-                            session = event.session,
+                          session = event.session,
                             sessionEventType = SessionEventType.INSERTED,
                         )
                         Log.d(CHECKINGVIEWMODEL,"Entering InsertSession")
