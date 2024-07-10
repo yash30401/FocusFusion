@@ -51,7 +51,7 @@ class SessionViewModel @Inject constructor(
             }
 
             is SessionEvent.StopSession -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     try {
                         sessionsUseCases.insertSessionUseCase(event.session)
                         sessionState.value = SessionState(
@@ -70,7 +70,7 @@ class SessionViewModel @Inject constructor(
             }
 
             is SessionEvent.UpdateSessionTag -> {
-                viewModelScope.launch {
+                viewModelScope.launch(Dispatchers.IO) {
                     try {
                         sessionsUseCases.updateSessionUseCase(event.session)
                         sessionState.value = SessionState(
