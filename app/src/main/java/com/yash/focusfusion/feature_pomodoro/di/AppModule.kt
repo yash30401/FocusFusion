@@ -18,6 +18,7 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetTotalMinutesForY
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.InsertSessionUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.SessionUseCases
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.UpdateSessionUseCase
+import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.SessionViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

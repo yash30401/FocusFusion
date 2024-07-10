@@ -1,6 +1,8 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session
 
+
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -24,10 +26,12 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,19 +48,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.yash.focusfusion.core.util.Constants.CHECKINGSESSIONDATA
+import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import okhttp3.internal.concurrent.Task
-import java.util.Timer
+import java.util.concurrent.TimeUnit
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
-    timer: Int = 1
+    timer: Int = 5,
+    viewModel: SessionViewModel = hiltViewModel()
 ) {
     var isTimerRunning by remember { mutableStateOf(false) }
     var isTimerStarted by remember {
@@ -66,6 +74,11 @@ fun TimerScreen(
 
     var cancelTime by remember { mutableStateOf(10) }
 
+    var startTime by remember {
+        mutableStateOf(0L)
+    }
+
+    var scaffoldState = rememberBottomSheetScaffoldState()
     LaunchedEffect(isTimerRunning) {
         while (isTimerRunning && timeLeft > 0) {
             delay(1000)
@@ -80,6 +93,16 @@ fun TimerScreen(
                 cancelTime--
             }
         }
+    }
+
+    LaunchedEffect(key1 = true) {
+//        viewModel.eventFlow.collect{event->
+//            when(event){
+//                is UIEvent.ShowSnackbar -> scaffoldState.snackbarHostState.showSnackbar(
+//                    message = event.message
+//                )
+//            }
+//        }
     }
     Column(
         modifier = modifier
@@ -99,8 +122,11 @@ fun TimerScreen(
         )
 
         TimerProgressBar(
-            timeInMinutes = 1, isTimerRunning,
-            isTimerStarted, timeLeft
+            timeInMinutes = timer, isTimerRunning = isTimerRunning,
+            isTimerStarted = isTimerStarted, timeLeft = timeLeft,
+            onTaskTagChanged = {
+
+            }
         ) { newTimeLeft ->
             timeLeft = newTimeLeft
         }
@@ -120,6 +146,8 @@ fun TimerScreen(
                     .clickable {
                         isTimerRunning = true
                         isTimerStarted = true
+
+                        startTime = System.currentTimeMillis()
                     },
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -140,6 +168,23 @@ fun TimerScreen(
                         isTimerStarted = false
                         cancelTime = 10
                         timeLeft = timer * 60
+                    }else{
+//                        viewModel.onEvent(SessionEvent.InsertSession(
+//                            Session(System.currentTimeMillis(),timeLeft*1000L,)
+//                        ))
+
+                        val endTime = System.currentTimeMillis()
+                        val duration = endTime - startTime
+                        isTimerRunning = false
+                        isTimerStarted = false
+                        cancelTime = 10
+                        timeLeft = timer * 60
+
+
+                        Log.d(CHECKINGSESSIONDATA,"Current Time:- ${System.currentTimeMillis()}\n" +
+                                "End Time:- ${TimeUnit.MINUTES.toMillis(timeLeft.toLong())}\n" +
+                                "Duration:- ${TimeUnit.MILLISECONDS.toMinutes(duration)}\n" +
+                                "Session Tag:- ${viewModel.sessionState.value.session?.taskTag}")
                     }
                 },
                 modifier = Modifier.width(150.dp),

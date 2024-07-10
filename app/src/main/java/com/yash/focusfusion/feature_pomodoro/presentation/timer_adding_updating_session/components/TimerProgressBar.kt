@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -71,11 +72,19 @@ fun TimerProgressBar(
     isTimerRunning: Boolean,
     isTimerStarted: Boolean,
     timeLeft: Int,
-    task: TaskTag = TaskTag.STUDY,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
+    onTaskTagChanged: (TaskTag) -> Unit,
     onTimeLeftChange: (Int) -> Unit,
 ) {
+
+    var taskTag by remember {
+        mutableStateOf(TaskTag.STUDY)
+    }
+
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(true) {
         if (isTimerRunning) {
@@ -96,6 +105,33 @@ fun TimerProgressBar(
         targetValue = progress,
         animationSpec = tween(durationMillis = 1000)
     )
+
+    if (showDialog) {
+        TaskTagEditDialog(setShowDialog = {
+            showDialog = it
+        }) { newTaskTagValue ->
+            if (newTaskTagValue == "Work") {
+                taskTag = TaskTag.WORK
+            }else if(newTaskTagValue == "Study"){
+                taskTag = TaskTag.STUDY
+            }
+            else if(newTaskTagValue == "Sport"){
+                taskTag = TaskTag.SPORT
+            }
+            else if(newTaskTagValue == "Relax"){
+                taskTag = TaskTag.RELAX
+            }
+            else if(newTaskTagValue == "Entertainment"){
+                taskTag = TaskTag.ENTERTAINMENT
+            }
+            else if(newTaskTagValue == "Exercise"){
+                taskTag = TaskTag.EXERCISE
+            }
+            else if(newTaskTagValue == "Social"){
+                taskTag = TaskTag.SOCIAL
+            }
+        }
+    }
 
     Box(
         contentAlignment = Alignment.Center, modifier = modifier
@@ -167,12 +203,24 @@ fun TimerProgressBar(
                 modifier = Modifier.width(90.dp)
             ) {
                 Text(
-                    text = task.name.toLowerCase().replaceFirstChar { it.uppercase() },
+                    text = taskTag.name.toLowerCase().replaceFirstChar { it.uppercase() },
                     color = Color(0xFFFF8D61),
                     fontSize = 24.sp,
                     fontWeight = FontWeight.SemiBold,
-                    style = MaterialTheme.typography.bodyLarge
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.clickable {
+                        showDialog = true
+                    }
                 )
+                IconButton(onClick = {
+                    showDialog = true
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_edit_24),
+                        contentDescription = "Edit TaskTag",
+                        tint = Color(0xFFFF8D61)
+                    )
+                }
             }
         }
     }
@@ -185,6 +233,8 @@ fun TimerProgressBar(
 private fun TimerCircularBarPreview() {
 
     TimerProgressBar(25, false, false,
-        25) {}
+        25, onTaskTagChanged = {
+
+        }) {}
 
 }

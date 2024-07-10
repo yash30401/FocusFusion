@@ -4,4 +4,6 @@ object Constants {
 
     const val DATABASE_NAME  = "FocusFusionDataBase"
 
+    // Logs
+    const val CHECKINGSESSIONDATA = "CHECKINGSESSIONDATA"
 }
