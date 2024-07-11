@@ -4,6 +4,10 @@ package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,6 +43,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,20 +53,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.CHECKINGSESSIONDATA
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.SessionUseCases
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -70,8 +83,8 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
-    timer: Int = 5,
-    viewModel: SessionViewModel = hiltViewModel()
+    timer: Int = 1,
+//    viewModel: SessionViewModel = hiltViewModel()
 ) {
     var isTimerRunning by remember { mutableStateOf(false) }
     var isTimerStarted by remember {
@@ -88,6 +101,15 @@ fun TimerScreen(
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
     }
+
+    var animateAlpha by remember {
+        mutableFloatStateOf(0f)
+    }
+
+    val offset by animateDpAsState(
+        targetValue = if (timeLeft==0) 0.dp else (-10).dp,
+        animationSpec = tween(durationMillis = 500)
+    )
 
     var scope = rememberCoroutineScope()
 
@@ -113,28 +135,30 @@ fun TimerScreen(
     }
 
     LaunchedEffect(key1 = true) {
-        viewModel.eventFlow.collectLatest { event ->
-            when (event) {
-                is UIEvent.ShowSnackbar -> {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(event.message)
-                    }
-                }
-            }
-        }
+//        viewModel.eventFlow.collectLatest { event ->
+//            when (event) {
+//                is UIEvent.ShowSnackbar -> {
+//                    scope.launch {
+//                        snackbarHostState.showSnackbar(event.message)
+//                    }
+//                }
+//            }
+//        }
     }
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(Color(0xFFFFFDFC)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = if ((timeLeft * 100) / 60 > 25) "You Can do it!" else "Just few minutes left",
             color = Color(0xFF212121),
             fontSize = 35.sp,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 40.dp),
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Medium,
             fontFamily = fontFamily
@@ -148,11 +172,25 @@ fun TimerScreen(
             }
         ) { newTimeLeft ->
             timeLeft = newTimeLeft
+
         }
+
+            if(timeLeft==0) {
+                Text(
+                    text = "+03:23",
+                    color = Color(0xFFFF8D61),
+                    fontSize = 34.sp,
+                    fontFamily = FontFamily(listOf(Font(R.font.baloo_bold))),
+                    modifier = Modifier.padding(top = 40.dp)
+                        .offset(y = offset)
+                        .animateContentSize()
+                )
+            }
 
         if (isTimerRunning == false) {
             Column(
                 modifier = Modifier
+                    .padding(top = 40.dp)
                     .size(70.dp)
                     .shadow(
                         elevation = 5.dp,
@@ -197,16 +235,16 @@ fun TimerScreen(
                         timeLeft = timer * 60
 
                         scope.launch(Dispatchers.IO) {
-                            viewModel.onEvent(
-                                SessionEvent.InsertSession(
-                                    Session(
-                                        startTime,
-                                        endTime,
-                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
-                                        taskTag
-                                    )
-                                )
-                            )
+//                            viewModel.onEvent(
+//                                SessionEvent.InsertSession(
+//                                    Session(
+//                                        startTime,
+//                                        endTime,
+//                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
+//                                        taskTag
+//                                    )
+//                                )
+//                            )
                         }
                         Log.d(
                             CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
@@ -217,18 +255,21 @@ fun TimerScreen(
                                     "Session Tag:- ${taskTag.name}"
                         )
 
-                        Log.d(
-                            "CHECKINGSESSIONDATA",
-                            "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
-                        )
+//                        Log.d(
+//                            "CHECKINGSESSIONDATA",
+//                            "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
+//                        )
                     }
                 },
-                modifier = Modifier.width(150.dp),
+                modifier = Modifier
+                    .width(150.dp)
+                    .padding(top = 40.dp),
                 colors = ButtonDefaults.buttonColors(Color.White),
                 border = BorderStroke(1.2.dp, color = Color(0xFFF45B5B)),
                 shape = RoundedCornerShape(10.dp),
                 elevation = ButtonDefaults.buttonElevation(5.dp)
             ) {
+
                 Text(
                     text = if (cancelTime > 0) {
                         "Cancel $cancelTime"
@@ -254,5 +295,8 @@ fun TimerScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun TimerScreenPreview() {
+
     TimerScreen()
 }
+
+

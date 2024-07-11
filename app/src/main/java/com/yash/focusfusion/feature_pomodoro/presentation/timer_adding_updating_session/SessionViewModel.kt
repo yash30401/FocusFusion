@@ -34,17 +34,17 @@ class SessionViewModel @Inject constructor(
                     try {
                         sessionsUseCases.insertSessionUseCase(event.session)
                         sessionState.value = SessionState(
-                          session = event.session,
+                            session = event.session,
                             sessionEventType = SessionEventType.INSERTED,
                         )
-                        Log.d(CHECKINGVIEWMODEL,"Entering InsertSession")
+                        Log.d(CHECKINGVIEWMODEL, "Entering InsertSession")
                     } catch (e: Exception) {
                         sessionState.value = SessionState(
                             session = event.session,
                             sessionEventType = SessionEventType.ERROR,
                             errorMessage = e.message
                         )
-                        Log.d(CHECKINGVIEWMODEL,"Error:- ${e.message}")
+                        Log.d(CHECKINGVIEWMODEL, "Error:- ${e.message}")
                     }
                     _eventFlow.emit(UIEvent.ShowSnackbar("Nice work! You crushed your ${event.session.duration}-minute focus session"))
                 }
@@ -77,7 +77,7 @@ class SessionViewModel @Inject constructor(
                             session = event.session,
                             sessionEventType = SessionEventType.UPDATED
                         )
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         sessionsUseCases.updateSessionUseCase(event.session)
                         sessionState.value = SessionState(
                             session = event.session,
