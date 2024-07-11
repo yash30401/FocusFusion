@@ -102,12 +102,16 @@ fun TimerScreen(
         mutableStateOf(TaskTag.STUDY)
     }
 
-    var animateAlpha by remember {
-        mutableFloatStateOf(0f)
+    var extraTime by remember {
+        mutableStateOf(0)
+    }
+
+    var isTakingExtraTime by remember {
+        mutableStateOf(false)
     }
 
     val offset by animateDpAsState(
-        targetValue = if (timeLeft==0) 0.dp else (-10).dp,
+        targetValue = if (timeLeft == 0) 0.dp else (-10).dp,
         animationSpec = tween(durationMillis = 500)
     )
 
@@ -122,6 +126,13 @@ fun TimerScreen(
         while (isTimerRunning && timeLeft > 0) {
             delay(1000)
             timeLeft--
+        }
+    }
+
+    LaunchedEffect(isTakingExtraTime) {
+        while (isTimerRunning) {
+            delay(1000)
+            extraTime++
         }
     }
 
@@ -175,17 +186,23 @@ fun TimerScreen(
 
         }
 
-            if(timeLeft==0) {
-                Text(
-                    text = "+03:23",
-                    color = Color(0xFFFF8D61),
-                    fontSize = 34.sp,
-                    fontFamily = FontFamily(listOf(Font(R.font.baloo_bold))),
-                    modifier = Modifier.padding(top = 40.dp)
-                        .offset(y = offset)
-                        .animateContentSize()
-                )
-            }
+        if (timeLeft == 0) {
+            isTakingExtraTime = true
+
+            val minutes = extraTime / 60
+            val remainingSeconds = extraTime % 60
+            Text(
+                text = "+"+String.format("%02d:%02d", minutes, remainingSeconds),
+                color = Color(0xFFFF8D61),
+                fontSize = 34.sp,
+                fontFamily = FontFamily(listOf(Font(R.font.baloo_bold))),
+                modifier = Modifier
+                    .padding(top = 30.dp)
+                    .padding(10.dp)
+                    .offset(y = offset)
+                    .animateContentSize()
+            )
+        }
 
         if (isTimerRunning == false) {
             Column(
