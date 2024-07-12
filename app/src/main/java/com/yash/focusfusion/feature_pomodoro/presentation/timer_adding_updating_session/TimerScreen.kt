@@ -192,7 +192,7 @@ fun TimerScreen(
             val minutes = extraTime / 60
             val remainingSeconds = extraTime % 60
             Text(
-                text = "+"+String.format("%02d:%02d", minutes, remainingSeconds),
+                text = "+" + String.format("%02d:%02d", minutes, remainingSeconds),
                 color = Color(0xFFFF8D61),
                 fontSize = 34.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.baloo_bold))),
@@ -282,21 +282,33 @@ fun TimerScreen(
                     .width(150.dp)
                     .padding(top = 40.dp),
                 colors = ButtonDefaults.buttonColors(Color.White),
-                border = BorderStroke(1.2.dp, color = Color(0xFFF45B5B)),
+                border = BorderStroke(
+                    1.2.dp,
+                    color = if (timeLeft > 0) Color(0xFFF45B5B) else Color(0xFF87DD3C)
+                ),
                 shape = RoundedCornerShape(10.dp),
                 elevation = ButtonDefaults.buttonElevation(5.dp)
             ) {
 
-                Text(
-                    text = if (cancelTime > 0) {
-                        "Cancel $cancelTime"
-                    } else {
-                        "Give Up!"
-                    },
-                    color = Color(0xFFF45B5B),
-                    fontSize = 20.sp,
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                if (timeLeft > 0) {
+                    Text(
+                        text = if (cancelTime > 0) {
+                            "Cancel $cancelTime"
+                        } else {
+                            "Give Up!"
+                        },
+                        color = Color(0xFFF45B5B),
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                } else {
+                    Text(
+                        text = "Done!",
+                        color = Color(0xFF87DD3C),
+                        fontSize = 20.sp,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
             }
 
         }
