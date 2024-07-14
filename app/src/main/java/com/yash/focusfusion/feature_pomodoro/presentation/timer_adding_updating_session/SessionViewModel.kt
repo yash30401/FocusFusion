@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,7 +47,7 @@ class SessionViewModel @Inject constructor(
                         )
                         Log.d(CHECKINGVIEWMODEL, "Error:- ${e.message}")
                     }
-                    _eventFlow.emit(UIEvent.ShowSnackbar("Nice work! You crushed your ${event.session.duration}-minute focus session"))
+                    _eventFlow.emit(UIEvent.ShowSnackbar("Nice work! You crushed your ${TimeUnit.SECONDS.toMinutes(event.session.duration.toLong())}-minute focus session"))
                 }
             }
 

@@ -257,7 +257,8 @@ fun TimerScreen(
                                     Session(
                                         startTime,
                                         endTime,
-                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
+                                        TimeUnit.MILLISECONDS.toSeconds(duration)
+                                            .toInt() + if (extraTime > 0) extraTime else 0,
                                         taskTag
                                     )
                                 )
@@ -267,13 +268,14 @@ fun TimerScreen(
                             CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
                                     "End Time:- ${endTime}\n" +
                                     "Duration:- ${
-                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt()
-                                    }\n" +
+                                        TimeUnit.MILLISECONDS.toSeconds(duration)
+                                            .toInt() + if (extraTime > 0) extraTime else 0
+                                    } Seconds\n" +
                                     "Session Tag:- ${taskTag.name}"
                         )
 
                         Log.d(
-                            "CHECKINGSESSIONDATA",
+                            CHECKINGSESSIONDATA,
                             "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
                         )
                     }
