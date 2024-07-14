@@ -52,7 +52,7 @@ class SessionViewModel @Inject constructor(
                     ).toInt()
                     _eventFlow.emit(
                         UIEvent.ShowSnackbar(
-                            if (timeInMinutes == 2) "Nice work! You crushed your ${timeInMinutes}-minutes focus session"
+                            if (timeInMinutes > 10) "Nice work! You crushed your ${timeInMinutes}-minutes focus session"
                             else "Oops! You stopped your focus session at the ${timeInMinutes}-minute mark."
                         )
                     )
