@@ -47,7 +47,15 @@ class SessionViewModel @Inject constructor(
                         )
                         Log.d(CHECKINGVIEWMODEL, "Error:- ${e.message}")
                     }
-                    _eventFlow.emit(UIEvent.ShowSnackbar("Nice work! You crushed your ${TimeUnit.SECONDS.toMinutes(event.session.duration.toLong())}-minute focus session"))
+                    _eventFlow.emit(
+                        UIEvent.ShowSnackbar(
+                            "Nice work! You crushed your ${
+                                TimeUnit.SECONDS.toMinutes(
+                                    event.session.duration.toLong()
+                                )
+                            }-minutes focus session"
+                        )
+                    )
                 }
             }
 

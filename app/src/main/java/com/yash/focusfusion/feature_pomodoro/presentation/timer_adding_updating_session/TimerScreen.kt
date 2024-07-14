@@ -251,6 +251,9 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
+                        val extraTimeInSeconds = if(extraTime>0) TimeUnit.MILLISECONDS.toSeconds(
+                            extraTime.toLong()) else 0L
+
                         scope.launch(Dispatchers.IO) {
                             viewModel.onEvent(
                                 SessionEvent.InsertSession(
@@ -258,7 +261,7 @@ fun TimerScreen(
                                         startTime,
                                         endTime,
                                         TimeUnit.MILLISECONDS.toSeconds(duration)
-                                            .toInt() + if (extraTime > 0) extraTime else 0,
+                                            .toInt() + extraTimeInSeconds.toInt(),
                                         taskTag
                                     )
                                 )
@@ -269,7 +272,7 @@ fun TimerScreen(
                                     "End Time:- ${endTime}\n" +
                                     "Duration:- ${
                                         TimeUnit.MILLISECONDS.toSeconds(duration)
-                                            .toInt() + if (extraTime > 0) extraTime else 0
+                                            .toInt() + extraTimeInSeconds.toInt()
                                     } Seconds\n" +
                                     "Session Tag:- ${taskTag.name}"
                         )
