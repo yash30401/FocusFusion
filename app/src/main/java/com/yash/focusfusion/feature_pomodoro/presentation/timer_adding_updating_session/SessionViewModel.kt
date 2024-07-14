@@ -47,13 +47,13 @@ class SessionViewModel @Inject constructor(
                         )
                         Log.d(CHECKINGVIEWMODEL, "Error:- ${e.message}")
                     }
+                    val timeInMinutes = TimeUnit.SECONDS.toMinutes(
+                        event.session.duration.toLong()
+                    ).toInt()
                     _eventFlow.emit(
                         UIEvent.ShowSnackbar(
-                            "Nice work! You crushed your ${
-                                TimeUnit.SECONDS.toMinutes(
-                                    event.session.duration.toLong()
-                                )
-                            }-minutes focus session"
+                            if (timeInMinutes == 2) "Nice work! You crushed your ${timeInMinutes}-minutes focus session"
+                            else "Oops! You stopped your focus session at the ${timeInMinutes}-minute mark."
                         )
                     )
                 }
