@@ -84,7 +84,7 @@ import java.util.concurrent.TimeUnit
 fun TimerScreen(
     modifier: Modifier = Modifier,
     timer: Int = 1,
-//    viewModel: SessionViewModel = hiltViewModel()
+    viewModel: SessionViewModel = hiltViewModel()
 ) {
     var isTimerRunning by remember { mutableStateOf(false) }
     var isTimerStarted by remember {
@@ -146,15 +146,15 @@ fun TimerScreen(
     }
 
     LaunchedEffect(key1 = true) {
-//        viewModel.eventFlow.collectLatest { event ->
-//            when (event) {
-//                is UIEvent.ShowSnackbar -> {
-//                    scope.launch {
-//                        snackbarHostState.showSnackbar(event.message)
-//                    }
-//                }
-//            }
-//        }
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is UIEvent.ShowSnackbar -> {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(event.message)
+                    }
+                }
+            }
+        }
     }
     Column(
         modifier = modifier
@@ -234,7 +234,7 @@ fun TimerScreen(
                 )
             }
         } else {
-
+            // See my pull request
             Button(
                 onClick = {
                     if (cancelTime > 0) {
@@ -252,16 +252,16 @@ fun TimerScreen(
                         timeLeft = timer * 60
 
                         scope.launch(Dispatchers.IO) {
-//                            viewModel.onEvent(
-//                                SessionEvent.InsertSession(
-//                                    Session(
-//                                        startTime,
-//                                        endTime,
-//                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
-//                                        taskTag
-//                                    )
-//                                )
-//                            )
+                            viewModel.onEvent(
+                                SessionEvent.InsertSession(
+                                    Session(
+                                        startTime,
+                                        endTime,
+                                        TimeUnit.MILLISECONDS.toMinutes(duration).toInt(),
+                                        taskTag
+                                    )
+                                )
+                            )
                         }
                         Log.d(
                             CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
@@ -272,10 +272,10 @@ fun TimerScreen(
                                     "Session Tag:- ${taskTag.name}"
                         )
 
-//                        Log.d(
-//                            "CHECKINGSESSIONDATA",
-//                            "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
-//                        )
+                        Log.d(
+                            "CHECKINGSESSIONDATA",
+                            "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
+                        )
                     }
                 },
                 modifier = Modifier
