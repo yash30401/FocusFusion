@@ -12,4 +12,6 @@ object Constants {
     const val NOTIFICATION_ID = 1
     const val CHANNEL_ID = "timer_channel"
     const val WORK_NAME = "TimerWorker"
+
+    const val KEY_TIMER_DURATION = "KEY_TIMER_DURATION"
 }
