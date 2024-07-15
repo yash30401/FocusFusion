@@ -14,15 +14,17 @@ import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.CHANNEL_ID
 import com.yash.focusfusion.core.util.Constants.KEY_TIMER_DURATION
 import com.yash.focusfusion.core.util.Constants.NOTIFICATION_ID
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
 @HiltWorker
-class TimerWorker @Inject constructor(
-    context: Context,
-    workerParam: WorkerParameters
-) : Worker(context, workerParam) {
+class TimerWorker @AssistedInject constructor(
+    @Assisted context: Context,
+    @Assisted workerParams: WorkerParameters
+) : Worker(context, workerParams) {
 
     private val notificationManager =
         applicationContext.getSystemService(Context.NOTIFICATION_SERVICE)
@@ -53,6 +55,8 @@ class TimerWorker @Inject constructor(
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setContentTitle("Focus Fusion")
             .setContentText("Time left: ${formatTime(timeLeft)}")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
             .setSmallIcon(R.drawable.baseline_timer_24)
             .build()
         notificationManager.notify(NOTIFICATION_ID, notification)

@@ -52,12 +52,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.work.WorkManager
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.CHECKINGSESSIONDATA
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
+import com.yash.focusfusion.worker.ScheduleTimer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -73,6 +75,7 @@ fun TimerScreen(
     viewModel: SessionViewModel = hiltViewModel(),
 ) {
 
+    val context = LocalContext.current
 
     var isTimerRunning by remember { mutableStateOf(false) }
     var isTimerStarted by remember {
@@ -109,6 +112,11 @@ fun TimerScreen(
         SnackbarHostState()
     }
 
+    LaunchedEffect(isTimerRunning) {
+        if(isTimerRunning){
+            ScheduleTimer.startTimer(context,timeLeft)
+        }
+    }
 
     LaunchedEffect(isTimerRunning) {
         while (isTimerRunning && timeLeft > 0) {
@@ -231,6 +239,7 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
+                        ScheduleTimer.cancelTimer(context)
                     } else {
 
                         val endTime = System.currentTimeMillis()
@@ -270,6 +279,7 @@ fun TimerScreen(
                             CHECKINGSESSIONDATA,
                             "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
                         )
+                        ScheduleTimer.cancelTimer(context)
                     }
                 },
                 modifier = Modifier
