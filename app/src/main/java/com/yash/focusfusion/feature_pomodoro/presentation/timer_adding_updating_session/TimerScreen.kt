@@ -59,6 +59,7 @@ import androidx.work.WorkManager
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.CHECKINGSERVICESLOGS
 import com.yash.focusfusion.core.util.Constants.CHECKINGSESSIONDATA
+import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
@@ -168,8 +169,13 @@ fun TimerScreen(
     }
 
     if(timeDifference!=null && previouslyLeftAt!=null){
+        Log.d(DATASTORELOGS,"Entering timedifference is :- ${timeDifference}" +
+                "Previously left at:- $previouslyLeftAt" +
+                "time left:- ${previouslyLeftAt-timeLeft}")
         isTimerRunning = true
         isTimerStarted = true
+
+        timeLeft = previouslyLeftAt-timeLeft
     }
 
     Column(

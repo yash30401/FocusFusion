@@ -20,6 +20,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -59,7 +61,6 @@ class MainActivity : ComponentActivity() {
     private var currentAppOpenTime: Long? = null
     private var timeDifferenceInSeconds: Int? = null
 
-
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,55 +78,64 @@ class MainActivity : ComponentActivity() {
         val filter = IntentFilter("TIMER_UPDATE")
         registerReceiver(timerReceiver, filter, RECEIVER_NOT_EXPORTED)
 
-
         datastoreManager = DatastoreManager(this)
+
         lifecycleScope.launch {
-            datastoreManager.exitedTimeData.collect {
-                exitedTimeData = it
-                if (exitedTimeData != null) {
-                    Log.d(DATASTORELOGS, "Time We are getting is:- ${exitedTimeData}")
-                    val difference = currentAppOpenTime!! - exitedTimeData!!
-                    timeDifferenceInSeconds = TimeUnit.MILLISECONDS.toSeconds(difference).toInt()
-                    Log.d(DATASTORELOGS, "App Open After:- ${timeDifferenceInSeconds}")
-                } else {
-                    Log.d(DATASTORELOGS, "Getting Null")
-                }
-            }
+            // Collect data
+            collectData()
 
-            datastoreManager.timeLeftData.collect {
-                timeLeftData = it
-                if (timeLeftData != null) {
-                    Log.d(DATASTORELOGS, "TimeLeft We are getting is:- ${timeLeftData}")
-                } else {
-                    Log.d(DATASTORELOGS, "Getting Null in timeleft")
-                }
-            }
-        }
-
-
-        setContent {
-            FocusFusionTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    if (exitedTimeData == null && timeLeftData == null) {
-                        TimerScreen(leftAt = {
-                            timeLeft = it
-                        }) { isTimerOn ->
-                            isTimerRunning = isTimerOn
-                        }
-                    } else {
-                        TimerScreen(
-                            timeDifference = timeDifferenceInSeconds,
-                            previouslyLeftAt = timeLeftData,
-                            leftAt = {
-                                timeLeft = it
+            // Ensure UI update happens on main thread
+            runOnUiThread {
+                setContent {
+                    FocusFusionTheme {
+                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                            Log.d(DATASTORELOGS, "ONCREATE:- $timeDifferenceInSeconds, $timeLeftData")
+                            TimerScreen(
+                                timeDifference = timeDifferenceInSeconds,
+                                previouslyLeftAt = timeLeftData,
+                                leftAt = {
+                                    timeLeft = it
+                                }
+                            ) { isTimerOn ->
+                                isTimerRunning = isTimerOn
                             }
-                        ) { isTimerOn ->
-                            isTimerRunning = isTimerOn
                         }
                     }
                 }
             }
         }
+    }
+
+    private suspend fun collectData() {
+        lifecycleScope.launch {
+            val exitedTimeJob = launch {
+                datastoreManager.exitedTimeData.collect {
+                    exitedTimeData = it
+                    if (exitedTimeData != null) {
+                        Log.d(DATASTORELOGS, "Time We are getting is:- ${exitedTimeData}")
+                        val difference = currentAppOpenTime!! - exitedTimeData!!
+                        timeDifferenceInSeconds =
+                            TimeUnit.MILLISECONDS.toSeconds(difference).toInt()
+                        Log.d(DATASTORELOGS, "App Open After:- ${timeDifferenceInSeconds}")
+                    } else {
+                        Log.d(DATASTORELOGS, "Getting Null for exitedTimeData")
+                    }
+                }
+            }
+            val timeLeftJob = launch {
+                datastoreManager.timeLeftData.collect {
+                    timeLeftData = it
+                    if (timeLeftData != null) {
+                        Log.d(DATASTORELOGS, "TimeLeft We are getting is:- ${timeLeftData}")
+                    } else {
+                        Log.d(DATASTORELOGS, "Getting Null in timeleft")
+                    }
+                }
+            }
+            exitedTimeJob.join()
+            timeLeftJob.join()
+        }
+
     }
 
     override fun onDestroy() {
