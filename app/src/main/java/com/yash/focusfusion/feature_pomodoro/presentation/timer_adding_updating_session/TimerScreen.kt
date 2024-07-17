@@ -77,7 +77,7 @@ fun TimerScreen(
     modifier: Modifier = Modifier,
     timer: Int = 1,
     viewModel: SessionViewModel = hiltViewModel(),
-    isTimerOn: (value: Boolean) -> Unit
+    isTimerOn: (value: Boolean,timeLeft:Int?) -> Unit
 
 ) {
     val context = LocalContext.current
@@ -227,7 +227,7 @@ fun TimerScreen(
                         isTimerRunning = true
                         isTimerStarted = true
 
-                        isTimerOn(true)
+                        isTimerOn(true,timeLeft)
 
                         startTime = System.currentTimeMillis()
 
@@ -252,7 +252,7 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
-                        isTimerOn(false)
+                        isTimerOn(false,null)
                     } else {
 
                         val endTime = System.currentTimeMillis()
@@ -262,7 +262,7 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
-                        isTimerOn(false)
+                        isTimerOn(false,null)
 
                         val extraTimeInSeconds = if (extraTime > 0) TimeUnit.MILLISECONDS.toSeconds(
                             extraTime.toLong()
@@ -344,7 +344,9 @@ fun TimerScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun TimerScreenPreview() {
-    TimerScreen() {}
+    TimerScreen() {isTimeOn,timeLeft->
+
+    }
 }
 
 

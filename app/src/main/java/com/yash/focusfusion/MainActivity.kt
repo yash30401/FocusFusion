@@ -20,17 +20,27 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.yash.focusfusion.core.util.Constants.TIMERRUNNINGLOGS
+import androidx.lifecycle.lifecycleScope
+import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
+import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.SessionViewModel
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -39,7 +49,11 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var sessionViewModel: SessionViewModel
     private lateinit var timerReceiver: BroadcastReceiver
-    private var isTimerRunning:Boolean = false
+    private var isTimerRunning: Boolean = false
+    private var timeLeft: Int? = null
+    private lateinit var datastoreManager: DatastoreManager
+    private lateinit var exitedTimeData:MutableStateFlow<Long?>
+
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -56,11 +70,28 @@ class MainActivity : ComponentActivity() {
         }
         val filter = IntentFilter("TIMER_UPDATE")
         registerReceiver(timerReceiver, filter, RECEIVER_NOT_EXPORTED)
+
+        exitedTimeData = MutableStateFlow<Long?>(null)
+
+        datastoreManager = DatastoreManager(this)
+        lifecycleScope.launch {
+            datastoreManager.exitedTimeData.collect {
+                data.value = it
+                if (data.value != null) {
+                    Log.d(DATASTORELOGS, "Time We are getting is:- ${data.value}")
+                } else {
+                    Log.d(DATASTORELOGS, "Getting Null")
+                }
+            }
+        }
+
+
         setContent {
             FocusFusionTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TimerScreen(){isTimerOn->
+                    TimerScreen() { isTimerOn, newTimeLeft ->
                         isTimerRunning = isTimerOn
+                        timeLeft = newTimeLeft
                     }
                 }
             }
@@ -70,8 +101,13 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(timerReceiver)
-        if(isTimerRunning){
-            Log.d(TIMERRUNNINGLOGS,"App Closed At:- ${System.currentTimeMillis()}")
+        runBlocking {
+            if (isTimerRunning) {
+                Log.d(DATASTORELOGS, "App Closed At: ${System.currentTimeMillis()}")
+                datastoreManager.addData(System.currentTimeMillis(), timeLeft)
+            } else {
+                datastoreManager.addData(null, null)
+            }
         }
     }
 }
