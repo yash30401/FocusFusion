@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -52,14 +53,18 @@ class MainActivity : ComponentActivity() {
     private var isTimerRunning: Boolean = false
     private var timeLeft: Int? = null
     private lateinit var datastoreManager: DatastoreManager
-    private lateinit var exitedTimeData:MutableStateFlow<Long?>
-
+    private var exitedTimeData: Long? = null
+    private var timeLeftData: Int? = null
+    private var currentAppOpenTime: Long? = null
+    private var timeDifferenceInSeconds: Int? = null
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        currentAppOpenTime = System.currentTimeMillis()
+
         sessionViewModel = ViewModelProvider(this).get(SessionViewModel::class.java)
 
         timerReceiver = object : BroadcastReceiver() {
@@ -71,16 +76,27 @@ class MainActivity : ComponentActivity() {
         val filter = IntentFilter("TIMER_UPDATE")
         registerReceiver(timerReceiver, filter, RECEIVER_NOT_EXPORTED)
 
-        exitedTimeData = MutableStateFlow<Long?>(null)
 
         datastoreManager = DatastoreManager(this)
         lifecycleScope.launch {
             datastoreManager.exitedTimeData.collect {
-                data.value = it
-                if (data.value != null) {
-                    Log.d(DATASTORELOGS, "Time We are getting is:- ${data.value}")
+                exitedTimeData = it
+                if (exitedTimeData != null) {
+                    Log.d(DATASTORELOGS, "Time We are getting is:- ${exitedTimeData}")
+                    val difference = currentAppOpenTime!! - exitedTimeData!!
+                    timeDifferenceInSeconds = TimeUnit.MILLISECONDS.toSeconds(difference).toInt()
+                    Log.d(DATASTORELOGS, "App Open After:- ${timeDifferenceInSeconds}")
                 } else {
                     Log.d(DATASTORELOGS, "Getting Null")
+                }
+            }
+
+            datastoreManager.timeLeftData.collect {
+                timeLeftData = it
+                if (timeLeftData != null) {
+                    Log.d(DATASTORELOGS, "TimeLeft We are getting is:- ${timeLeftData}")
+                } else {
+                    Log.d(DATASTORELOGS, "Getting Null in timeleft")
                 }
             }
         }
@@ -89,9 +105,20 @@ class MainActivity : ComponentActivity() {
         setContent {
             FocusFusionTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    TimerScreen() { isTimerOn, newTimeLeft ->
-                        isTimerRunning = isTimerOn
-                        timeLeft = newTimeLeft
+                    if (exitedTimeData == null && timeLeftData == null) {
+                        TimerScreen() { isTimerOn, newTimeLeft ->
+                            isTimerRunning = isTimerOn
+                            timeLeft = newTimeLeft
+                        }
+                    } else {
+                        TimerScreen(
+                            timeDifference = timeDifferenceInSeconds,
+                            previouslyLeftAt = timeLeftData
+                        ) { isTimerOn, newTimeLeft ->
+                            isTimerRunning = isTimerOn
+                            timeLeft = newTimeLeft
+
+                        }
                     }
                 }
             }
@@ -104,6 +131,9 @@ class MainActivity : ComponentActivity() {
         runBlocking {
             if (isTimerRunning) {
                 Log.d(DATASTORELOGS, "App Closed At: ${System.currentTimeMillis()}")
+                if (exitedTimeData != null) {
+                    datastoreManager.addData(null, null)
+                }
                 datastoreManager.addData(System.currentTimeMillis(), timeLeft)
             } else {
                 datastoreManager.addData(null, null)

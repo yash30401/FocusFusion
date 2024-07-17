@@ -77,6 +77,8 @@ fun TimerScreen(
     modifier: Modifier = Modifier,
     timer: Int = 1,
     viewModel: SessionViewModel = hiltViewModel(),
+    timeDifference:Int? = null,
+    previouslyLeftAt:Int?=null,
     isTimerOn: (value: Boolean,timeLeft:Int?) -> Unit
 
 ) {
@@ -161,6 +163,11 @@ fun TimerScreen(
                 }
             }
         }
+    }
+
+    if(timeDifference!=null && previouslyLeftAt!=null){
+        isTimerRunning = true
+        isTimerStarted = true
     }
 
     Column(
