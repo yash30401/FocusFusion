@@ -117,6 +117,9 @@ dependencies {
 
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.8.1")
+
+    // Datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 }
 
 kapt{

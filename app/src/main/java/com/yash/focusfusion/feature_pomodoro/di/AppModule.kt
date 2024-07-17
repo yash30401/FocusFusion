@@ -1,6 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.di
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import com.yash.focusfusion.core.util.Constants.DATABASE_NAME
 import com.yash.focusfusion.feature_pomodoro.data.local.SessionDatabase
@@ -22,6 +23,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -62,4 +64,5 @@ object AppModule {
             getSessionsForYearUseCase = GetSessionsForYearUseCase(sessionRepository)
         )
     }
+
 }

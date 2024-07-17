@@ -28,6 +28,7 @@ class SessionViewModel @Inject constructor(
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+
     fun onEvent(event: SessionEvent) {
         when (event) {
             is SessionEvent.InsertSession -> {

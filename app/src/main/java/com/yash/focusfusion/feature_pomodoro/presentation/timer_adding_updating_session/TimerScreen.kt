@@ -1,6 +1,9 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session
 
 
+import TimerService
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -54,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.work.WorkManager
 import com.yash.focusfusion.R
+import com.yash.focusfusion.core.util.Constants.CHECKINGSERVICESLOGS
 import com.yash.focusfusion.core.util.Constants.CHECKINGSESSIONDATA
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
@@ -73,8 +77,9 @@ fun TimerScreen(
     modifier: Modifier = Modifier,
     timer: Int = 1,
     viewModel: SessionViewModel = hiltViewModel(),
-) {
+    isTimerOn: (value: Boolean) -> Unit
 
+) {
     val context = LocalContext.current
 
     var isTimerRunning by remember { mutableStateOf(false) }
@@ -112,11 +117,16 @@ fun TimerScreen(
         SnackbarHostState()
     }
 
+
     LaunchedEffect(isTimerRunning) {
-        if(isTimerRunning){
-            ScheduleTimer.startTimer(context,timeLeft)
+        if (isTimerRunning) {
+            Log.d(CHECKINGSERVICESLOGS, "Entering Here")
+//            TimerService.startService(context.applicationContext,timeLeft)
+        } else {
+//            TimerService.stopService(context)
         }
     }
+
 
     LaunchedEffect(isTimerRunning) {
         while (isTimerRunning && timeLeft > 0) {
@@ -152,6 +162,7 @@ fun TimerScreen(
             }
         }
     }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -179,7 +190,6 @@ fun TimerScreen(
             }
         ) { newTimeLeft ->
             timeLeft = newTimeLeft
-
         }
 
         if (timeLeft == 0) {
@@ -217,7 +227,10 @@ fun TimerScreen(
                         isTimerRunning = true
                         isTimerStarted = true
 
+                        isTimerOn(true)
+
                         startTime = System.currentTimeMillis()
+
                     },
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -239,7 +252,7 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
-                        ScheduleTimer.cancelTimer(context)
+                        isTimerOn(false)
                     } else {
 
                         val endTime = System.currentTimeMillis()
@@ -249,8 +262,11 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
-                        val extraTimeInSeconds = if(extraTime>0) TimeUnit.MILLISECONDS.toSeconds(
-                            extraTime.toLong()) else 0L
+                        isTimerOn(false)
+
+                        val extraTimeInSeconds = if (extraTime > 0) TimeUnit.MILLISECONDS.toSeconds(
+                            extraTime.toLong()
+                        ) else 0L
 
                         scope.launch(Dispatchers.IO) {
                             viewModel.onEvent(
@@ -279,7 +295,7 @@ fun TimerScreen(
                             CHECKINGSESSIONDATA,
                             "Session:- ${viewModel.sessionState.value.sessionEventType.name}"
                         )
-                        ScheduleTimer.cancelTimer(context)
+
                     }
                 },
                 modifier = Modifier
@@ -328,7 +344,7 @@ fun TimerScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun TimerScreenPreview() {
-    TimerScreen()
+    TimerScreen() {}
 }
 
 

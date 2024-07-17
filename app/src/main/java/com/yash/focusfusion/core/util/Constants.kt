@@ -7,6 +7,8 @@ object Constants {
     // Logs
     const val CHECKINGSESSIONDATA = "CHECKINGSESSIONDATA"
     const val CHECKINGVIEWMODEL = "CHECKINGVIEWMODEL"
+    const val CHECKINGSERVICESLOGS = "CHECKINGSERVICESLOGS"
+    const val TIMERRUNNINGLOGS = "TIMERRUNNINGLOGS"
 
     // Notification
     const val NOTIFICATION_ID = 1
