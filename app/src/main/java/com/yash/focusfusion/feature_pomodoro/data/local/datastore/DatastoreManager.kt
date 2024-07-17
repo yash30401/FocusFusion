@@ -29,6 +29,7 @@ class DatastoreManager(private val context: Context) {
         context.dataStore.edit { timerPreferences ->
             timerPreferences[EXITED_TIME_KEY] = exitedTime ?: DEFAULT_LONG_VALUE
             timerPreferences[TIME_LEFT_KEY] = timeLeft ?: DEFAULT_INT_VALUE
+            Log.d(DATASTORELOGS, "Saved exitedTime: $exitedTime, timeLeft: $timeLeft")
         }
     }
 

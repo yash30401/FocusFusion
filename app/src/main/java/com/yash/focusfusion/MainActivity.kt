@@ -35,6 +35,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.last
@@ -106,18 +107,20 @@ class MainActivity : ComponentActivity() {
             FocusFusionTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     if (exitedTimeData == null && timeLeftData == null) {
-                        TimerScreen() { isTimerOn, newTimeLeft ->
+                        TimerScreen(leftAt = {
+                            timeLeft = it
+                        }) { isTimerOn ->
                             isTimerRunning = isTimerOn
-                            timeLeft = newTimeLeft
                         }
                     } else {
                         TimerScreen(
                             timeDifference = timeDifferenceInSeconds,
-                            previouslyLeftAt = timeLeftData
-                        ) { isTimerOn, newTimeLeft ->
+                            previouslyLeftAt = timeLeftData,
+                            leftAt = {
+                                timeLeft = it
+                            }
+                        ) { isTimerOn ->
                             isTimerRunning = isTimerOn
-                            timeLeft = newTimeLeft
-
                         }
                     }
                 }
@@ -128,7 +131,7 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(timerReceiver)
-        runBlocking {
+        runBlocking(Dispatchers.IO) {
             if (isTimerRunning) {
                 Log.d(DATASTORELOGS, "App Closed At: ${System.currentTimeMillis()}")
                 if (exitedTimeData != null) {
