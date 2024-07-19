@@ -1,7 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session
 
 
-import TimerService
+
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -55,8 +55,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.work.WorkManager
 import com.yash.focusfusion.R
+import com.yash.focusfusion.TimerService
 import com.yash.focusfusion.core.util.Constants.CHECKINGSERVICESLOGS
 import com.yash.focusfusion.core.util.Constants.CHECKINGSESSIONDATA
 import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
@@ -64,24 +64,19 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
-import com.yash.focusfusion.worker.ScheduleTimer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.sql.Time
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun TimerScreen(
     modifier: Modifier = Modifier,
     timer: Int = 1,
     viewModel: SessionViewModel = hiltViewModel(),
-    timeDifference:Int? = null,
-    previouslyLeftAt:Int?=null,
-    leftAt:(value:Int)->Unit,
-    isTimerOn: (value: Boolean) -> Unit
 
 ) {
     val context = LocalContext.current
@@ -136,7 +131,6 @@ fun TimerScreen(
         while (isTimerRunning && timeLeft > 0) {
             delay(1000)
             timeLeft--
-            leftAt(timeLeft)
         }
     }
 
@@ -166,16 +160,6 @@ fun TimerScreen(
                 }
             }
         }
-    }
-
-    if(timeDifference!=null && previouslyLeftAt!=null){
-        Log.d(DATASTORELOGS,"Entering timedifference is :- ${timeDifference}" +
-                "Previously left at:- $previouslyLeftAt" +
-                "time left:- ${previouslyLeftAt-timeLeft}")
-        isTimerRunning = true
-        isTimerStarted = true
-
-        timeLeft = previouslyLeftAt-timeLeft
     }
 
     Column(
@@ -242,9 +226,9 @@ fun TimerScreen(
                         isTimerRunning = true
                         isTimerStarted = true
 
-                        isTimerOn(true)
 
                         startTime = System.currentTimeMillis()
+                        TimerService.startService(context.applicationContext,timer.toLong()*60*1000)
 
                     },
                 verticalArrangement = Arrangement.Center,
@@ -267,7 +251,7 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
-                        isTimerOn(false)
+                        TimerService.stopService(context.applicationContext)
                     } else {
 
                         val endTime = System.currentTimeMillis()
@@ -277,11 +261,11 @@ fun TimerScreen(
                         cancelTime = 10
                         timeLeft = timer * 60
 
-                        isTimerOn(false)
 
                         val extraTimeInSeconds = if (extraTime > 0) TimeUnit.MILLISECONDS.toSeconds(
                             extraTime.toLong()
                         ) else 0L
+
 
                         scope.launch(Dispatchers.IO) {
                             viewModel.onEvent(
@@ -312,6 +296,8 @@ fun TimerScreen(
                         )
 
                     }
+
+                    TimerService.stopService(context.applicationContext)
                 },
                 modifier = Modifier
                     .width(150.dp)
@@ -345,7 +331,6 @@ fun TimerScreen(
                     )
                 }
             }
-
         }
         SnackbarHost(hostState = snackbarHostState,
             snackbar = { data ->
@@ -359,9 +344,5 @@ fun TimerScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun TimerScreenPreview() {
-    TimerScreen(leftAt = {}) {isTimeOn->
-
-    }
+    TimerScreen()
 }
-
-

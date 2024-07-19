@@ -1,19 +1,13 @@
 package com.yash.focusfusion
 
-import TimerService
-import TimerService.Companion.ACTION_START
-import TimerService.Companion.EXTRA_TIME_LEFT
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -24,133 +18,86 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
-import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
-import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.SessionViewModel
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 @AndroidEntryPoint
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class MainActivity : ComponentActivity() {
 
-    private lateinit var sessionViewModel: SessionViewModel
-    private lateinit var timerReceiver: BroadcastReceiver
-    private var isTimerRunning: Boolean = false
-    private var timeLeft: Int? = null
-    private lateinit var datastoreManager: DatastoreManager
-    private var exitedTimeData: Long? = null
-    private var timeLeftData: Int? = null
-    private var currentAppOpenTime: Long? = null
-    private var timeDifferenceInSeconds: Int? = null
+    private var timeLeft: Long by mutableStateOf(1500000L) // Default to 25:00
+    private lateinit var dataStoreManager: DatastoreManager
+    private var extraTime: Int by mutableStateOf(0)
+    private var isTimerRunning: Boolean by mutableStateOf(false)
+
+    private val timerUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            timeLeft = intent?.getLongExtra("TIME_LEFT", 1500000L) ?: 1500000L
+            extraTime = intent?.getIntExtra("EXTRA_TIME", 0) ?: 0
+            lifecycleScope.launch {
+                dataStoreManager.saveTimeLeft(timeLeft)
+                dataStoreManager.saveExtraTime(extraTime)
+            }
+        }
+    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        currentAppOpenTime = System.currentTimeMillis()
 
-        sessionViewModel = ViewModelProvider(this).get(SessionViewModel::class.java)
+        dataStoreManager = DatastoreManager(this)
 
-        timerReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                val timeLeft = intent?.getIntExtra("timeLeft", 0) ?: 0
-                Log.d("TIMER_UPDATE", "Time left: $timeLeft")
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
         }
-        val filter = IntentFilter("TIMER_UPDATE")
-        registerReceiver(timerReceiver, filter, RECEIVER_NOT_EXPORTED)
-
-        datastoreManager = DatastoreManager(this)
+        registerReceiver(
+            timerUpdateReceiver, IntentFilter("TIMER_UPDATE"),
+            RECEIVER_EXPORTED
+        )
 
         lifecycleScope.launch {
-            // Collect data
-            collectData()
-
-            // Ensure UI update happens on main thread
-            runOnUiThread {
-                setContent {
-                    FocusFusionTheme {
-                        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                            Log.d(DATASTORELOGS, "ONCREATE:- $timeDifferenceInSeconds, $timeLeftData")
-                            TimerScreen(
-                                timeDifference = timeDifferenceInSeconds,
-                                previouslyLeftAt = timeLeftData,
-                                leftAt = {
-                                    timeLeft = it
-                                }
-                            ) { isTimerOn ->
-                                isTimerRunning = isTimerOn
-                            }
-                        }
-                    }
-                }
+            dataStoreManager.timeLeftFlow.collect { savedTimeLeft ->
+                timeLeft = savedTimeLeft
             }
         }
-    }
 
-    private suspend fun collectData() {
         lifecycleScope.launch {
-            val exitedTimeJob = launch {
-                datastoreManager.exitedTimeData.collect {
-                    exitedTimeData = it
-                    if (exitedTimeData != null) {
-                        Log.d(DATASTORELOGS, "Time We are getting is:- ${exitedTimeData}")
-                        val difference = currentAppOpenTime!! - exitedTimeData!!
-                        timeDifferenceInSeconds =
-                            TimeUnit.MILLISECONDS.toSeconds(difference).toInt()
-                        Log.d(DATASTORELOGS, "App Open After:- ${timeDifferenceInSeconds}")
-                    } else {
-                        Log.d(DATASTORELOGS, "Getting Null for exitedTimeData")
-                    }
-                }
+            dataStoreManager.extraTime.collect { getExtraTime ->
+                extraTime = getExtraTime
             }
-            val timeLeftJob = launch {
-                datastoreManager.timeLeftData.collect {
-                    timeLeftData = it
-                    if (timeLeftData != null) {
-                        Log.d(DATASTORELOGS, "TimeLeft We are getting is:- ${timeLeftData}")
-                    } else {
-                        Log.d(DATASTORELOGS, "Getting Null in timeleft")
-                    }
-                }
-            }
-            exitedTimeJob.join()
-            timeLeftJob.join()
         }
 
+        lifecycleScope.launch {
+            dataStoreManager.continueTimerFlow.collect { shouldContinue ->
+                isTimerRunning = shouldContinue
+            }
+        }
+
+        setContent {
+            FocusFusionTheme {
+                Scaffold(modifier = Modifier.fillMaxSize()) {
+                    TimerScreen()
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(timerReceiver)
-        runBlocking(Dispatchers.IO) {
-            if (isTimerRunning) {
-                Log.d(DATASTORELOGS, "App Closed At: ${System.currentTimeMillis()}")
-                if (exitedTimeData != null) {
-                    datastoreManager.addData(null, null)
-                }
-                datastoreManager.addData(System.currentTimeMillis(), timeLeft)
-            } else {
-                datastoreManager.addData(null, null)
-            }
-        }
+        unregisterReceiver(timerUpdateReceiver)
     }
 }

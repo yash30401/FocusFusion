@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -12,34 +13,57 @@ import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+private val Context.dataStore by preferencesDataStore(name = "timer_prefs")
+
 class DatastoreManager(private val context: Context) {
 
-
     companion object {
-        private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "TimerPreferences")
-
-        val EXITED_TIME_KEY = longPreferencesKey("EXITED_TIME_KEY")
-        val TIME_LEFT_KEY = intPreferencesKey("TIME_LEFT_KEY")
-        const val DEFAULT_LONG_VALUE = -1L
-        const val DEFAULT_INT_VALUE = -1
+        val TIME_LEFT_KEY = longPreferencesKey("TIME_LEFT")
+        val EXTRA_TIME_KEY = intPreferencesKey("EXTRA_TIME")
+        val CONTINUE_TIMER_KEY = booleanPreferencesKey("CONTINUE_TIMER")
     }
 
-    suspend fun addData(exitedTime: Long?, timeLeft: Int?) {
-        Log.d(DATASTORELOGS,"Entering Add Data")
-        context.dataStore.edit { timerPreferences ->
-            timerPreferences[EXITED_TIME_KEY] = exitedTime ?: DEFAULT_LONG_VALUE
-            timerPreferences[TIME_LEFT_KEY] = timeLeft ?: DEFAULT_INT_VALUE
-            Log.d(DATASTORELOGS, "Saved exitedTime: $exitedTime, timeLeft: $timeLeft")
+    val timeLeftFlow: Flow<Long> = context.dataStore.data
+        .map { preferences ->
+            preferences[TIME_LEFT_KEY] ?: 1500000L
+        }
+
+    val extraTime: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[EXTRA_TIME_KEY] ?: 0
+    }
+
+    val continueTimerFlow: Flow<Boolean> = context.dataStore.data
+        .map { preferences ->
+            preferences[CONTINUE_TIMER_KEY] ?: false
+        }
+
+    suspend fun saveTimeLeft(timeLeft: Long) {
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[TIME_LEFT_KEY] = timeLeft
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving timeLeft", e)
         }
     }
 
-    val exitedTimeData: Flow<Long?> = context.dataStore.data.map { preferences ->
-        val exitedTime = preferences[EXITED_TIME_KEY] ?: DEFAULT_LONG_VALUE
-        if (exitedTime == DEFAULT_LONG_VALUE) null else exitedTime
+    suspend fun saveExtraTime(extraTime: Int) {
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[EXTRA_TIME_KEY] = extraTime
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving extraTime", e)
+        }
     }
 
-    val timeLeftData: Flow<Int?> = context.dataStore.data.map { preferences ->
-        val timeLeft = preferences[TIME_LEFT_KEY] ?: DEFAULT_INT_VALUE
-        if (timeLeft == DEFAULT_INT_VALUE) null else timeLeft
+    suspend fun saveContinueTimer(shouldContinue: Boolean) {
+        try {
+            context.dataStore.edit { preferences ->
+                preferences[CONTINUE_TIMER_KEY] = shouldContinue
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving continueTimer state", e)
+        }
     }
 }
