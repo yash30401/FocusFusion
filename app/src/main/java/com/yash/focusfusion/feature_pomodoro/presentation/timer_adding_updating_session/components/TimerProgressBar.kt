@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -58,10 +59,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.delay
 import okhttp3.internal.concurrent.Task
+import java.sql.Time
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -71,12 +75,14 @@ fun TimerProgressBar(
     timeInMinutes: Int,
     isTimerRunning: Boolean,
     isTimerStarted: Boolean,
-    timeLeft: Int,
+    timerSharedViewModel: TimerSharedViewModel,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
     onTaskTagChanged: (TaskTag) -> Unit,
     onTimeLeftChange: (Int) -> Unit,
 ) {
+
+    val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
 
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
@@ -86,18 +92,18 @@ fun TimerProgressBar(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(true) {
-        if (isTimerRunning) {
-            while (timeLeft > 0) {
-                delay(1000L)
-                onTimeLeftChange(timeLeft - 1)
-            }
-        }
-    }
+//    LaunchedEffect(true) {
+//        if (isTimerRunning) {
+//            while (timeLeft > 0) {
+//                delay(1000L)
+//                onTimeLeftChange(timeLeft - 1)
+//            }
+//        }
+//    }
 
-    val progress by remember(timeLeft) {
+    val progress by remember(TimeUnit.MILLISECONDS.toSeconds(timeLeft)) {
         derivedStateOf {
-            timeLeft / (timeInMinutes * 60f)
+            TimeUnit.MILLISECONDS.toSeconds(timeLeft) / (timeInMinutes * 60f)
         }
     }
 
@@ -114,24 +120,19 @@ fun TimerProgressBar(
 
             if (newTaskTagValue == TaskTag.WORK) {
                 taskTag = TaskTag.WORK
-            }else if(newTaskTagValue == TaskTag.STUDY){
+            } else if (newTaskTagValue == TaskTag.STUDY) {
                 taskTag = TaskTag.STUDY
-            }
-            else if(newTaskTagValue == TaskTag.SPORT){
+            } else if (newTaskTagValue == TaskTag.SPORT) {
                 taskTag = TaskTag.SPORT
-            }
-            else if(newTaskTagValue == TaskTag.RELAX){
+            } else if (newTaskTagValue == TaskTag.RELAX) {
                 taskTag = TaskTag.RELAX
-            }
-            else if(newTaskTagValue == TaskTag.ENTERTAINMENT){
+            } else if (newTaskTagValue == TaskTag.ENTERTAINMENT) {
                 taskTag = TaskTag.ENTERTAINMENT
-            }
-            else if(newTaskTagValue == TaskTag.EXERCISE){
+            } else if (newTaskTagValue == TaskTag.EXERCISE) {
                 taskTag = TaskTag.EXERCISE
-            }
-            else if(newTaskTagValue == TaskTag.SOCIAL){
+            } else if (newTaskTagValue == TaskTag.SOCIAL) {
                 taskTag = TaskTag.SOCIAL
-            }else if(newTaskTagValue == TaskTag.OTHER){
+            } else if (newTaskTagValue == TaskTag.OTHER) {
                 taskTag = TaskTag.OTHER
             }
         }
@@ -155,7 +156,7 @@ fun TimerProgressBar(
                 style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
             )
 
-            if (isTimerStarted) {
+            if (timeLeft < TimeUnit.MINUTES.toMillis(timeInMinutes.toLong())) {
                 val center = Offset(size.width / 2f, size.height / 2f)
                 val beta = (-360f * animatedProgress - 90f) * (PI / 180f).toFloat()
                 val radius = size.width / 2f
@@ -195,8 +196,10 @@ fun TimerProgressBar(
                 color = Color(0xFFB5B5B5),
                 fontFamily = FontFamily(Font(R.font.baloo_bhaijan_semi_bold))
             )
+            val minutes = (timeLeft / 1000) / 60
+            val seconds = (timeLeft / 1000) % 60
             Text(
-                text = String.format("%02d:%02d", timeLeft / 60, timeLeft % 60),
+                text = String.format("%02d:%02d", minutes, seconds),
                 fontSize = 48.sp,
                 color = Color(0xFF4D4D4D),
                 fontFamily = FontFamily(Font(R.font.baloo_bold))
@@ -209,7 +212,7 @@ fun TimerProgressBar(
                 Text(
                     text = taskTag.name.toLowerCase().replaceFirstChar { it.uppercase() },
                     color = Color(0xFFFF8D61),
-                    fontSize = if(taskTag.name.length>6) 18.sp else 24.sp,
+                    fontSize = if (taskTag.name.length > 6) 18.sp else 24.sp,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.clickable {
@@ -236,8 +239,9 @@ fun TimerProgressBar(
 @Composable
 private fun TimerCircularBarPreview() {
 
+    val timerSharedViewModel = TimerSharedViewModel()
     TimerProgressBar(25, false, false,
-        25, onTaskTagChanged = {
+        timerSharedViewModel = timerSharedViewModel, onTaskTagChanged = {
 
         }) {}
 

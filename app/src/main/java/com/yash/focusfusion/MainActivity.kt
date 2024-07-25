@@ -11,6 +11,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
@@ -25,6 +26,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
+import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -38,14 +40,25 @@ class MainActivity : ComponentActivity() {
     private lateinit var dataStoreManager: DatastoreManager
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
+    private var cancelTime:Int by mutableStateOf(10)
+    private val timerSharedViewModel:TimerSharedViewModel by viewModels()
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            timeLeft = intent?.getLongExtra("TIME_LEFT", 1500000L) ?: 1500000L
+            timeLeft = intent?.getLongExtra("TIME_LEFT", 0L) ?: 0L
             extraTime = intent?.getIntExtra("EXTRA_TIME", 0) ?: 0
+            isTimerRunning = timeLeft>0
+
             lifecycleScope.launch {
                 dataStoreManager.saveTimeLeft(timeLeft)
                 dataStoreManager.saveExtraTime(extraTime)
+                dataStoreManager.saveContinueTimer(isTimerRunning)
+                timerSharedViewModel.updateTimeLeft(timeLeft)
+                timerSharedViewModel.updateExtraTime(extraTime)
+
+                timerSharedViewModel.updateTimeLeft(timeLeft)
+                timerSharedViewModel.updateExtraTime(extraTime)
+                timerSharedViewModel.updateIsRunning(isTimerRunning)
             }
         }
     }
@@ -72,25 +85,32 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             dataStoreManager.timeLeftFlow.collect { savedTimeLeft ->
                 timeLeft = savedTimeLeft
+                timerSharedViewModel.updateTimeLeft(savedTimeLeft)
             }
         }
 
         lifecycleScope.launch {
-            dataStoreManager.extraTime.collect { getExtraTime ->
-                extraTime = getExtraTime
+            dataStoreManager.extraTime.collect { savedExtraTime ->
+                extraTime = savedExtraTime
+                timerSharedViewModel.updateExtraTime(savedExtraTime)
             }
         }
 
         lifecycleScope.launch {
             dataStoreManager.continueTimerFlow.collect { shouldContinue ->
                 isTimerRunning = shouldContinue
+                timerSharedViewModel.updateIsRunning(shouldContinue)
+                if (!shouldContinue) {
+                    cancelTime = 10 // Reset cancelTime if the timer is not running
+                }
             }
         }
 
         setContent {
             FocusFusionTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    TimerScreen()
+                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel,
+                        cancelTime = cancelTime)
                 }
             }
         }

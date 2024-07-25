@@ -1,7 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session
 
 
-
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -15,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -36,6 +36,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.TimerService
 import com.yash.focusfusion.core.util.Constants.CHECKINGSERVICESLOGS
@@ -68,26 +70,30 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.sql.Time
 import java.util.concurrent.TimeUnit
+
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun TimerScreen(
+    context: Context,
+    timerSharedViewModel: TimerSharedViewModel,
+    cancelTime: Int,
     modifier: Modifier = Modifier,
     timer: Int = 1,
     viewModel: SessionViewModel = hiltViewModel(),
-
 ) {
-    val context = LocalContext.current
 
-    var isTimerRunning by remember { mutableStateOf(false) }
+    val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
+    val extraTime by timerSharedViewModel.extraTime.collectAsState()
+    val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
+
     var isTimerStarted by remember {
-        mutableStateOf(false)
+        mutableStateOf(isTimerRunning)
     }
-    var timeLeft by remember { mutableStateOf(timer * 60) }
+//    var timeLeft by remember { mutableStateOf(timer * 60) }
 
-    var cancelTime by remember { mutableStateOf(10) }
+    var cancelTimeState by remember { mutableStateOf(cancelTime) }
 
     var startTime by remember {
         mutableStateOf(0L)
@@ -97,16 +103,16 @@ fun TimerScreen(
         mutableStateOf(TaskTag.STUDY)
     }
 
-    var extraTime by remember {
-        mutableStateOf(0)
-    }
+//    var extraTime by remember {
+//        mutableStateOf(0)
+//    }
 
     var isTakingExtraTime by remember {
         mutableStateOf(false)
     }
 
     val offset by animateDpAsState(
-        targetValue = if (timeLeft == 0) 0.dp else (-10).dp,
+        targetValue = if (timeLeft == 0L) 0.dp else (-10).dp,
         animationSpec = tween(durationMillis = 500)
     )
 
@@ -127,25 +133,25 @@ fun TimerScreen(
     }
 
 
-    LaunchedEffect(isTimerRunning) {
-        while (isTimerRunning && timeLeft > 0) {
-            delay(1000)
-            timeLeft--
-        }
-    }
+//    LaunchedEffect(isTimerRunning) {
+//        while (isTimerRunning && timeLeft > 0) {
+//            delay(1000)
+//            timeLeft--
+//        }
+//    }
 
-    LaunchedEffect(isTakingExtraTime) {
-        while (isTimerRunning) {
-            delay(1000)
-            extraTime++
-        }
-    }
+//    LaunchedEffect(isTakingExtraTime) {
+//        while (isTimerRunning) {
+//            delay(1000)
+//            extraTime++
+//        }
+//    }
 
     LaunchedEffect(isTimerRunning) {
         if (isTimerRunning) {
-            while (cancelTime > 0) {
+            while (cancelTimeState > 0) {
                 delay(1000)
-                cancelTime--
+                cancelTimeState--
             }
         }
     }
@@ -183,21 +189,21 @@ fun TimerScreen(
 
         TimerProgressBar(
             timeInMinutes = timer, isTimerRunning = isTimerRunning,
-            isTimerStarted = isTimerStarted, timeLeft = timeLeft,
+            isTimerStarted = isTimerStarted, timerSharedViewModel = timerSharedViewModel,
             onTaskTagChanged = {
                 taskTag = it
             }
         ) { newTimeLeft ->
-            timeLeft = newTimeLeft
+//            timeLeft = newTimeLeft
         }
 
-        if (timeLeft == 0) {
+        if (extraTime > 0) {
             isTakingExtraTime = true
 
-            val minutes = extraTime / 60
-            val remainingSeconds = extraTime % 60
+            val extraMinutes = extraTime / 60
+            val extraSeconds = extraTime % 60
             Text(
-                text = "+" + String.format("%02d:%02d", minutes, remainingSeconds),
+                text = "+" + String.format("%02d:%02d", extraMinutes, extraSeconds),
                 color = Color(0xFFFF8D61),
                 fontSize = 34.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.baloo_bold))),
@@ -209,7 +215,7 @@ fun TimerScreen(
             )
         }
 
-        if (isTimerRunning == false) {
+        if (!isTimerRunning) {
             Column(
                 modifier = Modifier
                     .padding(top = 40.dp)
@@ -223,12 +229,15 @@ fun TimerScreen(
                     .clip(CircleShape)
                     .background(Color(0xFFFF8D61))
                     .clickable {
-                        isTimerRunning = true
+                        timerSharedViewModel.updateIsRunning(true)
                         isTimerStarted = true
 
 
                         startTime = System.currentTimeMillis()
-                        TimerService.startService(context.applicationContext,timer.toLong()*60*1000)
+                        TimerService.startService(
+                            context.applicationContext,
+                            timer.toLong() * 60 * 1000
+                        )
 
                     },
                 verticalArrangement = Arrangement.Center,
@@ -242,24 +251,24 @@ fun TimerScreen(
                 )
             }
         } else {
-            // See my pull request
+
             Button(
                 onClick = {
                     if (cancelTime > 0) {
-                        isTimerRunning = false
+                        timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
-                        cancelTime = 10
-                        timeLeft = timer * 60
+                        cancelTimeState = 10
+//                        timeLeft = timer * 60
 
                         TimerService.stopService(context.applicationContext)
                     } else {
 
                         val endTime = System.currentTimeMillis()
                         val duration = endTime - startTime
-                        isTimerRunning = false
+                        timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
-                        cancelTime = 10
-                        timeLeft = timer * 60
+                        cancelTimeState = 10
+//                        timeLeft = timer * 60
 
 
                         val extraTimeInSeconds = if (extraTime > 0) TimeUnit.MILLISECONDS.toSeconds(
@@ -267,19 +276,19 @@ fun TimerScreen(
                         ) else 0L
 
 
-                        scope.launch(Dispatchers.IO) {
-                            viewModel.onEvent(
-                                SessionEvent.InsertSession(
-                                    Session(
-                                        startTime,
-                                        endTime,
-                                        TimeUnit.MILLISECONDS.toSeconds(duration)
-                                            .toInt() + extraTimeInSeconds.toInt(),
-                                        taskTag
-                                    )
-                                )
-                            )
-                        }
+//                        scope.launch(Dispatchers.IO) {
+//                            viewModel.onEvent(
+//                                SessionEvent.InsertSession(
+//                                    Session(
+//                                        startTime,
+//                                        endTime,
+//                                        TimeUnit.MILLISECONDS.toSeconds(duration)
+//                                            .toInt() + extraTimeInSeconds.toInt(),
+//                                        taskTag
+//                                    )
+//                                )
+//                            )
+//                        }
                         Log.d(
                             CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
                                     "End Time:- ${endTime}\n" +
@@ -313,8 +322,8 @@ fun TimerScreen(
 
                 if (timeLeft > 0) {
                     Text(
-                        text = if (cancelTime > 0) {
-                            "Cancel $cancelTime"
+                        text = if (cancelTimeState > 0) {
+                            "Cancel $cancelTimeState"
                         } else {
                             "Give Up!"
                         },
@@ -344,5 +353,7 @@ fun TimerScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun TimerScreenPreview() {
-    TimerScreen()
+    val context = LocalContext.current
+    val timerSharedView = TimerSharedViewModel()
+    TimerScreen(context = context, cancelTime = 10, timerSharedViewModel = timerSharedView)
 }

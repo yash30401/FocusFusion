@@ -41,7 +41,7 @@ class TimerService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             Actions.START.toString() -> {
-                timeLeft = intent.getLongExtra("TIME_LEFT", 1500000L)
+                timeLeft = intent.getLongExtra("TIME_LEFT", 0L)
                 startTimer(timeLeft)
             }
 
