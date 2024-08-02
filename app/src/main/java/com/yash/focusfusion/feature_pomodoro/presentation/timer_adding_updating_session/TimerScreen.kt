@@ -325,7 +325,7 @@ fun TimerScreen(
 
                 if (timeLeft > 0) {
                     Text(
-                        text = if (cancelTime > 0) {
+                        text = if (TimeUnit.MILLISECONDS.toSeconds(cancelTime) > 0) {
                             "Cancel ${TimeUnit.MILLISECONDS.toSeconds(cancelTime)}"
                         } else {
                             "Give Up!"
