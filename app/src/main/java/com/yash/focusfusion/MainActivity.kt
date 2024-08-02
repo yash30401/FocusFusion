@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
             extraTime = intent?.getIntExtra("EXTRA_TIME", 0) ?: 0
             isTimerRunning = timeLeft>0
 
-            lifecycleScope.launch {
+            lifecycleScope.launch  (Dispatchers.IO){
                 dataStoreManager.saveTimeLeft(timeLeft)
 
                 dataStoreManager.saveExtraTime(extraTime)
@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
             RECEIVER_EXPORTED
         )
 
-        lifecycleScope.launch {
+        lifecycleScope.launch  (Dispatchers.IO){
             dataStoreManager.timeLeftFlow.collect { savedTimeLeft ->
                 timeLeft = savedTimeLeft
                 timerSharedViewModel.updateTimeLeft(savedTimeLeft)
@@ -113,14 +113,14 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launch (Dispatchers.IO) {
             dataStoreManager.extraTime.collect { savedExtraTime ->
                 extraTime = savedExtraTime
                 timerSharedViewModel.updateExtraTime(savedExtraTime)
             }
         }
 
-        lifecycleScope.launch {
+        lifecycleScope.launch (Dispatchers.IO) {
             dataStoreManager.continueTimerFlow.collect { shouldContinue ->
                 isTimerRunning = shouldContinue
                 timerSharedViewModel.updateIsRunning(shouldContinue)
