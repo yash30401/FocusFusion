@@ -78,7 +78,6 @@ import java.util.concurrent.TimeUnit
 fun TimerScreen(
     context: Context,
     timerSharedViewModel: TimerSharedViewModel,
-    cancelTime: Int,
     modifier: Modifier = Modifier,
     timer: Int = 1,
     viewModel: SessionViewModel = hiltViewModel(),
@@ -87,13 +86,17 @@ fun TimerScreen(
     val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
     val extraTime by timerSharedViewModel.extraTime.collectAsState()
     val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
+    val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
+
+//    Log.d("TIMER_TESTING","TimeLeft-: ${TimeUnit.MILLISECONDS.toSeconds(timeLeft).toString()}")
+    Log.d("TIMER_TESTING_CANCEL","Cancel Time Left-: ${TimeUnit.MILLISECONDS.toSeconds(cancelTime).toString()}")
 
     var isTimerStarted by remember {
         mutableStateOf(isTimerRunning)
     }
 //    var timeLeft by remember { mutableStateOf(timer * 60) }
 
-    var cancelTimeState by remember { mutableStateOf(cancelTime) }
+//    var cancelTimeState by remember { mutableStateOf(cancelTime) }
 
     var startTime by remember {
         mutableStateOf(0L)
@@ -147,14 +150,14 @@ fun TimerScreen(
 //        }
 //    }
 
-    LaunchedEffect(isTimerRunning) {
-        if (isTimerRunning) {
-            while (cancelTimeState > 0) {
-                delay(1000)
-                cancelTimeState--
-            }
-        }
-    }
+//    LaunchedEffect(isTimerRunning) {
+//        if (isTimerRunning) {
+//            while (cancelTimeState > 0) {
+//                delay(1000)
+//                cancelTimeState--
+//            }
+//        }
+//    }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -257,7 +260,7 @@ fun TimerScreen(
                     if (cancelTime > 0) {
                         timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
-                        cancelTimeState = 10
+//                        cancelTimeState = 10
 //                        timeLeft = timer * 60
 
                         TimerService.stopService(context.applicationContext)
@@ -267,7 +270,7 @@ fun TimerScreen(
                         val duration = endTime - startTime
                         timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
-                        cancelTimeState = 10
+//                        cancelTimeState = 10
 //                        timeLeft = timer * 60
 
 
@@ -322,8 +325,8 @@ fun TimerScreen(
 
                 if (timeLeft > 0) {
                     Text(
-                        text = if (cancelTimeState > 0) {
-                            "Cancel $cancelTimeState"
+                        text = if (cancelTime > 0) {
+                            "Cancel ${TimeUnit.MILLISECONDS.toSeconds(cancelTime)}"
                         } else {
                             "Give Up!"
                         },
@@ -355,5 +358,5 @@ fun TimerScreen(
 private fun TimerScreenPreview() {
     val context = LocalContext.current
     val timerSharedView = TimerSharedViewModel()
-    TimerScreen(context = context, cancelTime = 10, timerSharedViewModel = timerSharedView)
+    TimerScreen(context = context, timerSharedViewModel = timerSharedView)
 }

@@ -23,6 +23,7 @@ class DatastoreManager(private val context: Context) {
         val TIME_LEFT_KEY = longPreferencesKey("TIME_LEFT")
         val EXTRA_TIME_KEY = intPreferencesKey("EXTRA_TIME")
         val CONTINUE_TIMER_KEY = booleanPreferencesKey("CONTINUE_TIMER")
+        val CANCEL_TIME_LEFT_KEY = longPreferencesKey("CANCEL_TIME_LEFT")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -38,6 +39,11 @@ class DatastoreManager(private val context: Context) {
         .map { preferences ->
             preferences[CONTINUE_TIMER_KEY] ?: false
         }
+
+
+    val cancelTimeFlow: Flow<Long> = context.dataStore.data.map { prefrences ->
+        prefrences[CANCEL_TIME_LEFT_KEY] ?: 10000L
+    }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
         try {
@@ -66,6 +72,16 @@ class DatastoreManager(private val context: Context) {
             }
         } catch (e: Exception) {
             Log.e(DATASTORELOGS, "Error saving continueTimer state", e)
+        }
+    }
+
+    suspend fun saveCancelTimeLeft(cancelTime: Long) {
+        try {
+            context.dataStore.edit { prefrences ->
+                prefrences[CANCEL_TIME_LEFT_KEY] = cancelTime
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving Cancel Time state", e)
         }
     }
 }

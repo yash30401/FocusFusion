@@ -22,11 +22,18 @@ import kotlinx.coroutines.launch
 class TimerService : Service() {
 
     private var countDownTimer: CountDownTimer? = null
+    private var cancelTimeCountDownTimer:CountDownTimer?=null
+
     private var timeLeft: Long = 0
     private var extraTime: Int = 0
+    private var cancelTimeLeft:Long = 0
+
     private lateinit var dataStoreManager: DatastoreManager
+
     private val scope = CoroutineScope(Dispatchers.IO)
     private var extraTimeJob: Job? = null
+
+    val broadcastIntent = Intent("TIMER_UPDATE")
 
     override fun onCreate() {
         super.onCreate()
@@ -80,7 +87,7 @@ class TimerService : Service() {
 
                 startForeground(1, updatedNotification)
 
-                val broadcastIntent = Intent("TIMER_UPDATE")
+
                 broadcastIntent.putExtra("TIME_LEFT", millisUntilFinished)
                 sendBroadcast(broadcastIntent)
             }
@@ -89,6 +96,21 @@ class TimerService : Service() {
                 showCompletionNotification()
                 startExtraTimerInTheBackground()
             }
+        }.start()
+
+        cancelTimeCountDownTimer = object :CountDownTimer(10000,1000){
+            override fun onTick(millisUntilFinished: Long) {
+                this@TimerService.cancelTimeLeft = millisUntilFinished
+
+
+                broadcastIntent.putExtra("CANCEL_TIME_LEFT", millisUntilFinished)
+                sendBroadcast(broadcastIntent)
+            }
+
+            override fun onFinish() {
+
+            }
+
         }.start()
 
         scope.launch {
@@ -121,7 +143,7 @@ class TimerService : Service() {
             while (true) {
                 delay(1000)
                 extraTime++
-                val broadcastIntent = Intent("TIMER_UPDATE")
+
                 broadcastIntent.putExtra("EXTRA_TIME", extraTime)
                 sendBroadcast(broadcastIntent)
             }
@@ -131,6 +153,9 @@ class TimerService : Service() {
     private fun stopTimer() {
         countDownTimer?.cancel()
         countDownTimer = null
+        cancelTimeCountDownTimer?.cancel()
+        cancelTimeCountDownTimer = null
+
         extraTimeJob?.cancel()
         extraTimeJob = null
 
@@ -142,8 +167,11 @@ class TimerService : Service() {
     private fun resetTimer() {
         timeLeft = 1500000L // 25 minutes
         extraTime = 0
+        cancelTimeLeft = 10000L
+
         scope.launch {
             dataStoreManager.saveTimeLeft(timeLeft)
+            dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
             dataStoreManager.saveExtraTime(extraTime)
         }
 
@@ -157,8 +185,9 @@ class TimerService : Service() {
 
         startForeground(1, notification)
 
-        val broadcastIntent = Intent("TIMER_UPDATE")
+
         broadcastIntent.putExtra("TIME_LEFT", timeLeft)
+        broadcastIntent.putExtra("CANCEL_TIME_LEFT", cancelTimeLeft)
         broadcastIntent.putExtra("EXTRA_TIME", extraTime)
         sendBroadcast(broadcastIntent)
 
@@ -194,6 +223,7 @@ class TimerService : Service() {
         stopTimer()
         scope.launch {
             dataStoreManager.saveTimeLeft(timeLeft)
+            dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
             dataStoreManager.saveExtraTime(extraTime)
         }
         super.onDestroy()

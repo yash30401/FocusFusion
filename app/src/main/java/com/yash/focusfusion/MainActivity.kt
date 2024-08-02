@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -29,6 +30,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -37,28 +39,43 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private var timeLeft: Long by mutableStateOf(1500000L) // Default to 25:00
+    private var cancelTimeLeft:Long by mutableStateOf(10000L)
+
     private lateinit var dataStoreManager: DatastoreManager
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
-    private var cancelTime:Int by mutableStateOf(10)
+//    private var cancelTime:Int by mutableStateOf(10)
     private val timerSharedViewModel:TimerSharedViewModel by viewModels()
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             timeLeft = intent?.getLongExtra("TIME_LEFT", 0L) ?: 0L
+            cancelTimeLeft = intent?.getLongExtra("CANCEL_TIME_LEFT", 0L) ?: 0L
+            Log.d("CANCEL_TIME_MAIN_ACITIVITY",cancelTimeLeft.toString())
             extraTime = intent?.getIntExtra("EXTRA_TIME", 0) ?: 0
             isTimerRunning = timeLeft>0
 
             lifecycleScope.launch {
                 dataStoreManager.saveTimeLeft(timeLeft)
+
                 dataStoreManager.saveExtraTime(extraTime)
                 dataStoreManager.saveContinueTimer(isTimerRunning)
-                timerSharedViewModel.updateTimeLeft(timeLeft)
-                timerSharedViewModel.updateExtraTime(extraTime)
 
                 timerSharedViewModel.updateTimeLeft(timeLeft)
+
+
                 timerSharedViewModel.updateExtraTime(extraTime)
+
+//                timerSharedViewModel.updateTimeLeft(timeLeft)
+//                timerSharedViewModel.updateExtraTime(extraTime)
                 timerSharedViewModel.updateIsRunning(isTimerRunning)
+            }
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                Log.d("CANCEL_TIME_MAIN_ACITIVITY_LIFECYCLESCOPE",cancelTimeLeft.toString())
+                dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
+
+                timerSharedViewModel.updateCancelTimeLeft(cancelTimeLeft)
             }
         }
     }
@@ -89,6 +106,13 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        lifecycleScope.launch (Dispatchers.IO){
+            dataStoreManager.cancelTimeFlow.collect{savedCancelTimeLeft->
+                cancelTimeLeft = savedCancelTimeLeft
+                timerSharedViewModel.updateCancelTimeLeft(savedCancelTimeLeft)
+            }
+        }
+
         lifecycleScope.launch {
             dataStoreManager.extraTime.collect { savedExtraTime ->
                 extraTime = savedExtraTime
@@ -100,17 +124,13 @@ class MainActivity : ComponentActivity() {
             dataStoreManager.continueTimerFlow.collect { shouldContinue ->
                 isTimerRunning = shouldContinue
                 timerSharedViewModel.updateIsRunning(shouldContinue)
-                if (!shouldContinue) {
-                    cancelTime = 10 // Reset cancelTime if the timer is not running
-                }
             }
         }
 
         setContent {
             FocusFusionTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel,
-                        cancelTime = cancelTime)
+                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
                 }
             }
         }
