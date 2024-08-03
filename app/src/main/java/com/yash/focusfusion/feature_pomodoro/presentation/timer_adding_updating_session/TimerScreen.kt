@@ -320,13 +320,15 @@ fun TimerScreen(
                 colors = ButtonDefaults.buttonColors(Color.White),
                 border = BorderStroke(
                     1.2.dp,
-                    color = if (timeLeft > 0) Color(0xFFF45B5B) else Color(0xFF87DD3C)
+                    color = if (TimeUnit.MILLISECONDS.toSeconds(timeLeft) > 0)
+                        Color(0xFFF45B5B) else
+                        Color(0xFF87DD3C)
                 ),
                 shape = RoundedCornerShape(10.dp),
                 elevation = ButtonDefaults.buttonElevation(5.dp)
             ) {
 
-                if (timeLeft > 0) {
+                if (TimeUnit.MILLISECONDS.toSeconds(timeLeft) > 0) {
                     Text(
                         text = if (TimeUnit.MILLISECONDS.toSeconds(cancelTime) > 0) {
                             "Cancel ${TimeUnit.MILLISECONDS.toSeconds(cancelTime)}"
