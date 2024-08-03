@@ -1,6 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -100,12 +101,13 @@ fun TimerProgressBar(
 //            }
 //        }
 //    }
-
+    Log.d("TIMELEFT_PROGRESS_CHEKING",timeLeft.toString())
     val progress by remember(TimeUnit.MILLISECONDS.toSeconds(timeLeft)) {
         derivedStateOf {
             TimeUnit.MILLISECONDS.toSeconds(timeLeft) / (timeInMinutes * 60f)
         }
     }
+    Log.d("PROGRESS_CHEKING",progress.toString())
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress,

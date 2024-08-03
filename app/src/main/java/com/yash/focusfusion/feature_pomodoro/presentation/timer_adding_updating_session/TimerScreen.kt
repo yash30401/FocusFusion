@@ -89,7 +89,10 @@ fun TimerScreen(
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
 
 //    Log.d("TIMER_TESTING","TimeLeft-: ${TimeUnit.MILLISECONDS.toSeconds(timeLeft).toString()}")
-    Log.d("TIMER_TESTING_CANCEL","Cancel Time Left-: ${TimeUnit.MILLISECONDS.toSeconds(cancelTime).toString()}")
+    Log.d(
+        "TIMER_TESTING_CANCEL",
+        "Cancel Time Left-: ${TimeUnit.MILLISECONDS.toSeconds(cancelTime).toString()}"
+    )
 
     var isTimerStarted by remember {
         mutableStateOf(isTimerRunning)
@@ -179,7 +182,7 @@ fun TimerScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if ((timeLeft * 100) / 60 > 25) "You Can do it!" else "Just few minutes left",
+            text = if ((TimeUnit.MILLISECONDS.toSeconds(timeLeft) * 100) / 60 > 25) "You Can do it!" else "Just few minutes left",
             color = Color(0xFF212121),
             fontSize = 35.sp,
             modifier = Modifier
