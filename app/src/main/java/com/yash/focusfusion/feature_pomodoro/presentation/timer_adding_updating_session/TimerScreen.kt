@@ -89,10 +89,10 @@ fun TimerScreen(
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
 
 //    Log.d("TIMER_TESTING","TimeLeft-: ${TimeUnit.MILLISECONDS.toSeconds(timeLeft).toString()}")
-    Log.d(
-        "TIMER_TESTING_CANCEL",
-        "Cancel Time Left-: ${TimeUnit.MILLISECONDS.toSeconds(cancelTime).toString()}"
-    )
+//    Log.d(
+//        "TIMER_TESTING_CANCEL",
+//        "Cancel Time Left-: ${TimeUnit.MILLISECONDS.toSeconds(cancelTime).toString()}"
+//    )
 
     var isTimerStarted by remember {
         mutableStateOf(isTimerRunning)
@@ -194,14 +194,12 @@ fun TimerScreen(
         )
 
         TimerProgressBar(
-            timeInMinutes = timer, isTimerRunning = isTimerRunning,
-            isTimerStarted = isTimerStarted, timerSharedViewModel = timerSharedViewModel,
+            timeInMinutes = timer,
+            timerSharedViewModel = timerSharedViewModel,
             onTaskTagChanged = {
                 taskTag = it
             }
-        ) { newTimeLeft ->
-//            timeLeft = newTimeLeft
-        }
+        )
 
         if (extraTime > 0) {
             isTakingExtraTime = true

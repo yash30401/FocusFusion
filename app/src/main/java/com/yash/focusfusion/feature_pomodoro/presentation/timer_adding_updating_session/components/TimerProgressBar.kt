@@ -29,12 +29,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.asLongState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +65,8 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import okhttp3.internal.concurrent.Task
 import java.sql.Time
 import java.util.Locale
@@ -74,16 +78,15 @@ import kotlin.math.sin
 @Composable
 fun TimerProgressBar(
     timeInMinutes: Int,
-    isTimerRunning: Boolean,
-    isTimerStarted: Boolean,
     timerSharedViewModel: TimerSharedViewModel,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
     onTaskTagChanged: (TaskTag) -> Unit,
-    onTimeLeftChange: (Int) -> Unit,
 ) {
 
+
     val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
+
 
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
@@ -101,18 +104,23 @@ fun TimerProgressBar(
 //            }
 //        }
 //    }
-    Log.d("TIMELEFT_PROGRESS_CHEKING",timeLeft.toString())
-    val progress by remember(TimeUnit.MILLISECONDS.toSeconds(timeLeft)) {
+
+    val seconds = (timeLeft/1000) % 60
+
+    Log.d("TIMELEFT_PROGRESS_CHEKING", timeLeft.toString())
+    val progress by remember(seconds) {
         derivedStateOf {
-            TimeUnit.MILLISECONDS.toSeconds(timeLeft) / (timeInMinutes * 60f)
+            seconds / (timeInMinutes * 60f)
         }
     }
-    Log.d("PROGRESS_CHEKING",progress.toString())
+    Log.d("PROGRESS_CHEKING", progress.toString())
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
         animationSpec = tween(durationMillis = 1000)
     )
+
+    Log.d("ANIMATED_ANIMATION_PROGRESS", (animatedProgress * 100).toString())
 
     if (showDialog) {
         TaskTagEditDialog(setShowDialog = {
@@ -150,6 +158,14 @@ fun TimerProgressBar(
                 0.0f to Color(0xFFBC9FF1), // Dark color
                 1.0f to Color(0xFFFAF9FD)  // Light color
             )
+            drawArc(
+                color = Color.LightGray,
+                startAngle = 0f,
+                sweepAngle = 360f,
+                useCenter = false,
+                style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
+            )
+
             drawArc(
                 color = Color(0xFFBC9FF1),
                 startAngle = -90f,
@@ -242,9 +258,9 @@ fun TimerProgressBar(
 private fun TimerCircularBarPreview() {
 
     val timerSharedViewModel = TimerSharedViewModel()
-    TimerProgressBar(25, false, false,
-        timerSharedViewModel = timerSharedViewModel, onTaskTagChanged = {
-
-        }) {}
+    TimerProgressBar(
+        25,
+        timerSharedViewModel = timerSharedViewModel
+    ) {}
 
 }
