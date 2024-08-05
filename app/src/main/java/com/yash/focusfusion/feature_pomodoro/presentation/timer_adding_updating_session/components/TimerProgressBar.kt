@@ -106,21 +106,23 @@ fun TimerProgressBar(
 //    }
 
     val seconds = (timeLeft/1000) % 60
-
-    Log.d("TIMELEFT_PROGRESS_CHEKING", timeLeft.toString())
-    val progress by remember(seconds) {
+//    Log.d("TIMELEFT_PROGRESS_CHEKING", timeLeft.toString())
+    val progress = remember(timeLeft) {
         derivedStateOf {
-            seconds / (timeInMinutes * 60f)
+            // Ensure progress is between 0.0 and 1.0
+            val progressValue = 1f - (timeInMinutes * 60 - TimeUnit.MILLISECONDS.toSeconds(timeLeft)) / (timeInMinutes * 60f)
+            maxOf(0f, minOf(1f, progressValue))
         }
     }
-    Log.d("PROGRESS_CHEKING", progress.toString())
+//    Log.d("PROGRESS_CHEKING", progress.toString())
 
     val animatedProgress by animateFloatAsState(
-        targetValue = progress,
+        targetValue = progress.value,
         animationSpec = tween(durationMillis = 1000)
     )
 
-    Log.d("ANIMATED_ANIMATION_PROGRESS", (animatedProgress * 100).toString())
+    Log.d("TimerProgressBar", "animatedProgress: $animatedProgress")
+    Log.d("TimerProgressBar", "timeLeft: $timeLeft")
 
     if (showDialog) {
         TaskTagEditDialog(setShowDialog = {
@@ -159,7 +161,7 @@ fun TimerProgressBar(
                 1.0f to Color(0xFFFAF9FD)  // Light color
             )
             drawArc(
-                color = Color.LightGray,
+                color =Color(0xFFBC9FF1),
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -167,16 +169,16 @@ fun TimerProgressBar(
             )
 
             drawArc(
-                color = Color(0xFFBC9FF1),
+                color =Color.LightGray,
                 startAngle = -90f,
-                sweepAngle = -360 * animatedProgress,
+                sweepAngle = 360 * (1f - animatedProgress),
                 useCenter = false,
                 style = Stroke(width = strokeWidth.toPx(), cap = StrokeCap.Round)
             )
 
             if (timeLeft < TimeUnit.MINUTES.toMillis(timeInMinutes.toLong())) {
                 val center = Offset(size.width / 2f, size.height / 2f)
-                val beta = (-360f * animatedProgress - 90f) * (PI / 180f).toFloat()
+                val beta =  ((360 * (1f - animatedProgress)) - 90f) * (PI / 180f).toFloat()
                 val radius = size.width / 2f
                 val x = center.x + cos(beta) * radius
                 val y = center.y + sin(beta) * radius
