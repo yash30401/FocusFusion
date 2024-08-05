@@ -88,18 +88,10 @@ fun TimerScreen(
     val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
 
-//    Log.d("TIMER_TESTING","TimeLeft-: ${TimeUnit.MILLISECONDS.toSeconds(timeLeft).toString()}")
-//    Log.d(
-//        "TIMER_TESTING_CANCEL",
-//        "Cancel Time Left-: ${TimeUnit.MILLISECONDS.toSeconds(cancelTime).toString()}"
-//    )
 
     var isTimerStarted by remember {
         mutableStateOf(isTimerRunning)
     }
-//    var timeLeft by remember { mutableStateOf(timer * 60) }
-
-//    var cancelTimeState by remember { mutableStateOf(cancelTime) }
 
     var startTime by remember {
         mutableStateOf(0L)
@@ -109,9 +101,6 @@ fun TimerScreen(
         mutableStateOf(TaskTag.STUDY)
     }
 
-//    var extraTime by remember {
-//        mutableStateOf(0)
-//    }
 
     var isTakingExtraTime by remember {
         mutableStateOf(false)
@@ -128,39 +117,6 @@ fun TimerScreen(
         SnackbarHostState()
     }
 
-
-    LaunchedEffect(isTimerRunning) {
-        if (isTimerRunning) {
-            Log.d(CHECKINGSERVICESLOGS, "Entering Here")
-//            TimerService.startService(context.applicationContext,timeLeft)
-        } else {
-//            TimerService.stopService(context)
-        }
-    }
-
-
-//    LaunchedEffect(isTimerRunning) {
-//        while (isTimerRunning && timeLeft > 0) {
-//            delay(1000)
-//            timeLeft--
-//        }
-//    }
-
-//    LaunchedEffect(isTakingExtraTime) {
-//        while (isTimerRunning) {
-//            delay(1000)
-//            extraTime++
-//        }
-//    }
-
-//    LaunchedEffect(isTimerRunning) {
-//        if (isTimerRunning) {
-//            while (cancelTimeState > 0) {
-//                delay(1000)
-//                cancelTimeState--
-//            }
-//        }
-//    }
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -182,7 +138,8 @@ fun TimerScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = if ((TimeUnit.MILLISECONDS.toSeconds(timeLeft) * 100) / 60 > 25) "You Can do it!" else "Just few minutes left",
+            text = if ((TimeUnit.MILLISECONDS.toSeconds(timeLeft) * 100) / 60 > 25)
+                "You Can do it!" else "Just few minutes left",
             color = Color(0xFF212121),
             fontSize = 35.sp,
             modifier = Modifier
@@ -261,8 +218,6 @@ fun TimerScreen(
                     if (cancelTime > 0) {
                         timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
-//                        cancelTimeState = 10
-//                        timeLeft = timer * 60
 
                         TimerService.stopService(context.applicationContext)
                     } else {
@@ -271,8 +226,6 @@ fun TimerScreen(
                         val duration = endTime - startTime
                         timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
-//                        cancelTimeState = 10
-//                        timeLeft = timer * 60
 
 
                         val extraTimeInSeconds = if (extraTime > 0) TimeUnit.MILLISECONDS.toSeconds(

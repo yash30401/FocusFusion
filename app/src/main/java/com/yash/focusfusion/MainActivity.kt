@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var dataStoreManager: DatastoreManager
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
-//    private var cancelTime:Int by mutableStateOf(10)
     private val timerSharedViewModel:TimerSharedViewModel by viewModels()
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
@@ -57,24 +56,16 @@ class MainActivity : ComponentActivity() {
 
             lifecycleScope.launch  (Dispatchers.IO){
                 dataStoreManager.saveTimeLeft(timeLeft)
-
                 dataStoreManager.saveExtraTime(extraTime)
                 dataStoreManager.saveContinueTimer(isTimerRunning)
 
                 timerSharedViewModel.updateTimeLeft(timeLeft)
-
-
                 timerSharedViewModel.updateExtraTime(extraTime)
-
-//                timerSharedViewModel.updateTimeLeft(timeLeft)
-//                timerSharedViewModel.updateExtraTime(extraTime)
                 timerSharedViewModel.updateIsRunning(isTimerRunning)
             }
 
             lifecycleScope.launch(Dispatchers.IO) {
-                Log.d("CANCEL_TIME_MAIN_ACITIVITY_LIFECYCLESCOPE",cancelTimeLeft.toString())
                 dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
-
                 timerSharedViewModel.updateCancelTimeLeft(cancelTimeLeft)
             }
         }

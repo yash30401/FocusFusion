@@ -96,17 +96,7 @@ fun TimerProgressBar(
         mutableStateOf(false)
     }
 
-//    LaunchedEffect(true) {
-//        if (isTimerRunning) {
-//            while (timeLeft > 0) {
-//                delay(1000L)
-//                onTimeLeftChange(timeLeft - 1)
-//            }
-//        }
-//    }
 
-    val seconds = (timeLeft/1000) % 60
-//    Log.d("TIMELEFT_PROGRESS_CHEKING", timeLeft.toString())
     val progress = remember(timeLeft) {
         derivedStateOf {
             // Ensure progress is between 0.0 and 1.0
@@ -114,7 +104,6 @@ fun TimerProgressBar(
             maxOf(0f, minOf(1f, progressValue))
         }
     }
-//    Log.d("PROGRESS_CHEKING", progress.toString())
 
     val animatedProgress by animateFloatAsState(
         targetValue = progress.value,
