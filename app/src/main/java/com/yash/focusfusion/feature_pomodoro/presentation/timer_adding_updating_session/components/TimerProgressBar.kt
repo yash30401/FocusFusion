@@ -62,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.feature_pomodoro.presentation.DatastoreViewmodel
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.delay
@@ -240,18 +241,5 @@ fun TimerProgressBar(
             }
         }
     }
-
-}
-
-
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFFFFFFF)
-@Composable
-private fun TimerCircularBarPreview() {
-
-    val timerSharedViewModel = TimerSharedViewModel()
-    TimerProgressBar(
-        25,
-        timerSharedViewModel = timerSharedViewModel
-    ) {}
 
 }

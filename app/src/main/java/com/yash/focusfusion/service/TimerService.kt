@@ -13,12 +13,16 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.DatastoreUseCases
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TimerService : Service() {
 
     private var countDownTimer: CountDownTimer? = null
@@ -28,7 +32,8 @@ class TimerService : Service() {
     private var extraTime: Int = 0
     private var cancelTimeLeft:Long = 0
 
-    private lateinit var dataStoreManager: DatastoreManager
+    @Inject
+    lateinit var datastoreUseCases: DatastoreUseCases
 
     private val scope = CoroutineScope(Dispatchers.IO)
     private var extraTimeJob: Job? = null
@@ -37,7 +42,6 @@ class TimerService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        dataStoreManager = DatastoreManager(this)
         createNotificationChannels()
     }
 
@@ -114,7 +118,7 @@ class TimerService : Service() {
         }.start()
 
         scope.launch {
-            dataStoreManager.saveContinueTimer(true)
+            datastoreUseCases.saveContinueTimerUseCase(true)
         }
     }
 
@@ -160,7 +164,7 @@ class TimerService : Service() {
         extraTimeJob = null
 
         scope.launch {
-            dataStoreManager.saveContinueTimer(false)
+            datastoreUseCases.saveContinueTimerUseCase(false)
         }
     }
 
@@ -170,9 +174,9 @@ class TimerService : Service() {
         cancelTimeLeft = 10000L
 
         scope.launch {
-            dataStoreManager.saveTimeLeft(timeLeft)
-            dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
-            dataStoreManager.saveExtraTime(extraTime)
+            datastoreUseCases.saveTimeLeftUseCase(timeLeft)
+            datastoreUseCases.saveCancelTimeLeftUseCase(cancelTimeLeft)
+            datastoreUseCases.saveExtraTimeUseCase(extraTime)
         }
 
         val notification = NotificationCompat.Builder(this, "101")
@@ -222,9 +226,9 @@ class TimerService : Service() {
     override fun onDestroy() {
         stopTimer()
         scope.launch {
-            dataStoreManager.saveTimeLeft(timeLeft)
-            dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
-            dataStoreManager.saveExtraTime(extraTime)
+            datastoreUseCases.saveTimeLeftUseCase(timeLeft)
+            datastoreUseCases.saveCancelTimeLeftUseCase(cancelTimeLeft)
+            datastoreUseCases.saveExtraTimeUseCase(extraTime)
         }
         super.onDestroy()
     }

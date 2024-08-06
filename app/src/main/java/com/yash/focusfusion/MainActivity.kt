@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
+import com.yash.focusfusion.feature_pomodoro.presentation.DatastoreViewmodel
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
@@ -41,7 +42,8 @@ class MainActivity : ComponentActivity() {
     private var timeLeft: Long by mutableStateOf(1500000L) // Default to 25:00
     private var cancelTimeLeft:Long by mutableStateOf(10000L)
 
-    private lateinit var dataStoreManager: DatastoreManager
+    private val datastoreViewmodel: DatastoreViewmodel by viewModels()
+
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
     private val timerSharedViewModel:TimerSharedViewModel by viewModels()
@@ -55,9 +57,9 @@ class MainActivity : ComponentActivity() {
             isTimerRunning = timeLeft>0
 
             lifecycleScope.launch  (Dispatchers.IO){
-                dataStoreManager.saveTimeLeft(timeLeft)
-                dataStoreManager.saveExtraTime(extraTime)
-                dataStoreManager.saveContinueTimer(isTimerRunning)
+                datastoreViewmodel.saveTimeLeft(timeLeft)
+                datastoreViewmodel.saveExtraTime(extraTime)
+                datastoreViewmodel.saveContinueTimer(isTimerRunning)
 
                 timerSharedViewModel.updateTimeLeft(timeLeft)
                 timerSharedViewModel.updateExtraTime(extraTime)
@@ -65,7 +67,7 @@ class MainActivity : ComponentActivity() {
             }
 
             lifecycleScope.launch(Dispatchers.IO) {
-                dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
+                datastoreViewmodel.saveCancelTimeLeft(cancelTimeLeft)
                 timerSharedViewModel.updateCancelTimeLeft(cancelTimeLeft)
             }
         }
@@ -75,8 +77,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
-        dataStoreManager = DatastoreManager(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(
@@ -91,28 +91,29 @@ class MainActivity : ComponentActivity() {
         )
 
         lifecycleScope.launch  (Dispatchers.IO){
-            dataStoreManager.timeLeftFlow.collect { savedTimeLeft ->
+            datastoreViewmodel.timeLeftFlow.collect { savedTimeLeft ->
                 timeLeft = savedTimeLeft
                 timerSharedViewModel.updateTimeLeft(savedTimeLeft)
             }
         }
 
         lifecycleScope.launch (Dispatchers.IO){
-            dataStoreManager.cancelTimeFlow.collect{savedCancelTimeLeft->
+            datastoreViewmodel.cancelTimeLeftFlow.collect{savedCancelTimeLeft->
                 cancelTimeLeft = savedCancelTimeLeft
                 timerSharedViewModel.updateCancelTimeLeft(savedCancelTimeLeft)
             }
         }
 
         lifecycleScope.launch (Dispatchers.IO) {
-            dataStoreManager.extraTime.collect { savedExtraTime ->
+            datastoreViewmodel.extraTimeFlow.collect { savedExtraTime ->
                 extraTime = savedExtraTime
                 timerSharedViewModel.updateExtraTime(savedExtraTime)
             }
         }
 
         lifecycleScope.launch (Dispatchers.IO) {
-            dataStoreManager.continueTimerFlow.collect { shouldContinue ->
+
+            datastoreViewmodel.continueTimerFlow.collect { shouldContinue ->
                 isTimerRunning = shouldContinue
                 timerSharedViewModel.updateIsRunning(shouldContinue)
             }
