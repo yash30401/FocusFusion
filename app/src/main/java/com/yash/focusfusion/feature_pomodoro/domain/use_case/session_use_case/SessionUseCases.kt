@@ -1,4 +1,4 @@
-package com.yash.focusfusion.feature_pomodoro.domain.use_case
+package com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case
 
 data class SessionUseCases(
     val insertSessionUseCase: InsertSessionUseCase,

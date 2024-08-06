@@ -1,7 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.di
 
 import android.app.Application
-import android.content.Context
 import androidx.room.Room
 import com.yash.focusfusion.core.util.Constants.DATABASE_NAME
 import com.yash.focusfusion.feature_pomodoro.data.local.SessionDatabase
@@ -10,23 +9,21 @@ import com.yash.focusfusion.feature_pomodoro.data.repository.DatastoreRepository
 import com.yash.focusfusion.feature_pomodoro.data.repository.SessionRepositoryImpl
 import com.yash.focusfusion.feature_pomodoro.domain.repository.DatastoreRepository
 import com.yash.focusfusion.feature_pomodoro.domain.repository.SessionRepository
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.DeleteSessionUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetAllSessionsUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetSessionByIdUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetSessionsForDateUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetSessionsForMonthUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetSessionsForYearUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetTotalMinutesForDateUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetTotalMinutesForMonthUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetTotalMinutesForYearUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.InsertSessionUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.SessionUseCases
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.UpdateSessionUseCase
-import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.SessionViewModel
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.DeleteSessionUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetAllSessionsUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionByIdUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForDateUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForMonthUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForYearUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalMinutesForDateUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalMinutesForMonthUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalMinutesForYearUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.InsertSessionUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.UpdateSessionUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
