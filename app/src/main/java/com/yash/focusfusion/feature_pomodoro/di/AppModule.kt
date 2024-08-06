@@ -5,7 +5,10 @@ import android.content.Context
 import androidx.room.Room
 import com.yash.focusfusion.core.util.Constants.DATABASE_NAME
 import com.yash.focusfusion.feature_pomodoro.data.local.SessionDatabase
+import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
+import com.yash.focusfusion.feature_pomodoro.data.repository.DatastoreRepositoryImpl
 import com.yash.focusfusion.feature_pomodoro.data.repository.SessionRepositoryImpl
+import com.yash.focusfusion.feature_pomodoro.domain.repository.DatastoreRepository
 import com.yash.focusfusion.feature_pomodoro.domain.repository.SessionRepository
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.DeleteSessionUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.GetAllSessionsUseCase
@@ -43,8 +46,20 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideDatastoreManager(application: Application): DatastoreManager {
+        return DatastoreManager(application)
+    }
+
+    @Provides
+    @Singleton
     fun provideSessionRepository(database: SessionDatabase): SessionRepository {
         return SessionRepositoryImpl(database.dao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatastoreRepository(datastoreManager: DatastoreManager): DatastoreRepository {
+        return DatastoreRepositoryImpl(datastoreManager)
     }
 
     @Provides
