@@ -9,6 +9,15 @@ import com.yash.focusfusion.feature_pomodoro.data.repository.DatastoreRepository
 import com.yash.focusfusion.feature_pomodoro.data.repository.SessionRepositoryImpl
 import com.yash.focusfusion.feature_pomodoro.domain.repository.DatastoreRepository
 import com.yash.focusfusion.feature_pomodoro.domain.repository.SessionRepository
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.DatastoreUseCases
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetCancelTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetContinueTimerUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetExtraTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetTimeLeftUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveCancelTimeLeftUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveContinueTimerUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveExtraTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveTimeLeftUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.DeleteSessionUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetAllSessionsUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionByIdUseCase
@@ -74,6 +83,21 @@ object AppModule {
             getSessionForDateUseCase = GetSessionsForDateUseCase(sessionRepository),
             getSessionsForMonthUseCase = GetSessionsForMonthUseCase(sessionRepository),
             getSessionsForYearUseCase = GetSessionsForYearUseCase(sessionRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatastoreUseCases(datastoreRepository: DatastoreRepository): DatastoreUseCases {
+        return DatastoreUseCases(
+            getTimeLeftUseCase = GetTimeLeftUseCase(datastoreRepository),
+            getExtraTimeUseCase = GetExtraTimeUseCase(datastoreRepository),
+            getContinueTimerUseCase = GetContinueTimerUseCase(datastoreRepository),
+            getCancelTimeUseCase = GetCancelTimeUseCase(datastoreRepository),
+            saveTimeLeftUseCase = SaveTimeLeftUseCase(datastoreRepository),
+            saveExtraTimeUseCase = SaveExtraTimeUseCase(datastoreRepository),
+            saveContinueTimerUseCase = SaveContinueTimerUseCase(datastoreRepository),
+            saveCancelTimeLeftUseCase = SaveCancelTimeLeftUseCase(datastoreRepository)
         )
     }
 

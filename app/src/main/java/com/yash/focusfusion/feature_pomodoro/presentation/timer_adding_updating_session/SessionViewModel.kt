@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SessionViewModel @Inject constructor(
-    private val sessionsUseCases: SessionUseCases
+    private val sessionsUseCases: SessionUseCases,
 ) : ViewModel() {
 
     var sessionState = mutableStateOf(SessionState())
