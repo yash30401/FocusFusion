@@ -8,5 +8,5 @@ class GetTimeLeftUseCase @Inject constructor(
     private val datastoreRepository: DatastoreRepository
 ) {
 
-    suspend operator fun invoke(): Flow<Long> = datastoreRepository.timeLeftFlow
+    operator fun invoke(): Flow<Long> = datastoreRepository.timeLeftFlow
 }
