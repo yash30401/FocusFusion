@@ -215,7 +215,7 @@ fun TimerScreen(
 
             Button(
                 onClick = {
-                    if (cancelTime > 0) {
+                    if (TimeUnit.MILLISECONDS.toSeconds(cancelTime) > 0) {
                         timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
 
