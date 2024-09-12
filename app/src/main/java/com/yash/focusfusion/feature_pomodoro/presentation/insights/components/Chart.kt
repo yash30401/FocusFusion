@@ -20,26 +20,28 @@ fun WaveLineChartWithAxes(
     days: List<String>,
     hoursData: List<Float>,
     modifier: Modifier = Modifier,
-    lineColor: Color = Color.Blue,
-    strokeWidth: Float = 4f
+    lineColor: Color = Color(0xFF9463ED),
+    strokeWidth: Float = 4f,
+    xOffset: Float = 50f,  // Shift the X-axis and wave to the right
+    waveAmplitude: Float = 2f  // Amplify the wave effect
 ) {
     val maxValue = 12f  // Y-axis max (12 hours)
     val minValue = 0f   // Y-axis min (0 hours)
     val yAxisStep = 3f  // Y-axis step (3-hour intervals)
 
     Canvas(modifier = modifier) {
-        val widthPerDay = size.width / (hoursData.size - 1)
+        val widthPerDay = (size.width - xOffset) / (hoursData.size - 1)
         val yAxisGap = size.height / ((maxValue - minValue) / yAxisStep)
+
+        // Calculate positions for the axes
+        val xAxisStart = Offset(xOffset, size.height)
+        val yAxisStart = Offset(xOffset, 0f)
+        val xAxisEnd = Offset(size.width, size.height)
+        val yAxisEnd = Offset(xOffset, size.height)
 
         // Draw Y-axis grid lines and labels (0h, 3h, 6h, 9h, 12h)
         for (i in 0..4) {
             val y = size.height - (i * yAxisGap)
-            drawLine(
-                color = Color.LightGray,
-                start = Offset(0f, y),
-                end = Offset(size.width, y),
-                strokeWidth = 1f
-            )
             drawContext.canvas.nativeCanvas.drawText(
                 "${i * 3}h",
                 10f,
@@ -51,9 +53,9 @@ fun WaveLineChartWithAxes(
             )
         }
 
-        // Draw X-axis labels (Days of the week)
+        // Draw X-axis labels (Days of the week) with right shift (xOffset)
         for (i in hoursData.indices) {
-            val x = i * widthPerDay
+            val x = i * widthPerDay + xOffset
             drawContext.canvas.nativeCanvas.drawText(
                 days[i],
                 x,
@@ -65,30 +67,54 @@ fun WaveLineChartWithAxes(
             )
         }
 
-        // Create path for wave-like line
+        // Create path for more wavy line
         val path = Path().apply {
-            moveTo(0f, size.height * (1 - (hoursData[0] - minValue) / (maxValue - minValue)))
+            moveTo(xOffset, size.height * (1 - (hoursData[0] - minValue) / (maxValue - minValue)))
 
             for (i in 1 until hoursData.size) {
-                val x1 = (i - 1) * widthPerDay + widthPerDay / 2
-                val y1 = size.height * (1 - (hoursData[i - 1] - minValue) / (maxValue - minValue))
+                val prevX = (i - 1) * widthPerDay + xOffset
+                val prevY = size.height * (1 - (hoursData[i - 1] - minValue) / (maxValue - minValue))
 
-                val x2 = i * widthPerDay
-                val y2 = size.height * (1 - (hoursData[i] - minValue) / (maxValue - minValue))
+                val currX = i * widthPerDay + xOffset
+                val currY = size.height * (1 - (hoursData[i] - minValue) / (maxValue - minValue))
 
-                // Draw quadratic Bézier curve for wave effect
-                quadraticBezierTo(x1, y1, x2, y2)
+                // Adjust control points for stronger wave effect
+                val controlX1 = prevX + widthPerDay / 2 * waveAmplitude
+                val controlY1 = prevY
+
+                val controlX2 = currX - widthPerDay / 2 * waveAmplitude
+                val controlY2 = currY
+
+                // Draw cubic Bézier curve with amplified wave effect
+                cubicTo(controlX1, controlY1, controlX2, controlY2, currX, currY)
             }
         }
 
-        // Draw the wave-like line
+        // Draw the more wavy line
         drawPath(
             path = path,
             color = lineColor,
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
         )
+
+        // Draw Y-axis line
+        drawLine(
+            color = Color.Black,
+            start = yAxisStart,
+            end = yAxisEnd,
+            strokeWidth = 2f
+        )
+
+        // Draw X-axis line
+        drawLine(
+            color = Color.Black,
+            start = xAxisStart,
+            end = xAxisEnd,
+            strokeWidth = 2f
+        )
     }
 }
+
 
 @Preview
 @Composable
@@ -103,7 +129,9 @@ fun PreviewWaveLineChartWithAxes() {
             .fillMaxWidth()
             .height(250.dp)
             .padding(16.dp),
-        lineColor = Color.Magenta,
-        strokeWidth = 5f
+        lineColor = Color(0xff9463ED),
+        strokeWidth = 9f,
+        xOffset = 80f,
+        waveAmplitude = 1f
     )
 }
