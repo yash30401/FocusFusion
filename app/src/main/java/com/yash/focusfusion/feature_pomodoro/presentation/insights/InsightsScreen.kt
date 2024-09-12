@@ -5,5 +5,5 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun InsightsScreen(modifier: Modifier = Modifier) {
-    
+    // Insights Screen Impl
 }
