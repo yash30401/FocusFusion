@@ -100,7 +100,8 @@ fun TimerProgressBar(
     val progress = remember(timeLeft) {
         derivedStateOf {
             // Ensure progress is between 0.0 and 1.0
-            val progressValue = 1f - (timeInMinutes * 60 - TimeUnit.MILLISECONDS.toSeconds(timeLeft)) / (timeInMinutes * 60f)
+            val progressValue =
+                1f - (timeInMinutes * 60 - TimeUnit.MILLISECONDS.toSeconds(timeLeft)) / (timeInMinutes * 60f)
             maxOf(0f, minOf(1f, progressValue))
         }
     }
@@ -150,7 +151,7 @@ fun TimerProgressBar(
                 1.0f to Color(0xFFFAF9FD)  // Light color
             )
             drawArc(
-                color =Color(0xFFBC9FF1),
+                color = Color(0xFFBC9FF1),
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -158,7 +159,7 @@ fun TimerProgressBar(
             )
 
             drawArc(
-                color =Color.LightGray,
+                color = Color.LightGray,
                 startAngle = -90f,
                 sweepAngle = 360 * (1f - animatedProgress),
                 useCenter = false,
@@ -167,7 +168,7 @@ fun TimerProgressBar(
 
             if (timeLeft < TimeUnit.MINUTES.toMillis(timeInMinutes.toLong())) {
                 val center = Offset(size.width / 2f, size.height / 2f)
-                val beta =  ((360 * (1f - animatedProgress)) - 90f) * (PI / 180f).toFloat()
+                val beta = ((360 * (1f - animatedProgress)) - 90f) * (PI / 180f).toFloat()
                 val radius = size.width / 2f
                 val x = center.x + cos(beta) * radius
                 val y = center.y + sin(beta) * radius
@@ -208,7 +209,12 @@ fun TimerProgressBar(
             val minutes = (timeLeft / 1000) / 60
             val seconds = (timeLeft / 1000) % 60
             Text(
-                text = String.format("%02d:%02d", minutes, seconds),
+                text = if (TimeUnit.MILLISECONDS.toMinutes(timeLeft).toInt() != 25) String.format(
+                    "%02d:%02d",
+                    minutes,
+                    seconds
+                ) else
+                    String.format("%02d:%02d", timeInMinutes, timeInMinutes / 60),
                 fontSize = 48.sp,
                 color = Color(0xFF4D4D4D),
                 fontFamily = FontFamily(Font(R.font.baloo_bold))
