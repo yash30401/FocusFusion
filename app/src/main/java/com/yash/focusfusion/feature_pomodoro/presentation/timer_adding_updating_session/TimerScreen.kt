@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -223,14 +224,13 @@ fun TimerScreen(
                     } else {
 
                         val endTime = System.currentTimeMillis()
-                        val duration = endTime - startTime
                         timerSharedViewModel.updateIsRunning(false)
                         isTimerStarted = false
 
 
-                        val extraTimeInSeconds = if (extraTime > 0) TimeUnit.MILLISECONDS.toSeconds(
-                            extraTime.toLong()
-                        ) else 0L
+                        val extraTimeInSeconds = if (extraTime > 0) extraTime
+                             else 0
+
 
 
 //                        scope.launch(Dispatchers.IO) {
@@ -250,8 +250,9 @@ fun TimerScreen(
                             CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
                                     "End Time:- ${endTime}\n" +
                                     "Duration:- ${
-                                        TimeUnit.MILLISECONDS.toSeconds(duration)
-                                            .toInt() + extraTimeInSeconds.toInt()
+                                        (TimeUnit.MINUTES.toSeconds(timer.toLong())
+                                            .toInt() - TimeUnit.MILLISECONDS.toSeconds(timeLeft)
+                                            .toInt()) + extraTimeInSeconds.toInt()
                                     } Seconds\n" +
                                     "Session Tag:- ${taskTag.name}"
                         )
