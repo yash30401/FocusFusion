@@ -94,10 +94,6 @@ fun TimerScreen(
         mutableStateOf(isTimerRunning)
     }
 
-    var startTime by remember {
-        mutableStateOf(0L)
-    }
-
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
     }
@@ -195,7 +191,6 @@ fun TimerScreen(
                         isTimerStarted = true
 
 
-                        startTime = System.currentTimeMillis()
                         TimerService.startService(
                             context.applicationContext,
                             timer.toLong() * 60 * 1000
@@ -233,22 +228,22 @@ fun TimerScreen(
 
 
 
-//                        scope.launch(Dispatchers.IO) {
-//                            viewModel.onEvent(
-//                                SessionEvent.InsertSession(
-//                                    Session(
-//                                        startTime,
-//                                        endTime,
-//                                        TimeUnit.MILLISECONDS.toSeconds(duration)
-//                                            .toInt() + extraTimeInSeconds.toInt(),
-//                                        taskTag
-//                                    )
-//                                )
-//                            )
-//                        }
+                        scope.launch(Dispatchers.IO) {
+                            viewModel.onEvent(
+                                SessionEvent.InsertSession(
+                                    Session(
+                                        endTime,
+                                        (TimeUnit.MINUTES.toSeconds(timer.toLong())
+                                            .toInt() - TimeUnit.MILLISECONDS.toSeconds(timeLeft)
+                                            .toInt()) + extraTimeInSeconds.toInt(),
+                                        taskTag
+                                    )
+                                )
+                            )
+                        }
+
                         Log.d(
-                            CHECKINGSESSIONDATA, "Current Time:- ${startTime}\n" +
-                                    "End Time:- ${endTime}\n" +
+                            CHECKINGSESSIONDATA, "Time:- ${endTime}\n" +
                                     "Duration:- ${
                                         (TimeUnit.MINUTES.toSeconds(timer.toLong())
                                             .toInt() - TimeUnit.MILLISECONDS.toSeconds(timeLeft)

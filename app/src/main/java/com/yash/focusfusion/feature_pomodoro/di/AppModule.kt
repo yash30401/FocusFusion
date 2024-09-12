@@ -24,9 +24,9 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.Ge
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForDateUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForMonthUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForYearUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalMinutesForDateUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalMinutesForMonthUseCase
-import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalMinutesForYearUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForDateUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForMonthUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForYearUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.InsertSessionUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.UpdateSessionUseCase
@@ -77,9 +77,9 @@ object AppModule {
             deleteSessionUseCase = DeleteSessionUseCase(sessionRepository),
             getSessionByIdUseCase = GetSessionByIdUseCase(sessionRepository),
             getAllSessionsUseCase = GetAllSessionsUseCase(sessionRepository),
-            getTotalMinutesForDateUseCase = GetTotalMinutesForDateUseCase(sessionRepository),
-            getTotalMinutesForMonthUseCase = GetTotalMinutesForMonthUseCase(sessionRepository),
-            getTotalMinutesForYearUseCase = GetTotalMinutesForYearUseCase(sessionRepository),
+            getTotalMinutesForDateUseCase = GetTotalSecondsForDateUseCase(sessionRepository),
+            getTotalMinutesForMonthUseCase = GetTotalSecondsForMonthUseCase(sessionRepository),
+            getTotalMinutesForYearUseCase = GetTotalSecondsForYearUseCase(sessionRepository),
             getSessionForDateUseCase = GetSessionsForDateUseCase(sessionRepository),
             getSessionsForMonthUseCase = GetSessionsForMonthUseCase(sessionRepository),
             getSessionsForYearUseCase = GetSessionsForYearUseCase(sessionRepository)

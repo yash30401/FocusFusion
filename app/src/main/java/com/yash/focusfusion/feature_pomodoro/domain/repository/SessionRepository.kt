@@ -11,9 +11,9 @@ interface SessionRepository{
     suspend fun deleteSession(session: Session)
     suspend fun getSessionById(id:Int):Session?
     fun getAllSessions(): Flow<List<Session>>
-    suspend fun getTotalMinutesForDate(date:Long):Int
-    suspend fun getTotalMinutesForMonth(month:String,year:String):Int
-    suspend fun getTotalMinutesForYear(year: String): Int
+    suspend fun getTotalSecondsForDate(date:Long):Int
+    suspend fun getTotalSecondsForMonth(month:String,year:String):Int
+    suspend fun getTotalSecondsForYear(year: String): Int
     fun getSessionsForDate(date: Long): Flow<List<Session>>
     fun getSessionsForMonth(month: String, year: String): Flow<List<Session>>
     fun getSessionsForYear(year: String): Flow<List<Session>>

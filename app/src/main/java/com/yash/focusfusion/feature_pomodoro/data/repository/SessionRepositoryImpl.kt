@@ -31,16 +31,16 @@ class SessionRepositoryImpl(
         return dao.getAllSessions().map { it.map { it.toSession() } }
     }
 
-    override suspend fun getTotalMinutesForDate(date: Long): Int {
-        return dao.getTotalMinutesForDate(date)
+    override suspend fun getTotalSecondsForDate(date: Long): Int {
+        return dao.getTotalSecondsForDate(date)
     }
 
-    override suspend fun getTotalMinutesForMonth(month: String, year: String): Int {
-        return dao.getTotalMinutesForMonth(month, year)
+    override suspend fun getTotalSecondsForMonth(month: String, year: String): Int {
+        return dao.getTotalSecondsForMonth(month, year)
     }
 
-    override suspend fun getTotalMinutesForYear(year: String): Int {
-        return dao.getTotalMinutesForYear(year)
+    override suspend fun getTotalSecondsForYear(year: String): Int {
+        return dao.getTotalSecondsForYear(year)
     }
 
     override fun getSessionsForDate(date: Long): Flow<List<Session>> {

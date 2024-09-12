@@ -7,8 +7,7 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 @Entity(tableName = "sessions")
 data class SessionEntity(
     @PrimaryKey(autoGenerate = true) val id:Int= 0,
-    val startTime:Long,
-    val endTime:Long,
+    val time:Long,
     val duration:Int,
     val taskTag:TaskTag
 )

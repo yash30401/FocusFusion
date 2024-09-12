@@ -30,22 +30,21 @@ interface SessionDao {
 
     // Aggregated Queries
 
-    @Query("select sum(duration) from sessions where date(startTime/1000,'unixepoch') = DATE(:date / 1000, 'unixepoch')")
-    fun getTotalMinutesForDate(date:Long):Int
+    @Query("SELECT SUM(duration) FROM sessions WHERE date(time/1000,'unixepoch') = DATE(:date / 1000, 'unixepoch')")
+    fun getTotalSecondsForDate(date: Long): Int
 
-    @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%m', startTime / 1000, 'unixepoch') = :month AND strftime('%Y', startTime / 1000, 'unixepoch') = :year")
-    fun getTotalMinutesForMonth(month:String,year:String):Int
+    @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%m', time / 1000, 'unixepoch') = :month AND strftime('%Y', time / 1000, 'unixepoch') = :year")
+    fun getTotalSecondsForMonth(month: String, year: String): Int
 
-    @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%Y', startTime / 1000, 'unixepoch') = :year")
-    fun getTotalMinutesForYear(year: String): Int
+    @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%Y', time / 1000, 'unixepoch') = :year")
+    fun getTotalSecondsForYear(year: String): Int
 
-    @Query("SELECT * FROM sessions WHERE DATE(startTime / 1000, 'unixepoch') = DATE(:date / 1000, 'unixepoch')")
+    @Query("SELECT * FROM sessions WHERE DATE(time / 1000, 'unixepoch') = DATE(:date / 1000, 'unixepoch')")
     fun getSessionsForDate(date: Long): Flow<List<SessionEntity>>
 
-    @Query("SELECT * FROM sessions WHERE strftime('%m', startTime / 1000, 'unixepoch') = :month AND strftime('%Y', startTime / 1000, 'unixepoch') = :year")
+    @Query("SELECT * FROM sessions WHERE strftime('%m', time / 1000, 'unixepoch') = :month AND strftime('%Y', time / 1000, 'unixepoch') = :year")
     fun getSessionsForMonth(month: String, year: String): Flow<List<SessionEntity>>
 
-    // Retrieve sessions for a specific year
-    @Query("SELECT * FROM sessions WHERE strftime('%Y', startTime / 1000, 'unixepoch') = :year")
+    @Query("SELECT * FROM sessions WHERE strftime('%Y', time / 1000, 'unixepoch') = :year")
     fun getSessionsForYear(year: String): Flow<List<SessionEntity>>
 }

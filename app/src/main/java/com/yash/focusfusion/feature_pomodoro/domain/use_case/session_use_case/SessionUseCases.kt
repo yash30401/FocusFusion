@@ -6,9 +6,9 @@ data class SessionUseCases(
     val deleteSessionUseCase: DeleteSessionUseCase,
     val getSessionByIdUseCase: GetSessionByIdUseCase,
     val getAllSessionsUseCase: GetAllSessionsUseCase,
-    val getTotalMinutesForDateUseCase: GetTotalMinutesForDateUseCase,
-    val getTotalMinutesForMonthUseCase: GetTotalMinutesForMonthUseCase,
-    val getTotalMinutesForYearUseCase: GetTotalMinutesForYearUseCase,
+    val getTotalMinutesForDateUseCase: GetTotalSecondsForDateUseCase,
+    val getTotalMinutesForMonthUseCase: GetTotalSecondsForMonthUseCase,
+    val getTotalMinutesForYearUseCase: GetTotalSecondsForYearUseCase,
     val getSessionForDateUseCase: GetSessionsForDateUseCase,
     val getSessionsForMonthUseCase: GetSessionsForMonthUseCase,
     val getSessionsForYearUseCase: GetSessionsForYearUseCase
