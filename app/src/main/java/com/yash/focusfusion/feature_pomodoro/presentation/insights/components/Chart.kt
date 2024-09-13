@@ -58,6 +58,15 @@ fun WaveLineChartWithAxes(
             val widthPerDay = (size.width - xOffset) / (hoursData.size - 1)
             val yAxisGap = size.height / ((maxValue - minValue) / yAxisStep)
 
+            val textPaint = android.graphics.Paint().apply {
+                color = android.graphics.Color.GRAY
+                textSize = 28f
+                textAlign = Paint.Align.RIGHT
+            }
+
+            val textHeight = textPaint.descent() - textPaint.ascent()
+            val textBaselineOffset = textPaint.descent() // Offset to align text baselines
+
             // Calculate positions for the axes
             val xAxisStart = Offset(xOffset - 20f, size.height - 10f)
             val yAxisStart = Offset(xOffset - 20f, 0f - 25f)
@@ -69,12 +78,9 @@ fun WaveLineChartWithAxes(
                 val y = size.height - (i * yAxisGap)
                 drawContext.canvas.nativeCanvas.drawText(
                     "${i * yAxisStep.toInt()}h",
-                    10f,
-                    y,
-                    Paint().apply {
-                        color = android.graphics.Color.GRAY
-                        textSize = 28f
-                    }
+                    40f,
+                    y+textBaselineOffset,
+                    textPaint
                 )
             }
 
