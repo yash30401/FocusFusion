@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
@@ -35,15 +36,16 @@ import com.yash.focusfusion.R
 fun WaveLineChartWithAxes(
     days: List<String>,
     hoursData: List<Float>,
+    maxHour:Int,
     modifier: Modifier = Modifier,
     lineColor: Color = Color(0xFF9463ED),
     strokeWidth: Float = 4f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f  // Amplify the wave effect
 ) {
-    val maxValue = 12f  // Y-axis max (12 hours)
+    val maxValue = maxHour.toFloat()  // Y-axis max (12 hours)
     val minValue = 0f   // Y-axis min (0 hours)
-    val yAxisStep = 3f  // Y-axis step (3-hour intervals)
+    val yAxisStep = calculateTimeDifference(maxHour).toFloat()  // Y-axis step (3-hour intervals)
 
     Box(modifier = modifier
         .shadow(2.dp, shape = RoundedCornerShape(20.dp))
@@ -66,9 +68,9 @@ fun WaveLineChartWithAxes(
             for (i in 0..4) {
                 val y = size.height - (i * yAxisGap)
                 drawContext.canvas.nativeCanvas.drawText(
-                    "${i * 3}h",
+                    "${i * yAxisStep.toInt()}h",
                     10f,
-                    y - 10f,
+                    y,
                     Paint().apply {
                         color = android.graphics.Color.GRAY
                         textSize = 28f
@@ -118,6 +120,22 @@ fun WaveLineChartWithAxes(
                 }
             }
 
+            val fillPath = Path().apply {
+                addPath(path)
+                lineTo(size.width, size.height)
+                lineTo(xOffset, size.height)
+                close()
+            }
+
+            drawPath(
+                path = fillPath,
+                brush = Brush.verticalGradient(
+                    colors = listOf(lineColor.copy(alpha = 0.3f), Color.Transparent),
+                    startY = 0f,
+                    endY = size.height
+                )
+            )
+
             // Draw the more wavy line
             drawPath(
                 path = path,
@@ -144,17 +162,30 @@ fun WaveLineChartWithAxes(
     }
 }
 
+fun calculateTimeDifference(maxHour:Int):Int{
+    var start = 5
+    while(true){
+        val div = (maxHour.toFloat()/start.toFloat())
+        if(div<=4.0){
+            break
+        }else{
+            start+=5
+        }
+    }
+    return start
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
     val daysOfWeek = listOf("M", "T", "W", "T", "F", "S", "S")
-    val hoursWorked = listOf(10f, 2f, 4f, 9f, 6.5f, 10f, 1f)
+    val hoursWorked = listOf(10f, 12f, 29f, 9f, 6.5f, 10f, 1f)
 
     WaveLineChartWithAxes(
         days = daysOfWeek,
         hoursData = hoursWorked,
+        maxHour = 30,
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
