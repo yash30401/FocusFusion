@@ -90,7 +90,7 @@ fun WaveLineChartWithAxes(
                 drawContext.canvas.nativeCanvas.drawText(
                     days[i],
                     x,
-                    size.height + 30f,
+                    size.height + 45f,
                     Paint().apply {
                         color = android.graphics.Color.GRAY
                         textSize = 28f
