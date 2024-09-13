@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,8 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -40,8 +45,14 @@ fun WaveLineChartWithAxes(
     val minValue = 0f   // Y-axis min (0 hours)
     val yAxisStep = 3f  // Y-axis step (3-hour intervals)
 
-    Box(modifier = modifier.padding(16.dp)) {
-        Canvas(modifier = Modifier.height(200.dp).width(350.dp)) {
+    Box(modifier = modifier
+        .shadow(2.dp, shape = RoundedCornerShape(20.dp))
+        .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
+        .padding(30.dp)
+        ,
+        contentAlignment = Alignment.Center,
+    ) {
+        Canvas(modifier = Modifier.size(300.dp)) {
             val widthPerDay = (size.width - xOffset) / (hoursData.size - 1)
             val yAxisGap = size.height / ((maxValue - minValue) / yAxisStep)
 
@@ -135,11 +146,11 @@ fun WaveLineChartWithAxes(
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
     val daysOfWeek = listOf("M", "T", "W", "T", "F", "S", "S")
-    val hoursWorked = listOf(10f, 7f, 4f, 9f, 6.5f, 10f, 1f)
+    val hoursWorked = listOf(10f, 2f, 4f, 9f, 6.5f, 10f, 1f)
 
     WaveLineChartWithAxes(
         days = daysOfWeek,
