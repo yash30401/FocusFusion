@@ -130,7 +130,6 @@ fun WaveLineChartWithAxes(
                     textAlign = Paint.Align.RIGHT
                 }
 
-                val textHeight = textPaint.descent() - textPaint.ascent()
                 val textBaselineOffset = textPaint.descent() // Offset to align text baselines
 
                 // Calculate positions for the axes
@@ -145,7 +144,7 @@ fun WaveLineChartWithAxes(
                     drawContext.canvas.nativeCanvas.drawText(
                         "${i * yAxisStep.toInt()}h",
                         30f,
-                        y + textBaselineOffset,
+                        y-20f,
                         textPaint
                     )
                 }
@@ -168,17 +167,17 @@ fun WaveLineChartWithAxes(
                 val path = Path().apply {
                     moveTo(
                         xOffset,
-                        size.height * (1 - (hoursData[0] - minValue) / (maxValue - minValue))
+                        size.height * (1 - (hoursData[0] - minValue) / (maxValue - minValue))-25f
                     )
 
                     for (i in 1 until hoursData.size) {
                         val prevX = (i - 1) * widthPerDay + xOffset
                         val prevY =
-                            size.height * (1 - (hoursData[i - 1] - minValue) / (maxValue - minValue))
+                            size.height * (1 - (hoursData[i - 1] - minValue) / (maxValue - minValue))-25f
 
                         val currX = i * widthPerDay + xOffset
                         val currY =
-                            size.height * (1 - (hoursData[i] - minValue) / (maxValue - minValue))
+                            size.height * (1 - (hoursData[i] - minValue) / (maxValue - minValue))-25f
 
                         // Adjust control points for stronger wave effect
                         val controlX1 = prevX + widthPerDay / 2 * waveAmplitude
@@ -252,12 +251,12 @@ fun calculateTimeDifference(maxHour: Int): Int {
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
-    val hoursWorked = listOf(10f, 12f, 29f, 9f, 6.5f, 10f, 2f)
+    val hoursWorked = listOf(140f, 120f, 200f, 50f, 70f, 10f,100f,0f,0f,)
 
     WaveLineChartWithAxes(
         hoursData = hoursWorked,
-        maxHour = 30,
-        timeRange = TimeRange.Month,
+        maxHour = 210,
+        timeRange = TimeRange.Year,
         daysInMonth = 30,
         month = 9,
         modifier = Modifier
