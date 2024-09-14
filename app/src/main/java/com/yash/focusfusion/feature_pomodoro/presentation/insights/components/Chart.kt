@@ -251,12 +251,12 @@ fun calculateTimeDifference(maxHour: Int): Int {
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
-    val hoursWorked = listOf(140f, 120f, 200f, 50f, 70f, 10f,100f,0f,0f,)
+    val hoursWorked = listOf(10f, 12f, 20f, 5f,0f,4f,17f)
 
     WaveLineChartWithAxes(
         hoursData = hoursWorked,
-        maxHour = 210,
-        timeRange = TimeRange.Year,
+        maxHour = 30,
+        timeRange = TimeRange.Week,
         daysInMonth = 30,
         month = 9,
         modifier = Modifier
