@@ -40,9 +40,11 @@ import com.yash.focusfusion.R
 @SuppressLint("ResourceAsColor")
 @Composable
 fun WaveLineChartWithAxes(
-    days: List<String>,
     hoursData: List<Float>,
     maxHour: Int,
+    timeRange: TimeRange,
+    daysInMonth: Int,
+    month: Int,
     modifier: Modifier = Modifier,
     lineColor: Color = Color(0xFF9463ED),
     strokeWidth: Float = 4f,
@@ -85,7 +87,41 @@ fun WaveLineChartWithAxes(
                     .size(290.dp)
                     .padding(top = 30.dp)
             ) {
-                val widthPerDay = (size.width - xOffset) / (hoursData.size - 1)
+
+                val xAxisLabels = when (timeRange) {
+                    TimeRange.Today -> listOf("12 AM", "6 AM", "12 PM", "6 PM")
+                    TimeRange.Week -> listOf("M", "T", "W", "T", "F", "S", "S")
+                    TimeRange.Month -> {
+                        if (daysInMonth == 30) {
+                            listOf("${month}/1", "${month}/8", "${month}/16", "${month}/23", "9/30")
+                        } else {
+                            listOf(
+                                "${month}/1",
+                                "${month}/9",
+                                "${month}/16",
+                                "${month}/24",
+                                "${month}/31"
+                            )
+                        }
+                    }
+
+                    TimeRange.Year -> listOf(
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8",
+                        "9",
+                        "10",
+                        "11",
+                        "12"
+                    )
+                }
+
+                val widthPerDay = (size.width - xOffset) / (xAxisLabels.size - 1)
                 val yAxisGap = size.height / ((maxValue - minValue) / yAxisStep)
 
                 val textPaint = Paint().apply {
@@ -115,10 +151,10 @@ fun WaveLineChartWithAxes(
                 }
 
                 // Draw X-axis labels (Days of the week) with right shift (xOffset)
-                for (i in hoursData.indices) {
+                for (i in 0..xAxisLabels.size - 1) {
                     val x = i * widthPerDay + xOffset
                     drawContext.canvas.nativeCanvas.drawText(
-                        days[i],
+                        xAxisLabels[i],
                         x,
                         size.height + 45f,
                         Paint().apply {
@@ -216,13 +252,14 @@ fun calculateTimeDifference(maxHour: Int): Int {
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
-    val daysOfWeek = listOf("M", "T", "W", "T", "F", "S", "S")
-    val hoursWorked = listOf(10f, 12f, 29f, 9f, 6.5f, 10f, 1f)
+    val hoursWorked = listOf(10f, 12f, 29f, 9f, 6.5f, 10f, 2f)
 
     WaveLineChartWithAxes(
-        days = daysOfWeek,
         hoursData = hoursWorked,
         maxHour = 30,
+        timeRange = TimeRange.Month,
+        daysInMonth = 30,
+        month = 9,
         modifier = Modifier
             .fillMaxWidth()
             .height(250.dp)
@@ -232,4 +269,8 @@ fun PreviewWaveLineChartWithAxes() {
         xOffset = 90f,
         waveAmplitude = 1f
     )
+}
+
+enum class TimeRange {
+    Today, Week, Month, Year
 }
