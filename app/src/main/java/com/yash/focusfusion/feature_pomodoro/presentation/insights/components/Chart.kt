@@ -10,6 +10,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -31,6 +37,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,21 +74,37 @@ fun WaveLineChartWithAxes(
             modifier = Modifier
                 .size(450.dp)
                 .padding(25.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                "3-9 June",
-                fontSize = 15.sp,
-                color = Color(0xff787878),
-                fontFamily = FontFamily(Font(R.font.jost_medium))
-            )
-            Text(
-                "53 Hrs",
-                fontSize = 10.sp,
-                modifier = Modifier.padding(bottom = 10.dp),
-                color = Color(0xff9E9E9E),
-                fontFamily = FontFamily(Font(R.font.jost_medium))
-            )
+            Row(verticalAlignment = Alignment.CenterVertically,
+              ) {
+                IconButton(onClick = {},) {
+                    Icon(imageVector = Icons.Default.ArrowBackIosNew,"Previous",
+                        tint = Color(0xff787878))
+                }
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+
+                    ) {
+                    Text(
+                        "3-9 June",
+                        fontSize = 15.sp,
+                        color = Color(0xff787878),
+                        fontFamily = FontFamily(Font(R.font.jost_medium)),
+                    )
+
+                    Text(
+                        "53 Hrs",
+                        fontSize = 10.sp,
+                        color = Color(0xff9E9E9E),
+                        fontFamily = FontFamily(Font(R.font.jost_medium)),
+                    )
+                }
+                IconButton(onClick = {},) {
+                    Icon(imageVector = Icons.Default.ArrowForwardIos,"Previous",
+                        tint = Color(0xff787878))
+                }
+            }
             Canvas(
                 modifier = Modifier
                     .size(290.dp)
@@ -144,7 +167,7 @@ fun WaveLineChartWithAxes(
                     drawContext.canvas.nativeCanvas.drawText(
                         "${i * yAxisStep.toInt()}h",
                         30f,
-                        y-20f,
+                        y - 20f,
                         textPaint
                     )
                 }
@@ -167,17 +190,17 @@ fun WaveLineChartWithAxes(
                 val path = Path().apply {
                     moveTo(
                         xOffset,
-                        size.height * (1 - (hoursData[0] - minValue) / (maxValue - minValue))-25f
+                        size.height * (1 - (hoursData[0] - minValue) / (maxValue - minValue)) - 25f
                     )
 
                     for (i in 1 until hoursData.size) {
                         val prevX = (i - 1) * widthPerDay + xOffset
                         val prevY =
-                            size.height * (1 - (hoursData[i - 1] - minValue) / (maxValue - minValue))-25f
+                            size.height * (1 - (hoursData[i - 1] - minValue) / (maxValue - minValue)) - 25f
 
                         val currX = i * widthPerDay + xOffset
                         val currY =
-                            size.height * (1 - (hoursData[i] - minValue) / (maxValue - minValue))-25f
+                            size.height * (1 - (hoursData[i] - minValue) / (maxValue - minValue)) - 25f
 
                         // Adjust control points for stronger wave effect
                         val controlX1 = prevX + widthPerDay / 2 * waveAmplitude
@@ -251,7 +274,7 @@ fun calculateTimeDifference(maxHour: Int): Int {
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
-    val hoursWorked = listOf(10f, 12f, 20f, 5f,0f,4f,17f)
+    val hoursWorked = listOf(10f, 12f, 20f, 5f, 0f, 4f, 17f)
 
     WaveLineChartWithAxes(
         hoursData = hoursWorked,
