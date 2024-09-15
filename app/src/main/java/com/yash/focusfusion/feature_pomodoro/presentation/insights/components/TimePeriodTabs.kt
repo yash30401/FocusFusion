@@ -1,10 +1,13 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.insights.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,22 +22,24 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
+import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
 
 @Composable
 fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit) {
 
     var currentSelectedTimePeriod by remember {
-        mutableStateOf(1)
+        mutableStateOf(0)
     }
     selectedPeriod(currentSelectedTimePeriod)
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 48.dp
+                horizontal = 50.dp
             )
             .shadow(2.dp, RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp)),
@@ -62,7 +67,7 @@ fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit)
         ) {
             Text(
                 "Today",
-                fontSize = 13.sp,
+                fontSize = 10.3.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                 color = if (currentSelectedTimePeriod == 0)
                     Color.White else Color(0xff9E9E9E)
@@ -93,7 +98,7 @@ fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit)
         ) {
             Text(
                 "Week",
-                fontSize = 13.sp,
+                fontSize = 10.3.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                 color = if (currentSelectedTimePeriod == 1)
                     Color.White else Color(0xff9E9E9E)
@@ -122,7 +127,7 @@ fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit)
         ) {
             Text(
                 "Month",
-                fontSize = 13.sp,
+                fontSize = 10.3.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                 color = if (currentSelectedTimePeriod == 2)
                     Color.White else Color(0xff9E9E9E)
@@ -150,12 +155,29 @@ fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit)
         ) {
             Text(
                 "Year",
-                fontSize = 13.sp,
+                fontSize = 10.3.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                 color = if (currentSelectedTimePeriod == 3)
                     Color.White else Color(0xff9E9E9E)
             )
         }
 
+    }
+}
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun TimePeriodTabsPreview() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Color(0xffFFFDFC)
+            )
+            .padding(10.dp)
+    ) {
+        TimePeriodTabs {  }
     }
 }

@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -57,7 +59,7 @@ fun InsightsScreen(modifier: Modifier = Modifier) {
             fontFamily = FontFamily(Font(R.font.jost_medium)),
             fontSize = 30.sp
         )
-        LazyColumn {
+        LazyColumn(modifier = Modifier.padding(bottom = 40.dp)) {
             items(getActivityItemListData()) {
                 ActivityInsightCard(it.icon, it.taskTag, it.totalTimeInMinutes)
             }

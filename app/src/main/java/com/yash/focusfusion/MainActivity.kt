@@ -14,7 +14,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -23,6 +28,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
@@ -121,9 +127,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FocusFusionTheme {
+
                 Scaffold(modifier = Modifier.fillMaxSize()) {
 //                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
-                    InsightsScreen()
+                    Column(modifier = Modifier.padding(top = 30.dp)) {
+                        InsightsScreen()
+                    }
+
                 }
             }
         }
