@@ -54,6 +54,7 @@ fun ActivityInsightCard(
 
     Row(
         modifier = modifier
+            .padding(10.dp)
             .fillMaxWidth()
             .shadow(2.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
@@ -140,7 +141,7 @@ fun ActivityInsightCard(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun ActivityInsightCardPreview() {
-    Column(modifier = Modifier.padding(10.dp)) {
+    Column {
         ActivityInsightCard(
             R.drawable.books,
             TaskTag.STUDY,

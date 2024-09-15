@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
+import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
@@ -121,7 +122,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             FocusFusionTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
+//                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
+                    InsightsScreen()
                 }
             }
         }

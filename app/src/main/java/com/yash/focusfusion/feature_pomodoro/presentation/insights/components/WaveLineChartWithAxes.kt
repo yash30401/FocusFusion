@@ -61,7 +61,7 @@ fun WaveLineChartWithAxes(
 
     Box(
         modifier = modifier
-            .shadow(2.dp, shape = RoundedCornerShape(20.dp))
+            .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
             .padding(bottom = 5.dp),
         contentAlignment = Alignment.Center
