@@ -25,13 +25,13 @@ import com.yash.focusfusion.R
 
 @Composable
 fun InsightsScreen(modifier: Modifier = Modifier) {
-    timePeriodTabs(){
+    timePeriodTabs() {
 
     }
 }
 
 @Composable
-fun timePeriodTabs(modifier: Modifier = Modifier,selectedPeriod:(Int)->Unit) {
+fun timePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit) {
 
     val currentSelectedTimePeriod by remember {
         mutableStateOf(0)
@@ -41,62 +41,105 @@ fun timePeriodTabs(modifier: Modifier = Modifier,selectedPeriod:(Int)->Unit) {
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                horizontal = 35.dp
+                horizontal = 48.dp
             )
             .shadow(2.dp, RoundedCornerShape(20.dp))
-            .background(Color.Cyan, RoundedCornerShape(20.dp))
-            ,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            .background(Color.Cyan, RoundedCornerShape(20.dp)),
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-            Column(modifier =
-            if(currentSelectedTimePeriod==0){
-                Modifier.background(Color(0xFFFF8D61))
-            }else{
+        Column(
+            modifier =
+            if (currentSelectedTimePeriod == 0) {
                 Modifier
-            }) {
-                Text(
-                    "Today",
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                )
+                    .background(Color(0xFFFF8D61), RoundedCornerShape(20.dp))
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
+            } else {
+                Modifier
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
             }
+        ) {
+            Text(
+                "Today",
+                fontSize = 13.sp,
+                fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
+            )
+        }
 
 
 
-        Column(modifier =
-        if(currentSelectedTimePeriod==1){
-            Modifier.background(Color(0xFFFF8D61))
-        }else{
-            Modifier
-        }) {
+        Column(
+            modifier =
+            if (currentSelectedTimePeriod == 1) {
+                Modifier
+                    .background(Color(0xFFFF8D61))
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
+            } else {
+                Modifier
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
+            }
+        ) {
             Text(
                 "Week",
-                fontSize = 16.sp,
+                fontSize = 13.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
             )
         }
 
-        Column(modifier =
-        if(currentSelectedTimePeriod==2){
-            Modifier.background(Color(0xFFFF8D61))
-        }else{
-            Modifier
-        }) {
+        Column(
+            modifier =
+            if (currentSelectedTimePeriod == 2) {
+                Modifier
+                    .background(Color(0xFFFF8D61))
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
+            } else {
+                Modifier
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
+            }
+        ) {
             Text(
                 "Month",
-                fontSize = 16.sp,
+                fontSize = 13.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
             )
         }
-        Column(modifier =
-        if(currentSelectedTimePeriod==3){
-            Modifier.background(Color(0xFFFF8D61))
-        }else{
-            Modifier
-        }) {
+        Column(
+            modifier =
+            if (currentSelectedTimePeriod == 3) {
+                Modifier
+                    .background(Color(0xFFFF8D61))
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
+            } else {
+                Modifier
+                    .padding(
+                        horizontal = 12.dp
+                    )
+                    .padding(7.dp)
+            }
+        ) {
             Text(
                 "Year",
-                fontSize = 16.sp,
+                fontSize = 13.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
             )
         }
