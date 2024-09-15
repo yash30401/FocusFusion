@@ -1,5 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.insights
 
+import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
@@ -13,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -31,37 +33,54 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Wa
 
 val hoursWorked = listOf(10f, 12f, 20f, 5f, 0f, 4f, 17f)
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InsightsScreen(modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        TimePeriodTabs {
+    Scaffold(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(top = 30.dp, bottom = 40.dp)
+        ) {
 
-        }
+            item {
+                TimePeriodTabs {
 
-        WaveLineChartWithAxes(
-            hoursData = hoursWorked,
-            maxHour = 30,
-            timeRange = TimeRange.Week,
-            daysInMonth = 30,
-            month = 9,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .padding(16.dp),
-            lineColor = Color(0xff9463ED),
-            strokeWidth = 9f,
-            xOffset = 90f,
-            waveAmplitude = 1f
-        )
-        Text("Activities",
-            modifier = Modifier.padding(start = 10.dp).padding(vertical = 5.dp),
-            fontFamily = FontFamily(Font(R.font.jost_medium)),
-            fontSize = 30.sp
-        )
-        LazyColumn(modifier = Modifier.padding(bottom = 40.dp)) {
-            items(getActivityItemListData()) {
-                ActivityInsightCard(it.icon, it.taskTag, it.totalTimeInMinutes)
+                }
+            }
+
+            item {
+                WaveLineChartWithAxes(
+                    hoursData = hoursWorked,
+                    maxHour = 30,
+                    timeRange = TimeRange.Week,
+                    daysInMonth = 30,
+                    month = 9,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(250.dp)
+                        .padding(16.dp),
+                    lineColor = Color(0xff9463ED),
+                    strokeWidth = 9f,
+                    xOffset = 90f,
+                    waveAmplitude = 1f
+                )
+            }
+
+            item {
+                Text(
+                    "Activities",
+                    modifier = Modifier
+                        .padding(start = 10.dp)
+                        .padding(vertical = 5.dp),
+                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                    fontSize = 30.sp
+                )
+            }
+
+            items(getActivityItemListData()) { activity ->
+                ActivityInsightCard(activity.icon, activity.taskTag, activity.totalTimeInMinutes)
             }
         }
     }

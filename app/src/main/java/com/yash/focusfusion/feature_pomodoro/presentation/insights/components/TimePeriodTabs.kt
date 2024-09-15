@@ -41,6 +41,7 @@ fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit)
             .padding(
                 horizontal = 50.dp
             )
+            .padding(top = 10.dp)
             .shadow(2.dp, RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp)),
         horizontalArrangement = Arrangement.SpaceEvenly

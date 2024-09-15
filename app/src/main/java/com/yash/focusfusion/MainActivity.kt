@@ -15,8 +15,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -127,12 +129,13 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FocusFusionTheme {
-
+                val scrollState = rememberScrollState()
                 Scaffold(modifier = Modifier.fillMaxSize()) {
 //                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
-                    Column(modifier = Modifier.padding(top = 30.dp)) {
-                        InsightsScreen()
-                    }
+
+                            InsightsScreen()
+
+
 
                 }
             }
