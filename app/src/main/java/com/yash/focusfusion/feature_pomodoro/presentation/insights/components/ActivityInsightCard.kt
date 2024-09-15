@@ -83,7 +83,8 @@ fun ActivityInsightCard(
             }",
                 modifier = Modifier.padding(start = 5.dp),
                 fontSize = 20.sp,
-                fontFamily = FontFamily(listOf(Font(R.font.jost_medium)))
+                fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
+                color = Color(0xff212121)
             )
         }
 
@@ -96,7 +97,8 @@ fun ActivityInsightCard(
                 withStyle(
                     style = SpanStyle(
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = Color(0xff212121)
                     )
                 ) {
                     append(hours.toString())
@@ -113,7 +115,8 @@ fun ActivityInsightCard(
                 withStyle(
                     style = SpanStyle(
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                        fontSize = 20.sp
+                        fontSize = 20.sp,
+                        color = Color(0xff212121)
                     )
                 ) {
                     append(" " + minutes.toString())
