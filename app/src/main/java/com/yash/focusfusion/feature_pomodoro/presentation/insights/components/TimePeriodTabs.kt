@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,137 +36,62 @@ fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit)
         mutableStateOf(0)
     }
     selectedPeriod(currentSelectedTimePeriod)
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = 50.dp
-            )
-            .padding(top = 10.dp)
+            .padding(10.dp)
+            .padding(horizontal = 40.dp)
             .shadow(2.dp, RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp)),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
-        Column(
-            modifier =
-            if (currentSelectedTimePeriod == 0) {
-                Modifier
-                    .shadow(1.dp, RoundedCornerShape(20.dp))
-                    .background(Color(0xFFFF8D61), RoundedCornerShape(20.dp))
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp)
-            } else {
-                Modifier
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp).clickable {
-                        currentSelectedTimePeriod = 0
-                    }
-            }
-        ) {
-            Text(
-                "Today",
-                fontSize = 10.3.sp,
-                fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                color = if (currentSelectedTimePeriod == 0)
-                    Color.White else Color(0xff9E9E9E)
-            )
-        }
-
-
-
-        Column(
-            modifier =
-            if (currentSelectedTimePeriod == 1) {
-                Modifier
-                    .shadow(1.dp, RoundedCornerShape(20.dp))
-                    .background(Color(0xFFFF8D61), RoundedCornerShape(20.dp))
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp)
-            } else {
-                Modifier
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp).clickable {
-                        currentSelectedTimePeriod = 1
-                    }
-            }
-        ) {
-            Text(
-                "Week",
-                fontSize = 10.3.sp,
-                fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                color = if (currentSelectedTimePeriod == 1)
-                    Color.White else Color(0xff9E9E9E)
-            )
-        }
-
-        Column(
-            modifier =
-            if (currentSelectedTimePeriod == 2) {
-                Modifier
-                    .shadow(1.dp, RoundedCornerShape(20.dp))
-                    .background(Color(0xFFFF8D61), RoundedCornerShape(20.dp))
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp)
-            } else {
-                Modifier
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp).clickable {
-                        currentSelectedTimePeriod = 2
-                    }
-            }
-        ) {
-            Text(
-                "Month",
-                fontSize = 10.3.sp,
-                fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                color = if (currentSelectedTimePeriod == 2)
-                    Color.White else Color(0xff9E9E9E)
-            )
-        }
-        Column(
-            modifier =
-            if (currentSelectedTimePeriod == 3) {
-                Modifier
-                    .shadow(1.dp, RoundedCornerShape(20.dp))
-                    .background(Color(0xFFFF8D61), RoundedCornerShape(20.dp))
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp)
-            } else {
-                Modifier
-                    .padding(
-                        horizontal = 12.dp
-                    )
-                    .padding(7.dp).clickable {
-                        currentSelectedTimePeriod = 3
-                    }
-            }
-        ) {
-            Text(
-                "Year",
-                fontSize = 10.3.sp,
-                fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                color = if (currentSelectedTimePeriod == 3)
-                    Color.White else Color(0xff9E9E9E)
-            )
-        }
-
+        TimePeriodTabItem(
+            isSelected = currentSelectedTimePeriod == 0,
+            text = "Today",
+            onClick = { currentSelectedTimePeriod = 0 },
+            modifier = Modifier.weight(1f) // Apply weight here in Row scope
+        )
+        TimePeriodTabItem(
+            isSelected = currentSelectedTimePeriod == 1,
+            text = "Week",
+            onClick = { currentSelectedTimePeriod = 1 },
+            modifier = Modifier.weight(1f)
+        )
+        TimePeriodTabItem(
+            isSelected = currentSelectedTimePeriod == 2,
+            text = "Month",
+            onClick = { currentSelectedTimePeriod = 2 },
+            modifier = Modifier.weight(1f)
+        )
+        TimePeriodTabItem(
+            isSelected = currentSelectedTimePeriod == 3,
+            text = "Year",
+            onClick = { currentSelectedTimePeriod = 3 },
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
+@Composable
+fun TimePeriodTabItem(isSelected: Boolean, text: String, onClick: () -> Unit, modifier: Modifier) {
+    Column(
+        modifier = modifier
+            .shadow(if (isSelected) 1.dp else 0.dp, RoundedCornerShape(20.dp))
+            .background(if (isSelected) Color(0xFFFF8D61) else Color.Transparent, RoundedCornerShape(20.dp))
+            .clickable { onClick() }
+            .padding(7.dp)
+    ) {
+        Text(
+            text = text,
+            fontSize = 12.sp,
+            fontFamily = FontFamily(Font(R.font.jost_medium)),
+            color = if (isSelected) Color.White else Color(0xff9E9E9E),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
@@ -174,11 +100,9 @@ private fun TimePeriodTabsPreview() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Color(0xffFFFDFC)
-            )
+            .background(Color(0xffFFFDFC))
             .padding(10.dp)
     ) {
-        TimePeriodTabs {  }
+        TimePeriodTabs { }
     }
 }
