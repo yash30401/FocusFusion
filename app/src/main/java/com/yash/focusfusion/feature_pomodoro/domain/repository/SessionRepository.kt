@@ -15,6 +15,7 @@ interface SessionRepository{
     suspend fun getTotalSecondsForMonth(month:String,year:String):Int
     suspend fun getTotalSecondsForYear(year: String): Int
     fun getSessionsForDate(date: Long): Flow<List<Session>>
+    fun getSessionsForWeek(startWeek: String, endWeek: String, month: String, year: String):Flow<List<Session>>
     fun getSessionsForMonth(month: String, year: String): Flow<List<Session>>
     fun getSessionsForYear(year: String): Flow<List<Session>>
 

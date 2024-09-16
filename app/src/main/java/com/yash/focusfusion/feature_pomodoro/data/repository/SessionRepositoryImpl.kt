@@ -47,6 +47,15 @@ class SessionRepositoryImpl(
         return dao.getSessionsForDate(date).map { it.map { it.toSession() } }
     }
 
+    override fun getSessionsForWeek(
+        startWeek: String,
+        endWeek: String,
+        month: String,
+        year: String
+    ): Flow<List<Session>> {
+        return dao.getSessionsForWeek(startWeek,endWeek, month, year).map { it.map { it.toSession() } }
+    }
+
     override fun getSessionsForMonth(month: String, year: String): Flow<List<Session>> {
         return dao.getSessionsForMonth(month, year).map { it.map { it.toSession() } }
     }

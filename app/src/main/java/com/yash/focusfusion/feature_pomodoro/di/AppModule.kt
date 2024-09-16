@@ -23,6 +23,7 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.Ge
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionByIdUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForDateUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForMonthUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForWeekUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForYearUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForDateUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForMonthUseCase
@@ -81,6 +82,7 @@ object AppModule {
             getTotalMinutesForMonthUseCase = GetTotalSecondsForMonthUseCase(sessionRepository),
             getTotalMinutesForYearUseCase = GetTotalSecondsForYearUseCase(sessionRepository),
             getSessionForDateUseCase = GetSessionsForDateUseCase(sessionRepository),
+            getSessionsForWeekUseCase = GetSessionsForWeekUseCase(sessionRepository),
             getSessionsForMonthUseCase = GetSessionsForMonthUseCase(sessionRepository),
             getSessionsForYearUseCase = GetSessionsForYearUseCase(sessionRepository)
         )
