@@ -20,4 +20,7 @@ object Constants {
     const val ACTION_STOP_TIMER = "ACTION_STOP_TIMER"
 
     const val KEY_TIMER_DURATION = "KEY_TIMER_DURATION"
+
+    //Insights
+    const val INSIGHTSVIEWMODELCHECKING = "INSIGHTSVIEWMODELCHECKING"
 }
