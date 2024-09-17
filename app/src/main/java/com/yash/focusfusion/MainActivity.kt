@@ -131,9 +131,9 @@ class MainActivity : ComponentActivity() {
             FocusFusionTheme {
                 val scrollState = rememberScrollState()
                 Scaffold(modifier = Modifier.fillMaxSize()) {
-                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
+//                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
 
-//                            InsightsScreen()
+                            InsightsScreen()
 
 
 
