@@ -2,6 +2,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.insights
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -38,8 +39,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
+import com.yash.focusfusion.core.util.Constants.INSIGHTSVIEWMODELCHECKING
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.ActivityInsightCard
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimeRange
@@ -50,10 +54,8 @@ val hoursWorked = listOf(10f, 12f, 20f, 5f, 0f, 4f, 17f)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InsightsScreen(modifier: Modifier = Modifier) {
+fun InsightsScreen(insightsViewModel: InsightsViewModel= hiltViewModel(), modifier: Modifier = Modifier) {
     Scaffold(modifier = modifier.fillMaxSize()) {
-
-
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
@@ -61,7 +63,11 @@ fun InsightsScreen(modifier: Modifier = Modifier) {
         ) {
 
             item {
-                TimePeriodTabs {
+                TimePeriodTabs {timePeriod->
+                    if(timePeriod==0){
+                        insightsViewModel.onEvent(InsightsEvent.DayEvent(1726247332000))
+                    }
+                    Log.d(INSIGHTSVIEWMODELCHECKING,timePeriod.toString())
 
                 }
             }
@@ -108,6 +114,7 @@ fun InsightsScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun InsightsScreenPreview() {
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -116,7 +123,7 @@ private fun InsightsScreenPreview() {
             )
             .padding(10.dp)
     ) {
-        InsightsScreen()
+//        InsightsScreen()
     }
 }
 

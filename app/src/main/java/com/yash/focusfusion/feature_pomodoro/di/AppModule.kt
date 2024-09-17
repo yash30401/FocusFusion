@@ -81,7 +81,7 @@ object AppModule {
             getTotalMinutesForDateUseCase = GetTotalSecondsForDateUseCase(sessionRepository),
             getTotalMinutesForMonthUseCase = GetTotalSecondsForMonthUseCase(sessionRepository),
             getTotalMinutesForYearUseCase = GetTotalSecondsForYearUseCase(sessionRepository),
-            getSessionForDateUseCase = GetSessionsForDateUseCase(sessionRepository),
+            getSessionsForDateUseCase = GetSessionsForDateUseCase(sessionRepository),
             getSessionsForWeekUseCase = GetSessionsForWeekUseCase(sessionRepository),
             getSessionsForMonthUseCase = GetSessionsForMonthUseCase(sessionRepository),
             getSessionsForYearUseCase = GetSessionsForYearUseCase(sessionRepository)

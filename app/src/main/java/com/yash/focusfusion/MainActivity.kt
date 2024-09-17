@@ -35,6 +35,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
+import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsViewModel
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
@@ -54,6 +55,7 @@ class MainActivity : ComponentActivity() {
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
     private val timerSharedViewModel:TimerSharedViewModel by viewModels()
+
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {

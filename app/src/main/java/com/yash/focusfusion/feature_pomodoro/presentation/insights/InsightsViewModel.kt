@@ -6,9 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yash.focusfusion.core.util.Constants.CHECKINGVIEWMODEL
 import com.yash.focusfusion.core.util.Constants.INSIGHTSVIEWMODELCHECKING
+import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,17 +33,17 @@ class InsightsViewModel @Inject constructor(
                             sessionsListState.value = SessionsListState(
                                 sessions = it
                             )
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "ALl session for date:- ${sessionsListState.value.sessions}"
+                            )
                         }
-                        Log.d(
-                            INSIGHTSVIEWMODELCHECKING,
-                            "ALl session for date:- ${sessionsListState.value.sessions}"
-                        )
                     } catch (e: Exception) {
+                        Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
                         sessionsListState.value = SessionsListState(
                             sessions = emptyList(),
                             errorMessage = e.message
                         )
-                        Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
                     }
                 }
             }
