@@ -43,12 +43,12 @@ interface SessionDao {
     fun getSessionsForDate(date: Long): Flow<List<SessionEntity>>
 
     @Query("""
-        SELECT * FROM sessions 
-        WHERE strftime('%W', time / 1000, 'unixepoch') BETWEEN :startWeek AND :endWeek 
-        AND strftime('%m', time / 1000, 'unixepoch') = :month 
-        AND strftime('%Y', time / 1000, 'unixepoch') = :year
+       SELECT * FROM sessions
+        WHERE strftime('%d', time / 1000, 'unixepoch') BETWEEN :startDay AND :endDay
+        AND strftime('%m', time / 1000, 'unixepoch') = :month
+        AND strftime('%Y', time / 1000, 'unixepoch') = :year;
     """)
-    fun getSessionsForWeek(startWeek: String, endWeek: String, month: String, year: String): Flow<List<SessionEntity>>
+    fun getSessionsForWeek(startDay: String, endDay: String, month: String, year: String): Flow<List<SessionEntity>>
 
     @Query("SELECT * FROM sessions WHERE strftime('%m', time / 1000, 'unixepoch') = :month AND strftime('%Y', time / 1000, 'unixepoch') = :year")
     fun getSessionsForMonth(month: String, year: String): Flow<List<SessionEntity>>
