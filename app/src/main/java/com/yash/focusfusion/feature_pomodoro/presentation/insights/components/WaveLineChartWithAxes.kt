@@ -41,11 +41,9 @@ import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 
 @RequiresApi(Build.VERSION_CODES.O)
-@SuppressLint("ResourceAsColor")
 @Composable
 fun WaveLineChartWithAxes(
-    hoursData: List<Float>,
-    maxHour: Int,
+    minutesData: List<Float>,
     timeRange: TimeRange,
     daysInMonth: Int,
     month: Int,
@@ -55,95 +53,78 @@ fun WaveLineChartWithAxes(
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f  // Amplify the wave effect
 ) {
-    val maxValue = maxHour.toFloat()  // Y-axis max (12 hours)
-    val minValue = 0f   // Y-axis min (0 hours)
-    val yAxisStep = calculateTimeDifference(maxHour).toFloat()  // Y-axis step (3-hour intervals)
+    val minValue = 0f   // Y-axis min (0 minutes)
+    val maxValue = (minutesData.maxOrNull() ?: minValue).coerceAtLeast(minValue)  // Y-axis max based on data
+
+    // Decide on number of Y-axis steps (e.g., 4 steps)
+    val numberOfSteps = 4
+    val yAxisStep = (maxValue - minValue) / numberOfSteps.toFloat()
 
     Box(
         modifier = modifier
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
-            .padding(bottom = 5.dp),
+            .padding(5.dp),
         contentAlignment = Alignment.Center
     ) {
-
-
         Column(
             modifier = Modifier
-                .size(450.dp)
+                .fillMaxWidth()
                 .padding(25.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically,
-              ) {
-                IconButton(onClick = {},) {
-                    Icon(imageVector = Icons.Default.ArrowBackIosNew,"Previous",
-                        tint = Color(0xff787878))
-                }
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
+            // Header UI code here (omitted for brevity)
 
-                    ) {
-                    Text(
-                        "3-9 June",
-                        fontSize = 15.sp,
-                        color = Color(0xff787878),
-                        fontFamily = FontFamily(Font(R.font.jost_medium)),
-                    )
-
-                    Text(
-                        "53 Hrs",
-                        fontSize = 10.sp,
-                        color = Color(0xff9E9E9E),
-                        fontFamily = FontFamily(Font(R.font.jost_medium)),
-                    )
-                }
-                IconButton(onClick = {},) {
-                    Icon(imageVector = Icons.Default.ArrowForwardIos,"Previous",
-                        tint = Color(0xff787878))
-                }
-            }
+            // Canvas for the chart
             Canvas(
                 modifier = Modifier
-                    .size(290.dp)
-                    .padding(top = 30.dp)
+                    .fillMaxWidth()
+                    .height(300.dp)  // Adjust height for better fit
+                    .padding(top = 20.dp)
             ) {
-
+                // X-axis labels for different time ranges
                 val xAxisLabels = when (timeRange) {
-                    TimeRange.Today -> listOf("12 AM", "6 AM", "12 PM", "6 PM")
+                    TimeRange.Today -> listOf("00:00",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "06:00",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "12:00",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "18:00",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    )
                     TimeRange.Week -> listOf("M", "T", "W", "T", "F", "S", "S")
                     TimeRange.Month -> {
                         if (daysInMonth == 30) {
-                            listOf("${month}/1", "${month}/8", "${month}/16", "${month}/23", "9/30")
+                            listOf("${month}/1", "${month}/8", "${month}/16", "${month}/23", "${month}/30")
                         } else {
-                            listOf(
-                                "${month}/1",
-                                "${month}/9",
-                                "${month}/16",
-                                "${month}/24",
-                                "${month}/31"
-                            )
+                            listOf("${month}/1", "${month}/9", "${month}/16", "${month}/24", "${month}/31")
                         }
                     }
-
-                    TimeRange.Year -> listOf(
-                        "1",
-                        "2",
-                        "3",
-                        "4",
-                        "5",
-                        "6",
-                        "7",
-                        "8",
-                        "9",
-                        "10",
-                        "11",
-                        "12"
-                    )
+                    TimeRange.Year -> listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
                 }
 
-                val widthPerDay = (size.width - xOffset) / (xAxisLabels.size - 1)
-                val yAxisGap = size.height / ((maxValue - minValue) / yAxisStep)
+                val leftPadding = xOffset
+                val rightPadding = xOffset
+                val widthPerLabel = (size.width - leftPadding - rightPadding) / (xAxisLabels.size - 1)
+                val heightPerUnit = size.height / (maxValue - minValue)
 
                 val textPaint = Paint().apply {
                     color = android.graphics.Color.GRAY
@@ -151,69 +132,57 @@ fun WaveLineChartWithAxes(
                     textAlign = Paint.Align.RIGHT
                 }
 
-                val textBaselineOffset = textPaint.descent() // Offset to align text baselines
-
-                // Calculate positions for the axes
-                val xAxisStart = Offset(xOffset - 35f, size.height - 10f)
-                val yAxisStart = Offset(xOffset - 35f, 0f - 125f)
-                val xAxisEnd = Offset(size.width + 20f, size.height - 10f)
-                val yAxisEnd = Offset(xOffset - 35f, size.height - 10f)
-
-                // Draw Y-axis grid lines and labels (0h, 3h, 6h, 9h, 12h)
-                for (i in 0..4) {
-                    val y = size.height - (i * yAxisGap)
+                // Y-axis labels
+                for (i in 0..numberOfSteps) {
+                    val yLabelValue = minValue + i * yAxisStep
+                    val y = size.height - (yLabelValue - minValue) * heightPerUnit
                     drawContext.canvas.nativeCanvas.drawText(
-                        "${i * yAxisStep.toInt()}h",
-                        30f,
-                        y - 20f,
+                        String.format("%.0f min", yLabelValue),
+                        leftPadding - 10f,
+                        y + 10f,  // Adjust for text height
                         textPaint
                     )
                 }
 
-                // Draw X-axis labels (Days of the week) with right shift (xOffset)
-                for (i in 0..xAxisLabels.size - 1) {
-                    val x = i * widthPerDay + xOffset
+                // X-axis labels
+                for (i in xAxisLabels.indices) {
+                    val x = leftPadding + i * widthPerLabel
                     drawContext.canvas.nativeCanvas.drawText(
                         xAxisLabels[i],
                         x,
-                        size.height + 45f,
+                        size.height + 40f,  // Adjust padding below the chart
                         Paint().apply {
                             color = android.graphics.Color.GRAY
                             textSize = 28f
+                            textAlign = Paint.Align.CENTER
                         }
                     )
                 }
 
-                // Create path for more wavy line
-                val path = Path().apply {
-                    moveTo(
-                        xOffset,
-                        size.height * (1 - (hoursData[0] - minValue) / (maxValue - minValue)) - 25f
-                    )
+                // Create path for the wave line
+                val wavePath = Path().apply {
+                    val firstX = leftPadding
+                    val firstY = size.height - (minutesData[0] - minValue) * heightPerUnit
+                    moveTo(firstX, firstY)
 
-                    for (i in 1 until hoursData.size) {
-                        val prevX = (i - 1) * widthPerDay + xOffset
-                        val prevY =
-                            size.height * (1 - (hoursData[i - 1] - minValue) / (maxValue - minValue)) - 25f
+                    for (i in 1 until minutesData.size) {
+                        val prevX = leftPadding + (i - 1) * widthPerLabel
+                        val prevY = size.height - (minutesData[i - 1] - minValue) * heightPerUnit
 
-                        val currX = i * widthPerDay + xOffset
-                        val currY =
-                            size.height * (1 - (hoursData[i] - minValue) / (maxValue - minValue)) - 25f
+                        val currX = leftPadding + i * widthPerLabel
+                        val currY = size.height - (minutesData[i] - minValue) * heightPerUnit
 
-                        // Adjust control points for stronger wave effect
-                        val controlX1 = prevX + widthPerDay / 2 * waveAmplitude
+                        val controlX1 = prevX + widthPerLabel / 2 * waveAmplitude
                         val controlY1 = prevY
-
-                        val controlX2 = currX - widthPerDay / 2 * waveAmplitude
+                        val controlX2 = currX - widthPerLabel / 2 * waveAmplitude
                         val controlY2 = currY
 
-                        // Draw cubic Bézier curve with amplified wave effect
                         cubicTo(controlX1, controlY1, controlX2, controlY2, currX, currY)
                     }
                 }
 
                 val fillPath = Path().apply {
-                    addPath(path)
+                    addPath(wavePath)
                     lineTo(size.width, size.height)
                     lineTo(xOffset, size.height)
                     close()
@@ -228,26 +197,26 @@ fun WaveLineChartWithAxes(
                     )
                 )
 
-                // Draw the more wavy line
+                // Draw the wave line
                 drawPath(
-                    path = path,
+                    path = wavePath,
                     color = lineColor,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )
 
                 // Draw Y-axis line
                 drawLine(
-                    color = Color(0xffA1A1A1),
-                    start = yAxisStart,
-                    end = yAxisEnd,
+                    color = Color.Gray,
+                    start = Offset(leftPadding, 0f),
+                    end = Offset(leftPadding, size.height),
                     strokeWidth = 3f
                 )
 
                 // Draw X-axis line
                 drawLine(
-                    color = Color(0xffA1A1A1),
-                    start = xAxisStart,
-                    end = xAxisEnd,
+                    color = Color.Gray,
+                    start = Offset(leftPadding, size.height),
+                    end = Offset(size.width - rightPadding, size.height),
                     strokeWidth = 3f
                 )
             }
@@ -255,29 +224,20 @@ fun WaveLineChartWithAxes(
     }
 }
 
-fun calculateTimeDifference(maxHour: Int): Int {
-    var start = 5
-    while (true) {
-        val div = (maxHour.toFloat() / start.toFloat())
-        if (div <= 4.0) {
-            break
-        } else {
-            start += 5
-        }
-    }
-    return start
-}
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
-    val hoursWorked = listOf(10f, 12f, 20f, 5f, 0f, 4f, 17f)
+    val minutesWorked = listOf(
+        60f, 120f, 0f, 0f, 0f, 120f, 400f, 0f,
+        0f, 0f, 300f, 0f, 0f, 0f, 0f, 0f, 240f, 0f, 0f, 0f, 0f, 0f, 0f, 0f
+    )
 
     WaveLineChartWithAxes(
-        hoursData = hoursWorked,
-        maxHour = 30,
-        timeRange = TimeRange.Week,
+        minutesData = minutesWorked,
+        timeRange = TimeRange.Today,
         daysInMonth = 30,
         month = 9,
         modifier = Modifier

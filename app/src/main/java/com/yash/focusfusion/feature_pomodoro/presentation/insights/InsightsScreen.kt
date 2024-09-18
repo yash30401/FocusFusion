@@ -130,7 +130,6 @@ fun InsightsScreen(
             item {
                 WaveLineChartWithAxes(
                     hoursData = hoursWorked,
-                    maxHour = 30,
                     timeRange = TimeRange.Week,
                     daysInMonth = 30,
                     month = 9,
