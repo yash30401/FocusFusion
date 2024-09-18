@@ -1,4 +1,4 @@
-package com.yash.focusfusion.feature_pomodoro.presentation.insights
+package com.yash.focusfusion.core.util
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -8,12 +8,12 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
-fun getTimeListInFormattedWay(sessions: List<Session>): List<String> {
+fun getTimeListInFormattedWayWithDuration(sessions: List<Session>): List<Pair<String, Int>> {
     val formatter =
         DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.systemDefault())
 
-    return sessions.map {
-        val instant = Instant.ofEpochMilli(it.time)
-        formatter.format(instant)
+    return sessions.map { session ->
+        val instant = Instant.ofEpochMilli(session.time)
+        formatter.format(instant) to session.duration
     }
 }
