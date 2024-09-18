@@ -26,6 +26,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -48,13 +52,20 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Ac
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimeRange
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
+import kotlinx.coroutines.delay
 
 val hoursWorked = listOf(10f, 12f, 20f, 5f, 0f, 4f, 17f)
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InsightsScreen(insightsViewModel: InsightsViewModel= hiltViewModel(), modifier: Modifier = Modifier) {
+fun InsightsScreen(
+    insightsViewModel: InsightsViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier
+) {
+
+    val sessionState by insightsViewModel.sessionListState.collectAsState()
+
     Scaffold(modifier = modifier.fillMaxSize()) {
         LazyColumn(
             modifier = modifier
@@ -63,11 +74,16 @@ fun InsightsScreen(insightsViewModel: InsightsViewModel= hiltViewModel(), modifi
         ) {
 
             item {
-                TimePeriodTabs {timePeriod->
-                    if(timePeriod==0){
-                        insightsViewModel.onEvent(InsightsEvent.DayEvent(1726247332000))
+                TimePeriodTabs { timePeriod ->
+                    when (timePeriod) {
+                        0 -> {insightsViewModel.onEvent(InsightsEvent.DayEvent(1726247332000))
+                        Log.d(INSIGHTSVIEWMODELCHECKING,sessionState.toString())
+                        }
+                        1 -> insightsViewModel.onEvent(InsightsEvent.WeekEvent("09", "15", "09", "2024"))
+                        2 -> insightsViewModel.onEvent(InsightsEvent.MonthEvent("08", "2024"))
+                        3 -> insightsViewModel.onEvent(InsightsEvent.YearEvent("2024"))
                     }
-                    Log.d(INSIGHTSVIEWMODELCHECKING,timePeriod.toString())
+                    Log.d(INSIGHTSVIEWMODELCHECKING, "Time period selected: $timePeriod")
 
                 }
             }

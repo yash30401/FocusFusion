@@ -1,6 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.insights
 
 import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,8 +21,9 @@ import javax.inject.Inject
 class InsightsViewModel @Inject constructor(
     private val sessionUseCases: SessionUseCases
 ) : ViewModel() {
-    var sessionsListState = mutableStateOf(SessionsListState())
-        private set
+
+    private val _sessionListState = MutableStateFlow<List<Session>>(emptyList())
+    val sessionListState:StateFlow<List<Session>> get() = _sessionListState
 
 
     fun onEvent(event: InsightsEvent) {
@@ -30,27 +32,77 @@ class InsightsViewModel @Inject constructor(
                 viewModelScope.launch(Dispatchers.IO) {
                     try {
                         sessionUseCases.getSessionsForDateUseCase.invoke(event.date).collect {
-                            sessionsListState.value = SessionsListState(
-                                sessions = it
-                            )
-                            Log.d(
-                                INSIGHTSVIEWMODELCHECKING,
-                                "ALl session for date:- ${sessionsListState.value.sessions}"
-                            )
+                            _sessionListState.value = it
+//                            Log.d(
+//                                INSIGHTSVIEWMODELCHECKING,
+//                                "ALl session for date:- ${sessionsListState.value.sessions}"
+//                            )
                         }
                     } catch (e: Exception) {
                         Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
-                        sessionsListState.value = SessionsListState(
-                            sessions = emptyList(),
-                            errorMessage = e.message
-                        )
+                        _sessionListState.value = emptyList()
                     }
                 }
             }
 
-            is InsightsEvent.MonthEvent -> {}
-            is InsightsEvent.WeekEvent -> {}
-            is InsightsEvent.YearEvent -> {}
+            is InsightsEvent.MonthEvent -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        sessionUseCases.getSessionsForMonthUseCase.invoke(event.month, event.year)
+                            .collect {
+                                _sessionListState.value = it
+                                Log.d(
+                                    INSIGHTSVIEWMODELCHECKING,
+                                    "ALl session for month:- ${sessionListState.value}"
+                                )
+                            }
+                    } catch (e: Exception) {
+                        Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
+                        _sessionListState.value = emptyList()
+                    }
+                }
+            }
+
+            is InsightsEvent.WeekEvent -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        sessionUseCases.getSessionsForWeekUseCase.invoke(
+                            event.startDate,
+                            event.endDate,
+                            event.month,
+                            event.year
+                        ).collect {
+                            _sessionListState.value = it
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "ALl session for Week:- ${sessionListState.value}"
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
+                        _sessionListState.value = emptyList()
+                    }
+                }
+            }
+
+            is InsightsEvent.YearEvent -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        sessionUseCases.getSessionsForYearUseCase.invoke(
+                            event.year
+                        ).collect {
+                            _sessionListState.value = it
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "ALl session for Year:- ${_sessionListState.value}"
+                            )
+                        }
+                    } catch (e: Exception) {
+                        Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
+                        _sessionListState.value = emptyList()
+                    }
+                }
+            }
         }
     }
 
