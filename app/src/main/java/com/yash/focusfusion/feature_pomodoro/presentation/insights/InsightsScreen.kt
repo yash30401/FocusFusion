@@ -77,11 +77,34 @@ fun InsightsScreen(
                 TimePeriodTabs { timePeriod ->
                     when (timePeriod) {
                         0 -> {insightsViewModel.onEvent(InsightsEvent.DayEvent(1726247332000))
-                        Log.d(INSIGHTSVIEWMODELCHECKING,sessionState.toString())
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "ALl session for date:- ${sessionState}"
+                            )
+                            val timeListInFormattedWay = getTimeListInFormattedWay(sessionState)
+                            Log.d(INSIGHTSVIEWMODELCHECKING,"Time Data:- $timeListInFormattedWay")
                         }
-                        1 -> insightsViewModel.onEvent(InsightsEvent.WeekEvent("09", "15", "09", "2024"))
-                        2 -> insightsViewModel.onEvent(InsightsEvent.MonthEvent("08", "2024"))
-                        3 -> insightsViewModel.onEvent(InsightsEvent.YearEvent("2024"))
+                        1 -> {
+                            insightsViewModel.onEvent(InsightsEvent.WeekEvent("09", "15", "09", "2024"))
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "ALl session for Week:- ${sessionState}"
+                            )
+                        }
+                        2 -> {
+                            insightsViewModel.onEvent(InsightsEvent.MonthEvent("08", "2024"))
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "ALl session for Month:- ${sessionState}"
+                            )
+                        }
+                        3 -> {
+                            insightsViewModel.onEvent(InsightsEvent.YearEvent("2024"))
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "ALl session for Year:- ${sessionState}"
+                            )
+                        }
                     }
                     Log.d(INSIGHTSVIEWMODELCHECKING, "Time period selected: $timePeriod")
 

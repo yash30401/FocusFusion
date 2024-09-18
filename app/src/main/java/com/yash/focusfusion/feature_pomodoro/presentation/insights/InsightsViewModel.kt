@@ -51,10 +51,10 @@ class InsightsViewModel @Inject constructor(
                         sessionUseCases.getSessionsForMonthUseCase.invoke(event.month, event.year)
                             .collect {
                                 _sessionListState.value = it
-                                Log.d(
-                                    INSIGHTSVIEWMODELCHECKING,
-                                    "ALl session for month:- ${sessionListState.value}"
-                                )
+//                                Log.d(
+//                                    INSIGHTSVIEWMODELCHECKING,
+//                                    "ALl session for month:- ${sessionListState.value}"
+//                                )
                             }
                     } catch (e: Exception) {
                         Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
@@ -73,10 +73,10 @@ class InsightsViewModel @Inject constructor(
                             event.year
                         ).collect {
                             _sessionListState.value = it
-                            Log.d(
-                                INSIGHTSVIEWMODELCHECKING,
-                                "ALl session for Week:- ${sessionListState.value}"
-                            )
+//                            Log.d(
+//                                INSIGHTSVIEWMODELCHECKING,
+//                                "ALl session for Week:- ${sessionListState.value}"
+//                            )
                         }
                     } catch (e: Exception) {
                         Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
@@ -92,10 +92,10 @@ class InsightsViewModel @Inject constructor(
                             event.year
                         ).collect {
                             _sessionListState.value = it
-                            Log.d(
-                                INSIGHTSVIEWMODELCHECKING,
-                                "ALl session for Year:- ${_sessionListState.value}"
-                            )
+//                            Log.d(
+//                                INSIGHTSVIEWMODELCHECKING,
+//                                "ALl session for Year:- ${_sessionListState.value}"
+//                            )
                         }
                     } catch (e: Exception) {
                         Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
