@@ -23,6 +23,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,6 +43,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -51,17 +58,31 @@ fun WaveLineChartWithAxes(
     lineColor: Color = Color(0xFF9463ED),
     strokeWidth: Float = 4f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
-    waveAmplitude: Float = 2f  // Amplify the wave effect
+    waveAmplitude: Float = 2f, // Amplify the wave effect
+    onPreviousClick: (String) -> Unit,
+    onNextClick: (String) -> Unit,
 ) {
     val minValue = 0f   // Y-axis min (0 minutes)
-    val maxValue = (minutesData.maxOrNull() ?: minValue).coerceAtLeast(minValue)  // Y-axis max based on data
+    val maxValue =
+        (minutesData.maxOrNull() ?: minValue).coerceAtLeast(minValue)  // Y-axis max based on data
 
     // Decide on number of Y-axis steps (e.g., 4 steps)
     val numberOfSteps = 4
     val yAxisStep = (maxValue - minValue) / numberOfSteps.toFloat()
 
+    var currentDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+    val formatter = DateTimeFormatter.ofPattern("d,MMM yyyy", Locale.ENGLISH)
+    var formattedDate by remember {
+        mutableStateOf("")
+    }
+    formattedDate = currentDate.format(formatter)
+
     Box(
-        modifier = modifier.fillMaxWidth().height(280.dp)
+        modifier = modifier
+            .fillMaxWidth()
+            .height(280.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
             .padding(5.dp),
@@ -77,7 +98,14 @@ fun WaveLineChartWithAxes(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                IconButton(onClick = { /* Handle previous action */ }) {
+                IconButton(onClick = {
+
+                    //Previous Date onClick
+
+                    currentDate = currentDate.minusDays(1)
+                    formattedDate = currentDate.format(formatter)
+                    onPreviousClick(formattedDate)
+                }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBackIosNew,
                         contentDescription = "Previous",
@@ -88,7 +116,7 @@ fun WaveLineChartWithAxes(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "3-9 June",
+                        text = "$formattedDate",
                         fontSize = 15.sp,
                         color = Color(0xff787878),
                         fontFamily = FontFamily.SansSerif,
@@ -100,7 +128,13 @@ fun WaveLineChartWithAxes(
                         fontFamily = FontFamily.SansSerif,
                     )
                 }
-                IconButton(onClick = { /* Handle next action */ }) {
+                IconButton(onClick = {
+                    // Next Date On Click
+                    currentDate =
+                        if (currentDate < LocalDate.now()) currentDate.plusDays(1) else currentDate
+                    formattedDate = currentDate.format(formatter)
+                    onPreviousClick(formattedDate)
+                }) {
                     Icon(
                         imageVector = Icons.Default.ArrowForwardIos,
                         contentDescription = "Next",
@@ -115,11 +149,13 @@ fun WaveLineChartWithAxes(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)  // Adjust height for better fit
-                    .padding(vertical = 25.dp).padding(start = 20.dp)
+                    .padding(vertical = 25.dp)
+                    .padding(start = 20.dp)
             ) {
                 // X-axis labels for different time ranges
                 val xAxisLabels = when (timeRange) {
-                    TimeRange.Today -> listOf("00:00",
+                    TimeRange.Today -> listOf(
+                        "00:00",
                         "",
                         "",
                         "",
@@ -145,20 +181,48 @@ fun WaveLineChartWithAxes(
                         "",
                         ""
                     )
+
                     TimeRange.Week -> listOf("M", "T", "W", "T", "F", "S", "S")
                     TimeRange.Month -> {
                         if (daysInMonth == 30) {
-                            listOf("${month}/1", "${month}/8", "${month}/16", "${month}/23", "${month}/30")
+                            listOf(
+                                "${month}/1",
+                                "${month}/8",
+                                "${month}/16",
+                                "${month}/23",
+                                "${month}/30"
+                            )
                         } else {
-                            listOf("${month}/1", "${month}/9", "${month}/16", "${month}/24", "${month}/31")
+                            listOf(
+                                "${month}/1",
+                                "${month}/9",
+                                "${month}/16",
+                                "${month}/24",
+                                "${month}/31"
+                            )
                         }
                     }
-                    TimeRange.Year -> listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+                    TimeRange.Year -> listOf(
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec"
+                    )
                 }
 
                 val leftPadding = xOffset
                 val rightPadding = xOffset
-                val widthPerLabel = (size.width - leftPadding - rightPadding) / (xAxisLabels.size - 1)
+                val widthPerLabel =
+                    (size.width - leftPadding - rightPadding) / (xAxisLabels.size - 1)
                 val heightPerUnit = size.height / (maxValue - minValue)
 
                 val textPaint = Paint().apply {
@@ -260,7 +324,6 @@ fun WaveLineChartWithAxes(
 }
 
 
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
@@ -280,7 +343,9 @@ fun PreviewWaveLineChartWithAxes() {
         lineColor = Color(0xff9463ED),
         strokeWidth = 9f,
         xOffset = 90f,
-        waveAmplitude = 1f
+        waveAmplitude = 1f,
+        onPreviousClick = {},
+        onNextClick = {}
     )
 }
 

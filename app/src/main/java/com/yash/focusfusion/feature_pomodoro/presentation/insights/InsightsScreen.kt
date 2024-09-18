@@ -41,10 +41,6 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Ti
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
 import java.util.concurrent.TimeUnit
 
-val minutesWorked = listOf(
-    60f, 120f, 0f, 0f, 0f, 120f, 400f, 0f,
-    0f, 0f, 300f, 0f, 0f, 0f, 0f, 0f, 240f, 0f, 0f, 0f, 0f, 0f, 0f, 0f
-)
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -161,7 +157,11 @@ fun InsightsScreen(
                     lineColor = Color(0xff9463ED),
                     strokeWidth = 9f,
                     xOffset = 90f,
-                    waveAmplitude = 1f
+                    waveAmplitude = 1f,
+                    onPreviousClick = {
+                        println(it)
+                    },
+                    onNextClick = {}
                 )
             }
 
