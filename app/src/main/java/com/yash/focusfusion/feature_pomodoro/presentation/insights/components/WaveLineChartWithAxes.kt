@@ -61,7 +61,7 @@ fun WaveLineChartWithAxes(
     val yAxisStep = (maxValue - minValue) / numberOfSteps.toFloat()
 
     Box(
-        modifier = modifier.fillMaxWidth().height(270.dp)
+        modifier = modifier.fillMaxWidth().height(280.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
             .padding(5.dp),
@@ -114,8 +114,8 @@ fun WaveLineChartWithAxes(
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)  // Adjust height for better fit
-                    .padding(vertical = 25.dp).padding(start = 25.dp)
+                    .weight(1f)  // Adjust height for better fit
+                    .padding(vertical = 25.dp).padding(start = 20.dp)
             ) {
                 // X-axis labels for different time ranges
                 val xAxisLabels = when (timeRange) {
@@ -172,7 +172,7 @@ fun WaveLineChartWithAxes(
                     val yLabelValue = minValue + i * yAxisStep
                     val y = size.height - (yLabelValue - minValue) * heightPerUnit
                     drawContext.canvas.nativeCanvas.drawText(
-                        String.format("%.0f min", yLabelValue),
+                        String.format("%.0f m", yLabelValue),
                         leftPadding - 10f,
                         y + 10f,  // Adjust for text height
                         textPaint
