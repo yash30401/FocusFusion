@@ -37,7 +37,9 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Ti
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimeRange
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
 
-val hoursWorked = listOf(10f, 12f, 20f, 5f, 0f, 4f, 17f)
+val minutesWorked = listOf(60f, 120f, 0f, 0f, 0f, 120f, 400f, 0f,
+    0f, 0f, 300f, 0f, 0f, 0f, 0f, 0f, 240f, 0f, 0f, 0f, 0f, 0f, 0f, 0f
+)
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -129,13 +131,11 @@ fun InsightsScreen(
 
             item {
                 WaveLineChartWithAxes(
-                    hoursData = hoursWorked,
-                    timeRange = TimeRange.Week,
+                    minutesData = minutesWorked,
+                    timeRange = TimeRange.Today,
                     daysInMonth = 30,
                     month = 9,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(250.dp)
                         .padding(16.dp),
                     lineColor = Color(0xff9463ED),
                     strokeWidth = 9f,

@@ -61,7 +61,7 @@ fun WaveLineChartWithAxes(
     val yAxisStep = (maxValue - minValue) / numberOfSteps.toFloat()
 
     Box(
-        modifier = modifier
+        modifier = modifier.fillMaxWidth().height(270.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
             .padding(5.dp),
@@ -69,18 +69,53 @@ fun WaveLineChartWithAxes(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(25.dp),
+                .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Header UI code here (omitted for brevity)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(onClick = { /* Handle previous action */ }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBackIosNew,
+                        contentDescription = "Previous",
+                        tint = Color(0xff787878)
+                    )
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "3-9 June",
+                        fontSize = 15.sp,
+                        color = Color(0xff787878),
+                        fontFamily = FontFamily.SansSerif,
+                    )
+                    Text(
+                        text = "53 Hrs",
+                        fontSize = 10.sp,
+                        color = Color(0xff9E9E9E),
+                        fontFamily = FontFamily.SansSerif,
+                    )
+                }
+                IconButton(onClick = { /* Handle next action */ }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForwardIos,
+                        contentDescription = "Next",
+                        tint = Color(0xff787878)
+                    )
+                }
+            }
+
 
             // Canvas for the chart
             Canvas(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(300.dp)  // Adjust height for better fit
-                    .padding(top = 20.dp)
+                    .padding(vertical = 25.dp).padding(start = 25.dp)
             ) {
                 // X-axis labels for different time ranges
                 val xAxisLabels = when (timeRange) {
@@ -241,8 +276,6 @@ fun PreviewWaveLineChartWithAxes() {
         daysInMonth = 30,
         month = 9,
         modifier = Modifier
-            .fillMaxWidth()
-            .height(250.dp)
             .padding(16.dp),
         lineColor = Color(0xff9463ED),
         strokeWidth = 9f,
