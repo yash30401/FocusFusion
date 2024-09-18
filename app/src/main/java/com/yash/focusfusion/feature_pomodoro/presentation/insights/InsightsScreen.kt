@@ -18,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
@@ -36,8 +39,10 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Ac
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimeRange
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
+import java.util.concurrent.TimeUnit
 
-val minutesWorked = listOf(60f, 120f, 0f, 0f, 0f, 120f, 400f, 0f,
+val minutesWorked = listOf(
+    60f, 120f, 0f, 0f, 0f, 120f, 400f, 0f,
     0f, 0f, 300f, 0f, 0f, 0f, 0f, 0f, 240f, 0f, 0f, 0f, 0f, 0f, 0f, 0f
 )
 
@@ -50,6 +55,9 @@ fun InsightsScreen(
 ) {
 
     val sessionState by insightsViewModel.sessionListState.collectAsState()
+
+    var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
+
 
     Scaffold(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -73,12 +81,25 @@ fun InsightsScreen(
                                 extractHourDataFromDateTimeListWithDuration(timeListInFormattedWay)
                             val getTotalDurationForDiffHours =
                                 getTotalDurationForDifferentHour(hourDataList)
+
+                            minutesFocused = (0..24).map { i ->
+                                if (getTotalDurationForDiffHours.containsKey(i)) {
+                                    val secondsToMinutes = TimeUnit.SECONDS.toMinutes(
+                                        getTotalDurationForDiffHours.getValue(i).toLong()
+                                    )
+                                    secondsToMinutes.toFloat()
+                                } else {
+                                    0f
+                                }
+                            }
+
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Hours Data:- $hourDataList")
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "Total Duration For Each hour:- $getTotalDurationForDiffHours"
                             )
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Final List:- $minutesFocused")
                         }
 
                         1 -> {
@@ -131,7 +152,7 @@ fun InsightsScreen(
 
             item {
                 WaveLineChartWithAxes(
-                    minutesData = minutesWorked,
+                    minutesData = minutesFocused,
                     timeRange = TimeRange.Today,
                     daysInMonth = 30,
                     month = 9,
