@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.INSIGHTSVIEWMODELCHECKING
+import com.yash.focusfusion.core.util.extractHourDataFromDateTimeListWithDuration
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.ActivityInsightCard
@@ -63,7 +64,9 @@ fun InsightsScreen(
                                 "ALl session for date:- ${sessionState}"
                             )
                             val timeListInFormattedWay = getTimeListInFormattedWayWithDuration(sessionState)
+                            val hourDataList = extractHourDataFromDateTimeListWithDuration(timeListInFormattedWay)
                             Log.d(INSIGHTSVIEWMODELCHECKING,"Time Data:- $timeListInFormattedWay")
+                            Log.d(INSIGHTSVIEWMODELCHECKING,"Hours Data:- $hourDataList")
                         }
                         1 -> {
                             insightsViewModel.onEvent(InsightsEvent.WeekEvent("09", "15", "09", "2024"))
