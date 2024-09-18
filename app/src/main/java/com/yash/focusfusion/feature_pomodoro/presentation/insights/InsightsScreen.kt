@@ -30,6 +30,7 @@ import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.INSIGHTSVIEWMODELCHECKING
 import com.yash.focusfusion.core.util.extractHourDataFromDateTimeListWithDuration
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
+import com.yash.focusfusion.core.util.getTotalDurationForDifferentHour
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.ActivityInsightCard
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
@@ -58,23 +59,53 @@ fun InsightsScreen(
             item {
                 TimePeriodTabs { timePeriod ->
                     when (timePeriod) {
-                        0 -> {insightsViewModel.onEvent(InsightsEvent.DayEvent(1726247332000))
+                        0 -> {
+                            insightsViewModel.onEvent(InsightsEvent.DayEvent(1726247332000))
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "ALl session for date:- ${sessionState}"
                             )
-                            val timeListInFormattedWay = getTimeListInFormattedWayWithDuration(sessionState)
-                            val hourDataList = extractHourDataFromDateTimeListWithDuration(timeListInFormattedWay)
-                            Log.d(INSIGHTSVIEWMODELCHECKING,"Time Data:- $timeListInFormattedWay")
-                            Log.d(INSIGHTSVIEWMODELCHECKING,"Hours Data:- $hourDataList")
+                            val timeListInFormattedWay =
+                                getTimeListInFormattedWayWithDuration(sessionState)
+                            val hourDataList =
+                                extractHourDataFromDateTimeListWithDuration(timeListInFormattedWay)
+                            val getTotalDurationForDiffHours =
+                                getTotalDurationForDifferentHour(hourDataList)
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Hours Data:- $hourDataList")
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "Total Duration For Each hour:- $getTotalDurationForDiffHours"
+                            )
                         }
+
                         1 -> {
-                            insightsViewModel.onEvent(InsightsEvent.WeekEvent("09", "15", "09", "2024"))
+                            insightsViewModel.onEvent(
+                                InsightsEvent.WeekEvent(
+                                    "09",
+                                    "15",
+                                    "09",
+                                    "2024"
+                                )
+                            )
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "ALl session for Week:- ${sessionState}"
                             )
+                            val timeListInFormattedWay =
+                                getTimeListInFormattedWayWithDuration(sessionState)
+                            val hourDataList =
+                                extractHourDataFromDateTimeListWithDuration(timeListInFormattedWay)
+                            val getTotalDurationForDiffHours =
+                                getTotalDurationForDifferentHour(hourDataList)
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Hours Data:- $hourDataList")
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "Total Duration For Each hour:- $getTotalDurationForDiffHours"
+                            )
                         }
+
                         2 -> {
                             insightsViewModel.onEvent(InsightsEvent.MonthEvent("08", "2024"))
                             Log.d(
@@ -82,6 +113,7 @@ fun InsightsScreen(
                                 "ALl session for Month:- ${sessionState}"
                             )
                         }
+
                         3 -> {
                             insightsViewModel.onEvent(InsightsEvent.YearEvent("2024"))
                             Log.d(
