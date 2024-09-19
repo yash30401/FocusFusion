@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +25,6 @@ class InsightsViewModel @Inject constructor(
 
     private val _sessionListState = MutableStateFlow<List<Session>>(emptyList())
     val sessionListState:StateFlow<List<Session>> get() = _sessionListState
-
 
     fun onEvent(event: InsightsEvent) {
         when (event) {

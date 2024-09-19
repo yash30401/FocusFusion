@@ -30,29 +30,31 @@ interface SessionDao {
 
     // Aggregated Queries
 
-    @Query("SELECT SUM(duration) FROM sessions WHERE date(time/1000,'unixepoch') = DATE(:date / 1000, 'unixepoch')")
+    @Query("SELECT SUM(duration) FROM sessions WHERE DATE(time / 1000, 'unixepoch', 'localtime') = DATE(:date / 1000, 'unixepoch', 'localtime')")
     fun getTotalSecondsForDate(date: Long): Int
 
-    @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%m', time / 1000, 'unixepoch') = :month AND strftime('%Y', time / 1000, 'unixepoch') = :year")
+    @Query("SELECT SUM(duration) FROM sessions\n" +
+            "WHERE strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
+            "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year")
     fun getTotalSecondsForMonth(month: String, year: String): Int
 
-    @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%Y', time / 1000, 'unixepoch') = :year")
+    @Query("SELECT SUM(duration) FROM sessions WHERE strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year")
     fun getTotalSecondsForYear(year: String): Int
 
-    @Query("SELECT * FROM sessions WHERE DATE(time / 1000, 'unixepoch') = DATE(:date / 1000, 'unixepoch')")
+    @Query("SELECT * FROM sessions WHERE DATE(time / 1000, 'unixepoch', 'localtime') = DATE(:date / 1000, 'unixepoch', 'localtime')")
     fun getSessionsForDate(date: Long): Flow<List<SessionEntity>>
 
-    @Query("""
-       SELECT * FROM sessions
-        WHERE strftime('%d', time / 1000, 'unixepoch') BETWEEN :startDay AND :endDay
-        AND strftime('%m', time / 1000, 'unixepoch') = :month
-        AND strftime('%Y', time / 1000, 'unixepoch') = :year;
-    """)
+    @Query("SELECT * FROM sessions\n" +
+            "WHERE strftime('%d', time / 1000, 'unixepoch', 'localtime') BETWEEN :startDay AND :endDay\n" +
+            "AND strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
+            "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year\n")
     fun getSessionsForWeek(startDay: String, endDay: String, month: String, year: String): Flow<List<SessionEntity>>
 
-    @Query("SELECT * FROM sessions WHERE strftime('%m', time / 1000, 'unixepoch') = :month AND strftime('%Y', time / 1000, 'unixepoch') = :year")
+    @Query("SELECT * FROM sessions\n" +
+            "WHERE strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
+            "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year\n")
     fun getSessionsForMonth(month: String, year: String): Flow<List<SessionEntity>>
 
-    @Query("SELECT * FROM sessions WHERE strftime('%Y', time / 1000, 'unixepoch') = :year")
+    @Query("SELECT * FROM sessions WHERE strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year\n")
     fun getSessionsForYear(year: String): Flow<List<SessionEntity>>
 }

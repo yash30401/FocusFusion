@@ -72,6 +72,7 @@ fun InsightsScreen(
                     when (timePeriod) {
                         0 -> {
                             val millis = date?.time
+                            println("millis:- $millis")
                             insightsViewModel.onEvent(InsightsEvent.DayEvent(millis ?: 0))
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
@@ -166,8 +167,10 @@ fun InsightsScreen(
                     waveAmplitude = 1f,
                     onPreviousClick = {
                         date = dateFormat.parse(it)
+                        println(it)
                     },
                     onNextClick = {
+                        date = dateFormat.parse(it)
                     }
                 )
             }
