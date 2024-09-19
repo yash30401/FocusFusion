@@ -87,17 +87,29 @@ fun WaveLineChartWithAxes(
 
     val todaysDate = LocalDate.now()
     // TimeRange For Week
-    val startOfWeek = todaysDate.with(
-        TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
-    )
-    val endOfWeek = todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+    var startOfWeek by remember {
+        mutableStateOf(
+            todaysDate.with(
+                TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+            )
+        )
+    }
+    var endOfWeek by remember {
+        mutableStateOf(
+            todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+        )
+    }
 
-    val currentWeekRange by remember {
+    var currentWeekRange by remember {
         mutableStateOf(
             startOfWeek.dayOfMonth.toString() + "-" +
                     endOfWeek.dayOfMonth.toString()
         )
     }
+    val currentImmutableWeekRange = todaysDate.with(
+        TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+    ).dayOfMonth.toString() + "-" +
+            todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
 
     when (timeRange) {
         TimeRange.Day -> {
@@ -136,18 +148,24 @@ fun WaveLineChartWithAxes(
 
                     //Previous Date onClick
 
-                    when(timeRange){
+                    when (timeRange) {
                         TimeRange.Day -> {
                             currentDate = currentDate.minusDays(1)
                             formattedDate = currentDate.format(formatter)
                             onPreviousClick(formattedDate)
                         }
+
                         TimeRange.Week -> {
-                            TODO()
+                            startOfWeek = startOfWeek.minusWeeks(1)
+                            endOfWeek = endOfWeek.minusWeeks(1)
+                            currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
+                                    endOfWeek.dayOfMonth.toString()
                         }
+
                         TimeRange.Month -> {
                             TODO()
                         }
+
                         TimeRange.Year -> {
                             TODO()
                         }
@@ -170,9 +188,17 @@ fun WaveLineChartWithAxes(
                                 formattedDate
                             }
 
-                            TimeRange.Week -> {currentWeekRange}
-                            TimeRange.Month -> {""}
-                            TimeRange.Year -> {""}
+                            TimeRange.Week -> {
+                                currentWeekRange
+                            }
+
+                            TimeRange.Month -> {
+                                ""
+                            }
+
+                            TimeRange.Year -> {
+                                ""
+                            }
                         },
                         fontSize = 15.sp,
                         color = Color(0xff787878),
@@ -189,19 +215,30 @@ fun WaveLineChartWithAxes(
                     // Next Date On Click
 
 
-                    when(timeRange){
+                    when (timeRange) {
                         TimeRange.Day -> {
                             currentDate =
                                 if (currentDate < LocalDate.now()) currentDate.plusDays(1) else currentDate
                             formattedDate = currentDate.format(formatter)
                             onNextClick(formattedDate)
                         }
+
                         TimeRange.Week -> {
-                            TODO()
+
+                            if (currentWeekRange != currentImmutableWeekRange) {
+                                startOfWeek = startOfWeek.plusWeeks(1)
+                                endOfWeek = endOfWeek.plusWeeks(1)
+                                currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
+                                        endOfWeek.dayOfMonth.toString()
+                            }
+
+
                         }
+
                         TimeRange.Month -> {
                             TODO()
                         }
+
                         TimeRange.Year -> {
                             TODO()
                         }
