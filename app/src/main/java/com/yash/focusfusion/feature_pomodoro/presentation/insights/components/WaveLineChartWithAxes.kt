@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,6 +43,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import com.yash.focusfusion.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -119,13 +121,13 @@ fun WaveLineChartWithAxes(
                         text = "$formattedDate",
                         fontSize = 15.sp,
                         color = Color(0xff787878),
-                        fontFamily = FontFamily.SansSerif,
+                        fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                     )
                     Text(
                         text = "53 Hrs",
                         fontSize = 10.sp,
                         color = Color(0xff9E9E9E),
-                        fontFamily = FontFamily.SansSerif,
+                        fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                     )
                 }
                 IconButton(onClick = {
@@ -143,7 +145,18 @@ fun WaveLineChartWithAxes(
                 }
             }
 
+            if (minutesData.sum().toInt() == 0) {
+                Box(modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center) {
+                    Text(
+                        "No Chart Data For This ${timeRange.name}",
+                        color = Color(0xff9E9E9E),
+                        fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
+                        fontSize = 17.sp
+                    )
+                }
 
+            }
             // Canvas for the chart
             Canvas(
                 modifier = Modifier
@@ -154,7 +167,7 @@ fun WaveLineChartWithAxes(
             ) {
                 // X-axis labels for different time ranges
                 val xAxisLabels = when (timeRange) {
-                    TimeRange.Today -> listOf(
+                    TimeRange.Day -> listOf(
                         "00:00",
                         "",
                         "",
@@ -335,7 +348,7 @@ fun PreviewWaveLineChartWithAxes() {
 
     WaveLineChartWithAxes(
         minutesData = minutesWorked,
-        timeRange = TimeRange.Today,
+        timeRange = TimeRange.Day,
         daysInMonth = 30,
         month = 9,
         modifier = Modifier
@@ -350,5 +363,5 @@ fun PreviewWaveLineChartWithAxes() {
 }
 
 enum class TimeRange {
-    Today, Week, Month, Year
+    Day, Week, Month, Year
 }

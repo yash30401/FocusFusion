@@ -39,8 +39,11 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Ac
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimeRange
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
+import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -58,7 +61,13 @@ fun InsightsScreen(
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
 
     val dateFormat = SimpleDateFormat("dd,MMM yyyy")
-    var date: Date? by remember { mutableStateOf(null) }
+    var date: Date? by remember {
+        mutableStateOf(
+            dateFormat.parse(
+                LocalDate.now().format(DateTimeFormatter.ofPattern("dd,MMM yyyy"))
+            )
+        )
+    }
 
     Scaffold(modifier = modifier.fillMaxSize()) {
         LazyColumn(
@@ -156,7 +165,7 @@ fun InsightsScreen(
             item {
                 WaveLineChartWithAxes(
                     minutesData = minutesFocused,
-                    timeRange = TimeRange.Today,
+                    timeRange = TimeRange.Day,
                     daysInMonth = 30,
                     month = 9,
                     modifier = Modifier

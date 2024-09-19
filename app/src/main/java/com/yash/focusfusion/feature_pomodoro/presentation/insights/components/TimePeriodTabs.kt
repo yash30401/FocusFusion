@@ -48,7 +48,7 @@ fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit)
     ) {
         TimePeriodTabItem(
             isSelected = currentSelectedTimePeriod == 0,
-            text = "Today",
+            text = "Day",
             onClick = { currentSelectedTimePeriod = 0 },
             modifier = Modifier.weight(1f) // Apply weight here in Row scope
         )
