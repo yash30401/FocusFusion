@@ -45,8 +45,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.yash.focusfusion.R
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjuster
+import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -70,8 +73,10 @@ fun WaveLineChartWithAxes(
 
     // Decide on number of Y-axis steps (e.g., 4 steps)
     val numberOfSteps = 4
-    val yAxisStep = (maxValue - minValue) / numberOfSteps.toFloat()
+    val yAxisStep =
+        if (maxValue - minValue == 0f) 0f else (maxValue - minValue) / numberOfSteps.toFloat()
 
+    //Time Range For Day
     var currentDate by remember {
         mutableStateOf(LocalDate.now())
     }
@@ -79,7 +84,34 @@ fun WaveLineChartWithAxes(
     var formattedDate by remember {
         mutableStateOf("")
     }
-    formattedDate = currentDate.format(formatter)
+
+    val todaysDate = LocalDate.now()
+    // TimeRange For Week
+    val startOfWeek = todaysDate.with(
+        TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+    )
+    val endOfWeek = todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+
+    val currentWeekRange by remember {
+        mutableStateOf(
+            startOfWeek.dayOfMonth.toString() + "-" +
+                    endOfWeek.dayOfMonth.toString()
+        )
+    }
+
+    when (timeRange) {
+        TimeRange.Day -> {
+            formattedDate = currentDate.format(formatter)
+        }
+
+        TimeRange.Week -> {
+            currentWeekRange
+        }
+
+        TimeRange.Month -> TODO()
+        TimeRange.Year -> TODO()
+    }
+
 
     Box(
         modifier = modifier
@@ -104,9 +136,24 @@ fun WaveLineChartWithAxes(
 
                     //Previous Date onClick
 
-                    currentDate = currentDate.minusDays(1)
-                    formattedDate = currentDate.format(formatter)
-                    onPreviousClick(formattedDate)
+                    when(timeRange){
+                        TimeRange.Day -> {
+                            currentDate = currentDate.minusDays(1)
+                            formattedDate = currentDate.format(formatter)
+                            onPreviousClick(formattedDate)
+                        }
+                        TimeRange.Week -> {
+                            TODO()
+                        }
+                        TimeRange.Month -> {
+                            TODO()
+                        }
+                        TimeRange.Year -> {
+                            TODO()
+                        }
+                    }
+
+
                 }) {
                     Icon(
                         imageVector = Icons.Default.ArrowBackIosNew,
@@ -118,7 +165,15 @@ fun WaveLineChartWithAxes(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "$formattedDate",
+                        text = when (timeRange) {
+                            TimeRange.Day -> {
+                                formattedDate
+                            }
+
+                            TimeRange.Week -> {currentWeekRange}
+                            TimeRange.Month -> {""}
+                            TimeRange.Year -> {""}
+                        },
                         fontSize = 15.sp,
                         color = Color(0xff787878),
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
@@ -132,10 +187,25 @@ fun WaveLineChartWithAxes(
                 }
                 IconButton(onClick = {
                     // Next Date On Click
-                    currentDate =
-                        if (currentDate < LocalDate.now()) currentDate.plusDays(1) else currentDate
-                    formattedDate = currentDate.format(formatter)
-                    onPreviousClick(formattedDate)
+
+
+                    when(timeRange){
+                        TimeRange.Day -> {
+                            currentDate =
+                                if (currentDate < LocalDate.now()) currentDate.plusDays(1) else currentDate
+                            formattedDate = currentDate.format(formatter)
+                            onNextClick(formattedDate)
+                        }
+                        TimeRange.Week -> {
+                            TODO()
+                        }
+                        TimeRange.Month -> {
+                            TODO()
+                        }
+                        TimeRange.Year -> {
+                            TODO()
+                        }
+                    }
                 }) {
                     Icon(
                         imageVector = Icons.Default.ArrowForwardIos,
@@ -146,8 +216,10 @@ fun WaveLineChartWithAxes(
             }
 
             if (minutesData.sum().toInt() == 0) {
-                Box(modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
                         "No Chart Data For This ${timeRange.name}",
                         color = Color(0xff9E9E9E),
@@ -155,7 +227,6 @@ fun WaveLineChartWithAxes(
                         fontSize = 17.sp
                     )
                 }
-
             }
             // Canvas for the chart
             Canvas(
@@ -168,31 +239,10 @@ fun WaveLineChartWithAxes(
                 // X-axis labels for different time ranges
                 val xAxisLabels = when (timeRange) {
                     TimeRange.Day -> listOf(
-                        "00:00",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "06:00",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "12:00",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "18:00",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "",
-                        ""
+                        "00:00", "", "", "", "", "", "06:00",
+                        "", "", "", "", "", "12:00",
+                        "", "", "", "", "", "18:00",
+                        "", "", "", "", "", ""
                     )
 
                     TimeRange.Week -> listOf("M", "T", "W", "T", "F", "S", "S")
@@ -217,18 +267,8 @@ fun WaveLineChartWithAxes(
                     }
 
                     TimeRange.Year -> listOf(
-                        "Jan",
-                        "Feb",
-                        "Mar",
-                        "Apr",
-                        "May",
-                        "Jun",
-                        "Jul",
-                        "Aug",
-                        "Sep",
-                        "Oct",
-                        "Nov",
-                        "Dec"
+                        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
                     )
                 }
 
@@ -236,7 +276,8 @@ fun WaveLineChartWithAxes(
                 val rightPadding = xOffset
                 val widthPerLabel =
                     (size.width - leftPadding - rightPadding) / (xAxisLabels.size - 1)
-                val heightPerUnit = size.height / (maxValue - minValue)
+                val heightPerUnit =
+                    if (maxValue - minValue == 0f) 0f else size.height / (maxValue - minValue)
 
                 val textPaint = Paint().apply {
                     color = android.graphics.Color.GRAY
@@ -259,9 +300,11 @@ fun WaveLineChartWithAxes(
                 // X-axis labels
                 for (i in xAxisLabels.indices) {
                     val x = leftPadding + i * widthPerLabel
+                    // Ensure x does not exceed size.width - rightPadding
+                    val adjustedX = minOf(x, size.width - rightPadding)
                     drawContext.canvas.nativeCanvas.drawText(
                         xAxisLabels[i],
-                        x,
+                        adjustedX,
                         size.height + 40f,  // Adjust padding below the chart
                         Paint().apply {
                             color = android.graphics.Color.GRAY
@@ -293,10 +336,15 @@ fun WaveLineChartWithAxes(
                     }
                 }
 
+                val lastX = leftPadding + (minutesData.size - 1) * widthPerLabel
+
                 val fillPath = Path().apply {
                     addPath(wavePath)
-                    lineTo(size.width, size.height)
-                    lineTo(xOffset, size.height)
+                    lineTo(lastX, size.height)  // Line to the bottom of the last data point
+                    lineTo(
+                        leftPadding,
+                        size.height
+                    )  // Line back to the starting X position at the bottom
                     close()
                 }
 
@@ -328,7 +376,7 @@ fun WaveLineChartWithAxes(
                 drawLine(
                     color = Color.Gray,
                     start = Offset(leftPadding, size.height),
-                    end = Offset(size.width - rightPadding, size.height),
+                    end = Offset(lastX, size.height),  // End at the last data point's X position
                     strokeWidth = 3f
                 )
             }
@@ -342,13 +390,12 @@ fun WaveLineChartWithAxes(
 @Composable
 fun PreviewWaveLineChartWithAxes() {
     val minutesWorked = listOf(
-        60f, 120f, 0f, 0f, 0f, 120f, 400f, 0f,
-        0f, 0f, 300f, 0f, 0f, 0f, 0f, 0f, 240f, 0f, 0f, 0f, 0f, 0f, 0f, 0f
+        60f, 10f, 100f, 200f, 50f, 120f, 400f
     )
 
     WaveLineChartWithAxes(
         minutesData = minutesWorked,
-        timeRange = TimeRange.Day,
+        timeRange = TimeRange.Week,
         daysInMonth = 30,
         month = 9,
         modifier = Modifier
