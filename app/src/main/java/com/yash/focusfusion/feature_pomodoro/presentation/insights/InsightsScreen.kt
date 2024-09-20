@@ -41,9 +41,11 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Ti
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
@@ -61,6 +63,26 @@ fun InsightsScreen(
     var currentTimePeriodTab by remember {
         mutableStateOf(TimeRange.Day)
     }
+    val todaysDate = LocalDate.now()
+
+    var currentWeekRange by remember {
+        mutableStateOf(
+            todaysDate.with(
+                TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
+            ).dayOfMonth.toString() + "-" +
+                    todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
+
+        )
+    }
+    var monthSelectedFromWeekRange by remember {
+        mutableStateOf(
+            if (todaysDate.month.value < 10) "0" + todaysDate.month.value.toString() else
+                todaysDate.month.value.toString()
+        )
+    }
+    var yearSelectedFromWeekRange by remember {
+        mutableStateOf(todaysDate.year.toString())
+    }
 
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
 
@@ -68,7 +90,7 @@ fun InsightsScreen(
     var date: Date? by remember {
         mutableStateOf(
             dateFormat.parse(
-                LocalDate.now().format(DateTimeFormatter.ofPattern("dd,MMM yyyy"))
+                todaysDate.format(DateTimeFormatter.ofPattern("dd,MMM yyyy"))
             )
         )
     }
@@ -122,6 +144,15 @@ fun InsightsScreen(
 
                         1 -> {
                             currentTimePeriodTab = TimeRange.Week
+
+                            val listOfWeekRange = currentWeekRange.split('-')
+                            println(listOfWeekRange)
+                            val startDate =
+                                if (listOfWeekRange[0].toInt() < 10) "0${listOfWeekRange.get(0)}" else listOfWeekRange[0]
+                            println(startDate)
+                            val endWeek =
+                                if (listOfWeekRange[1].toInt() < 10) "0${listOfWeekRange.get(1)}" else listOfWeekRange[1]
+                            println(endWeek)
                             insightsViewModel.onEvent(
                                 InsightsEvent.WeekEvent(
                                     "09",
@@ -181,39 +212,54 @@ fun InsightsScreen(
                     strokeWidth = 9f,
                     xOffset = 90f,
                     waveAmplitude = 1f,
-                    onPreviousClick = {
-                        when(currentTimePeriodTab){
+                    onPreviousClick = { dateOrRange, month, year ->
+                        when (currentTimePeriodTab) {
                             TimeRange.Day -> {
-                                date = dateFormat.parse(it)
+                                date = dateFormat.parse(dateOrRange)
                             }
-                            TimeRange.Week -> {
 
+                            TimeRange.Week -> {
+                                currentWeekRange = dateOrRange
+                                monthSelectedFromWeekRange = month!!
+                                yearSelectedFromWeekRange = year!!
                             }
+
                             TimeRange.Month -> {
 
                             }
+
                             TimeRange.Year -> {
 
                             }
                         }
 
-                        println(it)
+                        println(dateOrRange)
+                        println(month)
+                        println(year)
                     },
-                    onNextClick = {
-                        when(currentTimePeriodTab){
+                    onNextClick = { dateOrRange, month, year ->
+                        when (currentTimePeriodTab) {
                             TimeRange.Day -> {
-                                date = dateFormat.parse(it)
+                                date = dateFormat.parse(dateOrRange)
                             }
-                            TimeRange.Week -> {
 
+                            TimeRange.Week -> {
+                                currentWeekRange = dateOrRange
+                                monthSelectedFromWeekRange = month!!
+                                yearSelectedFromWeekRange = year!!
                             }
+
                             TimeRange.Month -> {
 
                             }
+
                             TimeRange.Year -> {
 
                             }
                         }
+                        println(dateOrRange)
+                        println(month)
+                        println(year)
                     }
                 )
             }

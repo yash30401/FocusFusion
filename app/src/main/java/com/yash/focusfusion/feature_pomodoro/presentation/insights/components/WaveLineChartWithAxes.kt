@@ -64,8 +64,8 @@ fun WaveLineChartWithAxes(
     strokeWidth: Float = 4f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f, // Amplify the wave effect
-    onPreviousClick: (String) -> Unit,
-    onNextClick: (String) -> Unit,
+    onPreviousClick: (String, String?, String?) -> Unit,
+    onNextClick: (String, String?, String?) -> Unit,
 ) {
     val minValue = 0f   // Y-axis min (0 minutes)
     val maxValue =
@@ -106,6 +106,22 @@ fun WaveLineChartWithAxes(
                     endOfWeek.dayOfMonth.toString()
         )
     }
+
+    var currentMonth by remember {
+        mutableStateOf(
+            "${
+                if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
+                else startOfWeek.month.value.toString()
+            }"
+        )
+    }
+
+    var currentYear by remember {
+        mutableStateOf("${
+            startOfWeek.year
+        }")
+    }
+
     val currentImmutableWeekRange = todaysDate.with(
         TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
     ).dayOfMonth.toString() + "-" +
@@ -152,7 +168,8 @@ fun WaveLineChartWithAxes(
                         TimeRange.Day -> {
                             currentDate = currentDate.minusDays(1)
                             formattedDate = currentDate.format(formatter)
-                            onPreviousClick(formattedDate)
+
+                            onPreviousClick(formattedDate, null, null)
                         }
 
                         TimeRange.Week -> {
@@ -160,7 +177,13 @@ fun WaveLineChartWithAxes(
                             endOfWeek = endOfWeek.minusWeeks(1)
                             currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
                                     endOfWeek.dayOfMonth.toString()
-                            onPreviousClick(currentWeekRange)
+
+                            currentMonth = "${
+                                if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
+                                else startOfWeek.month.value.toString()
+                            }"
+
+                                onPreviousClick(currentWeekRange,currentMonth,currentYear)
                         }
 
                         TimeRange.Month -> {
@@ -221,7 +244,7 @@ fun WaveLineChartWithAxes(
                             currentDate =
                                 if (currentDate < LocalDate.now()) currentDate.plusDays(1) else currentDate
                             formattedDate = currentDate.format(formatter)
-                            onNextClick(formattedDate)
+                            onNextClick(formattedDate, null, null)
                         }
 
                         TimeRange.Week -> {
@@ -231,7 +254,12 @@ fun WaveLineChartWithAxes(
                                 endOfWeek = endOfWeek.plusWeeks(1)
                                 currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
                                         endOfWeek.dayOfMonth.toString()
-                                onNextClick(currentWeekRange)
+
+                                currentMonth = "${
+                                    if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
+                                    else startOfWeek.month.value.toString()
+                                }"
+                                onNextClick(currentWeekRange,currentMonth,currentYear)
                             }
 
 
@@ -443,8 +471,8 @@ fun PreviewWaveLineChartWithAxes() {
         strokeWidth = 9f,
         xOffset = 90f,
         waveAmplitude = 1f,
-        onPreviousClick = {},
-        onNextClick = {}
+        onPreviousClick = {dayOrRange,month,year->},
+        onNextClick = {dayOrRange,month,year->}
     )
 }
 
