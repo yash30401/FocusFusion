@@ -58,6 +58,10 @@ fun InsightsScreen(
 
     val sessionState by insightsViewModel.sessionListState.collectAsState()
 
+    var currentTimePeriodTab by remember {
+        mutableStateOf(TimeRange.Day)
+    }
+
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
 
     val dateFormat = SimpleDateFormat("dd,MMM yyyy")
@@ -80,6 +84,8 @@ fun InsightsScreen(
                 TimePeriodTabs { timePeriod ->
                     when (timePeriod) {
                         0 -> {
+                            currentTimePeriodTab = TimeRange.Day
+
                             val millis = date?.time
                             println("millis:- $millis")
                             insightsViewModel.onEvent(InsightsEvent.DayEvent(millis ?: 0))
@@ -115,6 +121,7 @@ fun InsightsScreen(
                         }
 
                         1 -> {
+                            currentTimePeriodTab = TimeRange.Week
                             insightsViewModel.onEvent(
                                 InsightsEvent.WeekEvent(
                                     "09",
@@ -165,7 +172,7 @@ fun InsightsScreen(
             item {
                 WaveLineChartWithAxes(
                     minutesData = minutesFocused,
-                    timeRange = TimeRange.Day,
+                    timeRange = currentTimePeriodTab,
                     daysInMonth = 30,
                     month = 9,
                     modifier = Modifier
@@ -175,11 +182,38 @@ fun InsightsScreen(
                     xOffset = 90f,
                     waveAmplitude = 1f,
                     onPreviousClick = {
-                        date = dateFormat.parse(it)
+                        when(currentTimePeriodTab){
+                            TimeRange.Day -> {
+                                date = dateFormat.parse(it)
+                            }
+                            TimeRange.Week -> {
+
+                            }
+                            TimeRange.Month -> {
+
+                            }
+                            TimeRange.Year -> {
+
+                            }
+                        }
+
                         println(it)
                     },
                     onNextClick = {
-                        date = dateFormat.parse(it)
+                        when(currentTimePeriodTab){
+                            TimeRange.Day -> {
+                                date = dateFormat.parse(it)
+                            }
+                            TimeRange.Week -> {
+
+                            }
+                            TimeRange.Month -> {
+
+                            }
+                            TimeRange.Year -> {
+
+                            }
+                        }
                     }
                 )
             }

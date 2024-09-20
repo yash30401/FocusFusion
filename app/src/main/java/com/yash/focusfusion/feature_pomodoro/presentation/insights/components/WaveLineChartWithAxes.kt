@@ -160,6 +160,7 @@ fun WaveLineChartWithAxes(
                             endOfWeek = endOfWeek.minusWeeks(1)
                             currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
                                     endOfWeek.dayOfMonth.toString()
+                            onPreviousClick(currentWeekRange)
                         }
 
                         TimeRange.Month -> {
@@ -230,6 +231,7 @@ fun WaveLineChartWithAxes(
                                 endOfWeek = endOfWeek.plusWeeks(1)
                                 currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
                                         endOfWeek.dayOfMonth.toString()
+                                onNextClick(currentWeekRange)
                             }
 
 
