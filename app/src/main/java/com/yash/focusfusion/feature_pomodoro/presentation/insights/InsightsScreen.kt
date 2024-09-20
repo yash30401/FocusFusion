@@ -32,8 +32,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.INSIGHTSVIEWMODELCHECKING
 import com.yash.focusfusion.core.util.extractHourDataFromDateTimeListWithDuration
+import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.core.util.getTotalDurationForDifferentHour
+import com.yash.focusfusion.core.util.getTotalDurationWeeklyUsingHashMap
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.ActivityInsightCard
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
@@ -147,18 +149,21 @@ fun InsightsScreen(
 
                             val listOfWeekRange = currentWeekRange.split('-')
                             println(listOfWeekRange)
+
                             val startDate =
                                 if (listOfWeekRange[0].toInt() < 10) "0${listOfWeekRange.get(0)}" else listOfWeekRange[0]
                             println(startDate)
+
                             val endWeek =
                                 if (listOfWeekRange[1].toInt() < 10) "0${listOfWeekRange.get(1)}" else listOfWeekRange[1]
                             println(endWeek)
+
                             insightsViewModel.onEvent(
                                 InsightsEvent.WeekEvent(
-                                    "09",
-                                    "15",
-                                    "09",
-                                    "2024"
+                                    startDate,
+                                    endWeek,
+                                    monthSelectedFromWeekRange,
+                                    yearSelectedFromWeekRange
                                 )
                             )
                             Log.d(
@@ -167,16 +172,19 @@ fun InsightsScreen(
                             )
                             val timeListInFormattedWay =
                                 getTimeListInFormattedWayWithDuration(sessionState)
-                            val hourDataList =
-                                extractHourDataFromDateTimeListWithDuration(timeListInFormattedWay)
-                            val getTotalDurationForDiffHours =
-                                getTotalDurationForDifferentHour(hourDataList)
-                            Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
-                            Log.d(INSIGHTSVIEWMODELCHECKING, "Hours Data:- $hourDataList")
-                            Log.d(
-                                INSIGHTSVIEWMODELCHECKING,
-                                "Total Duration For Each hour:- $getTotalDurationForDiffHours"
+
+                            val extractedListOfWeekWithDuration = getListOfWeeksNameWithDuration(
+                                timeListInFormattedWay
                             )
+                            val totalDurationData = getTotalDurationWeeklyUsingHashMap(extractedListOfWeekWithDuration)
+
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Weeks Data:- $extractedListOfWeekWithDuration")
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Total Duration Weekly:- $totalDurationData")
+
+                            minutesFocused = totalDurationData.map {
+                                it.value.toFloat()
+                            }
                         }
 
                         2 -> {
@@ -282,6 +290,8 @@ fun InsightsScreen(
         }
     }
 }
+
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
