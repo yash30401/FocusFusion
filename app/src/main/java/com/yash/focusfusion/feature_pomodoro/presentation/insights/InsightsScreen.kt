@@ -225,7 +225,7 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Week -> {
-                                currentWeekRange = dateOrRange
+                                currentWeekRange = dateOrRange!!
                                 monthSelectedFromWeekRange = month!!
                                 yearSelectedFromWeekRange = year!!
                             }
@@ -250,7 +250,7 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Week -> {
-                                currentWeekRange = dateOrRange
+                                currentWeekRange = dateOrRange!!
                                 monthSelectedFromWeekRange = month!!
                                 yearSelectedFromWeekRange = year!!
                             }
