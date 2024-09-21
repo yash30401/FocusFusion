@@ -51,14 +51,13 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjuster
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WaveLineChartWithAxes(
     minutesData: List<Float>,
     timeRange: TimeRange,
-    daysInMonth: Int,
-    month: Int,
     modifier: Modifier = Modifier,
     lineColor: Color = Color(0xFF9463ED),
     strokeWidth: Float = 4f,
@@ -116,10 +115,20 @@ fun WaveLineChartWithAxes(
         )
     }
 
+    var currentMonthInWord by remember {
+        mutableStateOf(startOfWeek.month)
+    }
+
+    var currentMonthDays by remember {
+        mutableStateOf(startOfWeek.month.maxLength())
+    }
+
     var currentYear by remember {
-        mutableStateOf("${
-            startOfWeek.year
-        }")
+        mutableStateOf(
+            "${
+                startOfWeek.year
+            }"
+        )
     }
 
     val currentImmutableWeekRange = todaysDate.with(
@@ -136,8 +145,11 @@ fun WaveLineChartWithAxes(
             currentWeekRange
         }
 
-        TimeRange.Month -> TODO()
-        TimeRange.Year -> TODO()
+        TimeRange.Month -> {
+            currentMonth
+        }
+
+        TimeRange.Year -> {}
     }
 
 
@@ -183,11 +195,18 @@ fun WaveLineChartWithAxes(
                                 else startOfWeek.month.value.toString()
                             }"
 
-                                onPreviousClick(currentWeekRange,currentMonth,currentYear)
+                            onPreviousClick(currentWeekRange, currentMonth, currentYear)
                         }
 
                         TimeRange.Month -> {
-                            TODO()
+                            currentMonth = "${
+                                if (startOfWeek.month.value < 10) "0" + startOfWeek.month.minus(1).value.toString()
+                                else startOfWeek.month.minus(1).value.toString()
+                            }"
+                            val previousMonth = currentMonthInWord.minus(1)
+                            currentMonthInWord = previousMonth
+
+
                         }
 
                         TimeRange.Year -> {
@@ -217,7 +236,7 @@ fun WaveLineChartWithAxes(
                             }
 
                             TimeRange.Month -> {
-                                ""
+                                currentMonthInWord.toString()
                             }
 
                             TimeRange.Year -> {
@@ -259,18 +278,23 @@ fun WaveLineChartWithAxes(
                                     if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
                                     else startOfWeek.month.value.toString()
                                 }"
-                                onNextClick(currentWeekRange,currentMonth,currentYear)
+                                onNextClick(currentWeekRange, currentMonth, currentYear)
                             }
 
 
                         }
 
                         TimeRange.Month -> {
-                            TODO()
+                            currentMonth = "${
+                                if (startOfWeek.month.value < 10) "0" + startOfWeek.month.plus(1).value.toString()
+                                else startOfWeek.month.plus(1).value.toString()
+                            }"
+                            val previousMonth = currentMonthInWord.plus(1)
+                            currentMonthInWord = previousMonth
                         }
 
                         TimeRange.Year -> {
-                            TODO()
+
                         }
                     }
                 }) {
@@ -314,22 +338,14 @@ fun WaveLineChartWithAxes(
 
                     TimeRange.Week -> listOf("M", "T", "W", "T", "F", "S", "S")
                     TimeRange.Month -> {
-                        if (daysInMonth == 30) {
-                            listOf(
-                                "${month}/1",
-                                "${month}/8",
-                                "${month}/16",
-                                "${month}/23",
-                                "${month}/30"
-                            )
+                        if (currentMonthDays == 30) {
+                            (1..30).map {
+                                if (it % 5 == 0) "${currentMonth}/${it}" else ""
+                            }
                         } else {
-                            listOf(
-                                "${month}/1",
-                                "${month}/9",
-                                "${month}/16",
-                                "${month}/24",
-                                "${month}/31"
-                            )
+                            (1..31).map {
+                                if (it % 5 == 0) "${currentMonth}/${it}" else ""
+                            }
                         }
                     }
 
@@ -457,22 +473,20 @@ fun WaveLineChartWithAxes(
 @Composable
 fun PreviewWaveLineChartWithAxes() {
     val minutesWorked = listOf(
-        60f, 10f, 100f, 200f, 50f, 120f, 400f
+        60f, 10f, 100f, 200f, 50f, 120f, 400f, 10f, 20f, 14f, 12f, 300f
     )
 
     WaveLineChartWithAxes(
         minutesData = minutesWorked,
-        timeRange = TimeRange.Week,
-        daysInMonth = 30,
-        month = 9,
+        timeRange = TimeRange.Month,
         modifier = Modifier
             .padding(16.dp),
         lineColor = Color(0xff9463ED),
         strokeWidth = 9f,
         xOffset = 90f,
         waveAmplitude = 1f,
-        onPreviousClick = {dayOrRange,month,year->},
-        onNextClick = {dayOrRange,month,year->}
+        onPreviousClick = { dayOrRange, month, year -> },
+        onNextClick = { dayOrRange, month, year -> }
     )
 }
 

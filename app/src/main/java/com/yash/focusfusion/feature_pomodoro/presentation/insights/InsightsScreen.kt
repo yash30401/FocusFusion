@@ -212,8 +212,6 @@ fun InsightsScreen(
                 WaveLineChartWithAxes(
                     minutesData = minutesFocused,
                     timeRange = currentTimePeriodTab,
-                    daysInMonth = 30,
-                    month = 9,
                     modifier = Modifier
                         .padding(16.dp),
                     lineColor = Color(0xff9463ED),
