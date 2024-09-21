@@ -289,8 +289,10 @@ fun WaveLineChartWithAxes(
                                 if (startOfWeek.month.value < 10) "0" + startOfWeek.month.plus(1).value.toString()
                                 else startOfWeek.month.plus(1).value.toString()
                             }"
-                            val previousMonth = currentMonthInWord.plus(1)
-                            currentMonthInWord = previousMonth
+                            if(currentMonthInWord != startOfWeek.month){
+                                val previousMonth = currentMonthInWord.plus(1)
+                                currentMonthInWord = previousMonth
+                            }
                         }
 
                         TimeRange.Year -> {
