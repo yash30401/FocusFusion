@@ -201,8 +201,10 @@ fun WaveLineChartWithAxes(
 
                         TimeRange.Month -> {
                             currentMonth = "${
-                                if (startOfWeek.month.value < 10) "0" + startOfWeek.month.minus(1).value.toString()
-                                else startOfWeek.month.minus(1).value.toString()
+                                if (monthTemporalAdjuster.month.value < 10) "0" + monthTemporalAdjuster.month.minus(
+                                    1
+                                ).value.toString()
+                                else monthTemporalAdjuster.month.minus(1).value.toString()
                             }"
                             monthTemporalAdjuster = monthTemporalAdjuster.minusMonths(1)
                             val previousMonth = monthTemporalAdjuster
@@ -288,11 +290,16 @@ fun WaveLineChartWithAxes(
                         }
 
                         TimeRange.Month -> {
-                            currentMonth = "${
-                                if (startOfWeek.month.value < 10) "0" + startOfWeek.month.plus(1).value.toString()
-                                else startOfWeek.month.plus(1).value.toString()
-                            }"
+
                             if (currentMonthInWord != startOfWeek.month.toString() || currentYear != startOfWeek.year) {
+
+                                currentMonth = "${
+                                    if (monthTemporalAdjuster.month.value < 10) "0" + monthTemporalAdjuster.month.plus(
+                                        1
+                                    ).value.toString()
+                                    else monthTemporalAdjuster.month.plus(1).value.toString()
+                                }"
+
                                 monthTemporalAdjuster = monthTemporalAdjuster.plusMonths(1)
                                 val nextMonth = monthTemporalAdjuster
                                 currentMonthInWord = nextMonth.month.toString()

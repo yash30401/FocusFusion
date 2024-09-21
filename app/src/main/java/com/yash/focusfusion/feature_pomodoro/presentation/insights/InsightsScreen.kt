@@ -32,6 +32,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.INSIGHTSVIEWMODELCHECKING
 import com.yash.focusfusion.core.util.extractHourDataFromDateTimeListWithDuration
+import com.yash.focusfusion.core.util.getExtractedListOfDatesHashMap
+import com.yash.focusfusion.core.util.getListOfDatesNameWithDuration
 import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.core.util.getTotalDurationForDifferentHour
@@ -83,6 +85,17 @@ fun InsightsScreen(
         )
     }
     var yearSelectedFromWeekRange by remember {
+        mutableStateOf(todaysDate.year.toString())
+    }
+
+    var currentMonthForMonthData by remember {
+        mutableStateOf(
+            if (todaysDate.month.value < 10) "0" + todaysDate.month.value.toString() else
+                todaysDate.month.value.toString()
+        )
+    }
+
+    var currentYearSelectedForMonthData by remember {
         mutableStateOf(todaysDate.year.toString())
     }
 
@@ -176,11 +189,18 @@ fun InsightsScreen(
                             val extractedListOfWeekWithDuration = getListOfWeeksNameWithDuration(
                                 timeListInFormattedWay
                             )
-                            val totalDurationData = getTotalDurationWeeklyUsingHashMap(extractedListOfWeekWithDuration)
+                            val totalDurationData =
+                                getTotalDurationWeeklyUsingHashMap(extractedListOfWeekWithDuration)
 
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
-                            Log.d(INSIGHTSVIEWMODELCHECKING, "Weeks Data:- $extractedListOfWeekWithDuration")
-                            Log.d(INSIGHTSVIEWMODELCHECKING, "Total Duration Weekly:- $totalDurationData")
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "Weeks Data:- $extractedListOfWeekWithDuration"
+                            )
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "Total Duration Weekly:- $totalDurationData"
+                            )
 
                             minutesFocused = totalDurationData.map {
                                 it.value.toFloat()
@@ -188,11 +208,36 @@ fun InsightsScreen(
                         }
 
                         2 -> {
-                            insightsViewModel.onEvent(InsightsEvent.MonthEvent("08", "2024"))
+                            currentTimePeriodTab = TimeRange.Month
+                            insightsViewModel.onEvent(
+                                InsightsEvent.MonthEvent(
+                                    currentMonthForMonthData,
+                                    currentYearSelectedForMonthData
+                                )
+                            )
+
+                            val timeListInFormattedWay =
+                                getTimeListInFormattedWayWithDuration(sessionState)
+
+                            val extractedListOfDatesWithDuration = getListOfDatesNameWithDuration(
+                                timeListInFormattedWay
+                            )
+
+                            val extractedListOfDatesHashMap =
+                                getExtractedListOfDatesHashMap(
+                                    extractedListOfDatesWithDuration,
+                                    currentMonthForMonthData.length
+                                )
+
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "ALl session for Month:- ${sessionState}"
                             )
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
+
+                            minutesFocused = extractedListOfDatesHashMap.map {
+                                it.value.toFloat()
+                            }
                         }
 
                         3 -> {
@@ -231,7 +276,8 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Month -> {
-
+                                currentMonthForMonthData = month!!
+                                currentYearSelectedForMonthData = year!!
                             }
 
                             TimeRange.Year -> {
@@ -256,7 +302,8 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Month -> {
-
+                                currentMonthForMonthData = month!!
+                                currentYearSelectedForMonthData = year!!
                             }
 
                             TimeRange.Year -> {
@@ -288,8 +335,6 @@ fun InsightsScreen(
         }
     }
 }
-
-
 
 
 @RequiresApi(Build.VERSION_CODES.O)
