@@ -215,7 +215,7 @@ fun InsightsScreen(
                     modifier = Modifier
                         .padding(16.dp),
                     lineColor = Color(0xff9463ED),
-                    strokeWidth = 9f,
+                    strokeWidth = 5f,
                     xOffset = 90f,
                     waveAmplitude = 1f,
                     onPreviousClick = { dateOrRange, month, year ->
