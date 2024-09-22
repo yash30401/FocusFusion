@@ -107,6 +107,10 @@ fun InsightsScreen(
 
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
 
+    var overallTotalDuration by remember {
+        mutableStateOf(0)
+    }
+
     val dateFormat = SimpleDateFormat("dd,MMM yyyy")
     var date: Date? by remember {
         mutableStateOf(
@@ -143,6 +147,7 @@ fun InsightsScreen(
                             val getTotalDurationForDiffHours =
                                 getTotalDurationForDifferentHour(hourDataList)
 
+
                             minutesFocused = (0..24).map { i ->
                                 if (getTotalDurationForDiffHours.containsKey(i)) {
                                     val secondsToMinutes = TimeUnit.SECONDS.toMinutes(
@@ -153,6 +158,9 @@ fun InsightsScreen(
                                     0f
                                 }
                             }
+
+                            overallTotalDuration = minutesFocused.sum().toInt()
+                            println("Total duration:- "+overallTotalDuration)
 
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Hours Data:- $hourDataList")
@@ -209,7 +217,7 @@ fun InsightsScreen(
                             )
 
                             minutesFocused = totalDurationData.map {
-                                it.value.toFloat()
+                                TimeUnit.SECONDS.toMinutes(it.value.toLong()).toFloat()
                             }
                         }
 
@@ -242,7 +250,7 @@ fun InsightsScreen(
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
 
                             minutesFocused = extractedListOfDatesHashMap.map {
-                                it.value.toFloat()
+                                TimeUnit.SECONDS.toMinutes(it.value.toLong()).toFloat()
                             }
                         }
 
@@ -274,10 +282,13 @@ fun InsightsScreen(
                                 "Years Data:- $extractedListOfDatesWithDuration"
                             )
 
-                            Log.d(INSIGHTSVIEWMODELCHECKING,"Sorted Map:- $extractedListOfMonthsHashMap")
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "Sorted Map:- $extractedListOfMonthsHashMap"
+                            )
 
                             minutesFocused = extractedListOfMonthsHashMap.map {
-                                it.value.toFloat()
+                                TimeUnit.SECONDS.toMinutes(it.value.toLong()).toFloat()
                             }
                         }
                     }
@@ -290,6 +301,7 @@ fun InsightsScreen(
                 WaveLineChartWithAxes(
                     minutesData = minutesFocused,
                     timeRange = currentTimePeriodTab,
+                    overallTotalDurationInMinutes = overallTotalDuration,
                     modifier = Modifier
                         .padding(16.dp),
                     lineColor = Color(0xff9463ED),
@@ -318,9 +330,7 @@ fun InsightsScreen(
                             }
                         }
 
-                        println(dateOrRange)
-                        println(month)
-                        println(year)
+
                     },
                     onNextClick = { dateOrRange, month, year ->
                         when (currentTimePeriodTab) {
@@ -343,9 +353,7 @@ fun InsightsScreen(
                                 currentYear = year!!
                             }
                         }
-                        println(dateOrRange)
-                        println(month)
-                        println(year)
+
                     }
                 )
             }
