@@ -12,6 +12,7 @@ interface SessionRepository{
     suspend fun getSessionById(id:Int):Session?
     fun getAllSessions(): Flow<List<Session>>
     suspend fun getTotalSecondsForDate(date:Long):Int
+    suspend fun getTotalSecondsForWeek(startDay: String, endDay: String, month: String, year: String):Int
     suspend fun getTotalSecondsForMonth(month:String,year:String):Int
     suspend fun getTotalSecondsForYear(year: String): Int
     fun getSessionsForDate(date: Long): Flow<List<Session>>

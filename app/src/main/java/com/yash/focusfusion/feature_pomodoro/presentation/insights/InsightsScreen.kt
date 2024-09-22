@@ -197,6 +197,10 @@ fun InsightsScreen(
                                     yearSelectedFromWeekRange
                                 )
                             )
+
+                            overallTotalDuration =
+                                TimeUnit.SECONDS.toMinutes(totalDurationState.toLong()).toInt()
+
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "ALl session for Week:- ${sessionState}"
@@ -223,6 +227,8 @@ fun InsightsScreen(
                             minutesFocused = totalDurationData.map {
                                 TimeUnit.SECONDS.toMinutes(it.value.toLong()).toFloat()
                             }
+
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Final List:- $minutesFocused")
                         }
 
                         2 -> {
@@ -233,7 +239,8 @@ fun InsightsScreen(
                                     currentYearSelectedForMonthData
                                 )
                             )
-
+                            overallTotalDuration =
+                                TimeUnit.SECONDS.toMinutes(totalDurationState.toLong()).toInt()
                             val timeListInFormattedWay =
                                 getTimeListInFormattedWayWithDuration(sessionState)
 
@@ -256,11 +263,16 @@ fun InsightsScreen(
                             minutesFocused = extractedListOfDatesHashMap.map {
                                 TimeUnit.SECONDS.toMinutes(it.value.toLong()).toFloat()
                             }
+
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Final List:- $minutesFocused")
                         }
 
                         3 -> {
                             currentTimePeriodTab = TimeRange.Year
                             insightsViewModel.onEvent(InsightsEvent.YearEvent(currentYear))
+
+                            overallTotalDuration =
+                                TimeUnit.SECONDS.toMinutes(totalDurationState.toLong()).toInt()
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "ALl session for Year:- ${sessionState}"
@@ -294,6 +306,8 @@ fun InsightsScreen(
                             minutesFocused = extractedListOfMonthsHashMap.map {
                                 TimeUnit.SECONDS.toMinutes(it.value.toLong()).toFloat()
                             }
+
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Final List:- $minutesFocused")
                         }
                     }
                     Log.d(INSIGHTSVIEWMODELCHECKING, "Time period selected: $timePeriod")

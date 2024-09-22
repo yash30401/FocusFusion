@@ -27,6 +27,7 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.Ge
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionsForYearUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForDateUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForMonthUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForWeekUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetTotalSecondsForYearUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.InsertSessionUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
@@ -78,9 +79,10 @@ object AppModule {
             deleteSessionUseCase = DeleteSessionUseCase(sessionRepository),
             getSessionByIdUseCase = GetSessionByIdUseCase(sessionRepository),
             getAllSessionsUseCase = GetAllSessionsUseCase(sessionRepository),
-            getTotalMinutesForDateUseCase = GetTotalSecondsForDateUseCase(sessionRepository),
-            getTotalMinutesForMonthUseCase = GetTotalSecondsForMonthUseCase(sessionRepository),
-            getTotalMinutesForYearUseCase = GetTotalSecondsForYearUseCase(sessionRepository),
+            getTotalSecondsForDateUseCase = GetTotalSecondsForDateUseCase(sessionRepository),
+            getTotalSecondsForWeekUseCase = GetTotalSecondsForWeekUseCase(sessionRepository),
+            getTotalSecondsForMonthUseCase = GetTotalSecondsForMonthUseCase(sessionRepository),
+            getTotalSecondsForYearUseCase = GetTotalSecondsForYearUseCase(sessionRepository),
             getSessionsForDateUseCase = GetSessionsForDateUseCase(sessionRepository),
             getSessionsForWeekUseCase = GetSessionsForWeekUseCase(sessionRepository),
             getSessionsForMonthUseCase = GetSessionsForMonthUseCase(sessionRepository),

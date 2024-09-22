@@ -35,6 +35,15 @@ class SessionRepositoryImpl(
         return dao.getTotalSecondsForDate(date)
     }
 
+    override suspend fun getTotalSecondsForWeek(
+        startDay: String,
+        endDay: String,
+        month: String,
+        year: String
+    ):Int {
+        return dao.getTotalSecondsForWeek(startDay, endDay, month, year)
+    }
+
     override suspend fun getTotalSecondsForMonth(month: String, year: String): Int {
         return dao.getTotalSecondsForMonth(month, year)
     }
