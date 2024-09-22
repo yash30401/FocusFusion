@@ -33,7 +33,9 @@ import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.Constants.INSIGHTSVIEWMODELCHECKING
 import com.yash.focusfusion.core.util.extractHourDataFromDateTimeListWithDuration
 import com.yash.focusfusion.core.util.getExtractedListOfDatesHashMap
+import com.yash.focusfusion.core.util.getExtractedListOfMonthsHashMap
 import com.yash.focusfusion.core.util.getListOfDatesNameWithDuration
+import com.yash.focusfusion.core.util.getListOfMonthsNameWithDuration
 import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.core.util.getTotalDurationForDifferentHour
@@ -96,6 +98,10 @@ fun InsightsScreen(
     }
 
     var currentYearSelectedForMonthData by remember {
+        mutableStateOf(todaysDate.year.toString())
+    }
+
+    var currentYear by remember {
         mutableStateOf(todaysDate.year.toString())
     }
 
@@ -241,11 +247,38 @@ fun InsightsScreen(
                         }
 
                         3 -> {
-                            insightsViewModel.onEvent(InsightsEvent.YearEvent("2024"))
+                            currentTimePeriodTab = TimeRange.Year
+                            insightsViewModel.onEvent(InsightsEvent.YearEvent(currentYear))
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "ALl session for Year:- ${sessionState}"
                             )
+
+                            val timeListInFormattedWay =
+                                getTimeListInFormattedWayWithDuration(sessionState)
+
+
+                            val extractedListOfDatesWithDuration = getListOfMonthsNameWithDuration(
+                                timeListInFormattedWay
+                            )
+
+                            val extractedListOfMonthsHashMap =
+                                getExtractedListOfMonthsHashMap(
+                                    extractedListOfDatesWithDuration
+                                )
+
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
+
+                            Log.d(
+                                INSIGHTSVIEWMODELCHECKING,
+                                "Years Data:- $extractedListOfDatesWithDuration"
+                            )
+
+                            Log.d(INSIGHTSVIEWMODELCHECKING,"Sorted Map:- $extractedListOfMonthsHashMap")
+
+                            minutesFocused = extractedListOfMonthsHashMap.map {
+                                it.value.toFloat()
+                            }
                         }
                     }
                     Log.d(INSIGHTSVIEWMODELCHECKING, "Time period selected: $timePeriod")
@@ -281,7 +314,7 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Year -> {
-
+                                currentYear = year!!
                             }
                         }
 
@@ -307,7 +340,7 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Year -> {
-
+                                currentYear = year!!
                             }
                         }
                         println(dateOrRange)
