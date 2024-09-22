@@ -150,7 +150,9 @@ fun WaveLineChartWithAxes(
             currentMonth
         }
 
-        TimeRange.Year -> {}
+        TimeRange.Year -> {
+            currentYear
+        }
     }
 
 
@@ -215,7 +217,10 @@ fun WaveLineChartWithAxes(
                         }
 
                         TimeRange.Year -> {
-                            TODO()
+                            val previousYear = currentYear.minus(1)
+                            currentYear = previousYear
+
+                            onPreviousClick(null, null, currentYear.toString())
                         }
                     }
 
@@ -245,7 +250,7 @@ fun WaveLineChartWithAxes(
                             }
 
                             TimeRange.Year -> {
-                                ""
+                                currentYear.toString()
                             }
                         },
                         fontSize = 15.sp,
@@ -309,7 +314,11 @@ fun WaveLineChartWithAxes(
                         }
 
                         TimeRange.Year -> {
-
+                            if (currentYear != todaysDate.year) {
+                                val nextYear = currentYear.plus(1)
+                                currentYear = nextYear
+                            }
+                            onNextClick(null, null, currentYear.toString())
                         }
                     }
                 }) {
@@ -365,8 +374,8 @@ fun WaveLineChartWithAxes(
                     }
 
                     TimeRange.Year -> listOf(
-                        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+                        "01", "02", "03", "04", "05", "06",
+                        "07", "08", "09", "10", "11", "12"
                     )
                 }
 
@@ -487,7 +496,7 @@ fun WaveLineChartWithAxes(
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
-    val randomNumbers = (0..30).map {
+    val randomNumbers = (1..12).map {
         kotlin.random.Random.nextInt(0, 300).toFloat()
     }
     val minutesWorked = randomNumbers
@@ -496,7 +505,7 @@ fun PreviewWaveLineChartWithAxes() {
 
     WaveLineChartWithAxes(
         minutesData = minutesWorked,
-        timeRange = TimeRange.Month,
+        timeRange = TimeRange.Year,
         modifier = Modifier
             .padding(16.dp),
         lineColor = Color(0xff9463ED),
