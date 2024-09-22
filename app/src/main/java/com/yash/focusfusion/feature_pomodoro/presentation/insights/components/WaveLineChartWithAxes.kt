@@ -72,8 +72,8 @@ fun WaveLineChartWithAxes(
     strokeWidth: Float = 5f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f, // Amplify the wave effect
-    onPreviousClick: (String?, String?, String?) -> Int,
-    onNextClick: (String?, String?, String?) -> Int,
+    onPreviousClick: (String?, String?, String?) -> Unit,
+    onNextClick: (String?, String?, String?) -> Unit,
 ) {
     val minValue = 0f   // Y-axis min (0 minutes)
     val maxValue =
@@ -142,6 +142,8 @@ fun WaveLineChartWithAxes(
         mutableStateOf(overallTotalDurationInMinutes)
     }
 
+    println("Wave Chart Duration:- "+overallTotalDurationState.toString())
+
     val currentImmutableWeekRange = todaysDate.with(
         TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
     ).dayOfMonth.toString() + "-" +
@@ -165,16 +167,8 @@ fun WaveLineChartWithAxes(
         }
     }
 
-    val totalHours by remember {
-        derivedStateOf {
-            overallTotalDurationState / 60
-        }
-    }
-    val totalMinutes by remember {
-        derivedStateOf {
-            overallTotalDurationState % 60
-        }
-    }
+    val totalHours = overallTotalDurationInMinutes / 60
+    val totalMinutes = overallTotalDurationInMinutes % 60
 
     Box(
         modifier = modifier
@@ -204,8 +198,8 @@ fun WaveLineChartWithAxes(
                             currentDate = currentDate.minusDays(1)
                             formattedDate = currentDate.format(formatter)
 
-                            val totalDuration = onPreviousClick(formattedDate, null, null)
-                            overallTotalDurationState = totalDuration
+                        onPreviousClick(formattedDate, null, null)
+
                         }
 
                         TimeRange.Week -> {
@@ -219,11 +213,11 @@ fun WaveLineChartWithAxes(
                                 else startOfWeek.month.value.toString()
                             }"
 
-                            val totalDuration = onPreviousClick(
+                            onPreviousClick(
                                 currentWeekRange,
                                 currentMonth, currentYear.toString()
                             )
-                            overallTotalDurationState = totalDuration
+
                         }
 
                         TimeRange.Month -> {
@@ -238,19 +232,19 @@ fun WaveLineChartWithAxes(
                             currentMonthInWord = previousMonth.month.toString()
                             currentYear = previousMonth.year
 
-                            val totalDuration = onPreviousClick(
+                        onPreviousClick(
                                 null, currentMonth,
                                 currentYear.toString()
                             )
-                            overallTotalDurationState = totalDuration
+
                         }
 
                         TimeRange.Year -> {
                             val previousYear = currentYear.minus(1)
                             currentYear = previousYear
 
-                            val totalDuration = onPreviousClick(null, null, currentYear.toString())
-                            overallTotalDurationState = totalDuration
+                            onPreviousClick(null, null, currentYear.toString())
+
                         }
                     }
 
@@ -346,8 +340,8 @@ fun WaveLineChartWithAxes(
                             currentDate =
                                 if (currentDate < LocalDate.now()) currentDate.plusDays(1) else currentDate
                             formattedDate = currentDate.format(formatter)
-                            val totalDuration = onNextClick(formattedDate, null, null)
-                            overallTotalDurationState = totalDuration
+                          onNextClick(formattedDate, null, null)
+
                         }
 
                         TimeRange.Week -> {
@@ -362,12 +356,12 @@ fun WaveLineChartWithAxes(
                                     if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
                                     else startOfWeek.month.value.toString()
                                 }"
-                                val totalDuration = onNextClick(
+                            onNextClick(
                                     currentWeekRange,
                                     currentMonth,
                                     currentYear.toString()
                                 )
-                                overallTotalDurationState = totalDuration
+
                             }
 
 
@@ -389,9 +383,9 @@ fun WaveLineChartWithAxes(
                                 currentMonthInWord = nextMonth.month.toString()
                                 currentYear = nextMonth.year
                             }
-                            val totalDuration =
+
                                 onNextClick(null, currentMonth, currentYear.toString())
-                            overallTotalDurationState = totalDuration
+
                         }
 
                         TimeRange.Year -> {
@@ -399,8 +393,8 @@ fun WaveLineChartWithAxes(
                                 val nextYear = currentYear.plus(1)
                                 currentYear = nextYear
                             }
-                            val totalDuration = onNextClick(null, null, currentYear.toString())
-                            overallTotalDurationState = totalDuration
+                             onNextClick(null, null, currentYear.toString())
+
                         }
                     }
                 }) {
@@ -596,9 +590,9 @@ fun PreviewWaveLineChartWithAxes() {
         xOffset = 90f,
         waveAmplitude = 1f,
         onPreviousClick = { dayOrRange, month, year ->
-            1321
+
         },
-        onNextClick = { dayOrRange, month, year -> 1321 }
+        onNextClick = { dayOrRange, month, year -> }
     )
 }
 

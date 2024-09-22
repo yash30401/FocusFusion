@@ -11,9 +11,11 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
@@ -26,22 +28,44 @@ class InsightsViewModel @Inject constructor(
     private val _sessionListState = MutableStateFlow<List<Session>>(emptyList())
     val sessionListState:StateFlow<List<Session>> get() = _sessionListState
 
+    var totalDurationState = mutableStateOf(0)
+        private set
+
     fun onEvent(event: InsightsEvent) {
         when (event) {
             is InsightsEvent.DayEvent -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    try {
-                        sessionUseCases.getSessionsForDateUseCase.invoke(event.date).collect {
-                            _sessionListState.value = it
+                    val sessions = async {
+                        try {
+                            sessionUseCases.getSessionsForDateUseCase.invoke(event.date).collect {
+                                _sessionListState.value = it
 //                            Log.d(
 //                                INSIGHTSVIEWMODELCHECKING,
 //                                "ALl session for date:- ${sessionsListState.value.sessions}"
 //                            )
+                            }
+                        } catch (e: Exception) {
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
+                            _sessionListState.value = emptyList()
                         }
-                    } catch (e: Exception) {
-                        Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
-                        _sessionListState.value = emptyList()
                     }
+
+                    val totalDuration = async {
+                        try {
+                            val totaldDuration = sessionUseCases.getTotalMinutesForDateUseCase.invoke(event.date)
+                                totalDurationState.value = totaldDuration
+//                            Log.d(
+//                                INSIGHTSVIEWMODELCHECKING,
+//                                "ALl session for date:- ${sessionsListState.value.sessions}"
+//                            )
+
+                        } catch (e: Exception) {
+                            Log.d(INSIGHTSVIEWMODELCHECKING, "Error:- ${e.message}")
+                            totalDurationState.value = 0
+                        }
+                    }
+                    sessions.await()
+                    totalDuration.await()
                 }
             }
 

@@ -65,6 +65,7 @@ fun InsightsScreen(
 ) {
 
     val sessionState by insightsViewModel.sessionListState.collectAsState()
+    val totalDurationState by insightsViewModel.totalDurationState
 
     var currentTimePeriodTab by remember {
         mutableStateOf(TimeRange.Day)
@@ -136,6 +137,11 @@ fun InsightsScreen(
                             val millis = date?.time
                             println("millis:- $millis")
                             insightsViewModel.onEvent(InsightsEvent.DayEvent(millis ?: 0))
+
+                            overallTotalDuration =
+                                TimeUnit.SECONDS.toMinutes(totalDurationState.toLong()).toInt()
+
+                            println("Total Duration:- $overallTotalDuration")
                             Log.d(
                                 INSIGHTSVIEWMODELCHECKING,
                                 "ALl session for date:- ${sessionState}"
@@ -159,8 +165,6 @@ fun InsightsScreen(
                                 }
                             }
 
-                            overallTotalDuration = minutesFocused.sum().toInt()
-                            println("Total duration:- "+overallTotalDuration)
 
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Time Data:- $timeListInFormattedWay")
                             Log.d(INSIGHTSVIEWMODELCHECKING, "Hours Data:- $hourDataList")
@@ -330,7 +334,6 @@ fun InsightsScreen(
                             }
                         }
 
-
                     },
                     onNextClick = { dateOrRange, month, year ->
                         when (currentTimePeriodTab) {
@@ -353,7 +356,6 @@ fun InsightsScreen(
                                 currentYear = year!!
                             }
                         }
-
                     }
                 )
             }
