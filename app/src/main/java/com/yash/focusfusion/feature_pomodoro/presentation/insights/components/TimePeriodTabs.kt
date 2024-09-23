@@ -30,10 +30,10 @@ import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
 
 @Composable
-fun TimePeriodTabs(modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit) {
+fun TimePeriodTabs(currentSelected:Int,modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit) {
 
     var currentSelectedTimePeriod by remember {
-        mutableStateOf(0)
+        mutableStateOf(currentSelected)
     }
     selectedPeriod(currentSelectedTimePeriod)
 
@@ -103,6 +103,6 @@ private fun TimePeriodTabsPreview() {
             .background(Color(0xffFFFDFC))
             .padding(10.dp)
     ) {
-        TimePeriodTabs { }
+        TimePeriodTabs(0) { }
     }
 }

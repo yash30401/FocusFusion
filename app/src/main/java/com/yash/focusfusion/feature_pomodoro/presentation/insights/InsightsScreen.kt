@@ -123,6 +123,8 @@ fun InsightsScreen(
         mutableStateOf(0)
     }
 
+    var currentSelectedTimePeriod by remember { mutableStateOf(0) }
+
     val dateFormat = SimpleDateFormat("dd,MMM yyyy")
     var date: Date? by remember {
         mutableStateOf(
@@ -140,11 +142,11 @@ fun InsightsScreen(
         ) {
 
             item {
-                TimePeriodTabs { timePeriod ->
+                TimePeriodTabs(currentSelectedTimePeriod) { timePeriod ->
                     when (timePeriod) {
                         0 -> {
                             currentTimePeriodTab = TimeRange.Day
-
+                            currentSelectedTimePeriod = 0
                             val millis = date?.time
                             println("millis:- $millis")
                             insightsViewModel.onEvent(InsightsEvent.DayEvent(millis ?: 0))
@@ -188,7 +190,7 @@ fun InsightsScreen(
 
                         1 -> {
                             currentTimePeriodTab = TimeRange.Week
-
+                            currentSelectedTimePeriod = 1
                             val listOfWeekRange = currentWeekRange.split('-')
                             println(listOfWeekRange)
 
@@ -244,6 +246,8 @@ fun InsightsScreen(
 
                         2 -> {
                             currentTimePeriodTab = TimeRange.Month
+                            currentSelectedTimePeriod = 2
+
                             insightsViewModel.onEvent(
                                 InsightsEvent.MonthEvent(
                                     currentMonthForMonthData,
@@ -280,6 +284,7 @@ fun InsightsScreen(
 
                         3 -> {
                             currentTimePeriodTab = TimeRange.Year
+                            currentSelectedTimePeriod = 3
                             insightsViewModel.onEvent(InsightsEvent.YearEvent(currentYear))
 
                             overallTotalDuration =
@@ -408,7 +413,7 @@ fun InsightsScreen(
 
             items(
                 items = listOfTaskWithTotalTime,
-                key = { (taskTag, duration) -> "$taskTag-$duration" }  // Use the unique TaskTag as the key
+                key = { (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }  // Use the unique TaskTag as the key
             ) { (taskTag, duration) ->
                 ActivityInsightCard(
                     R.drawable.books,
