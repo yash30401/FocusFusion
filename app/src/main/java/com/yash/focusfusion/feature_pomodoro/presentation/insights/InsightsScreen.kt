@@ -16,10 +16,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,11 +44,16 @@ import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.core.util.getTotalDurationForDifferentHour
 import com.yash.focusfusion.core.util.getTotalDurationWeeklyUsingHashMap
+import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.ActivityInsightCard
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimeRange
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
@@ -54,6 +63,8 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -374,20 +385,36 @@ fun InsightsScreen(
                 )
             }
 
+
             item {
                 Text(
                     "Activities",
                     modifier = Modifier
-                        .padding(start = 10.dp)
-                        .padding(vertical = 5.dp),
+                        .padding(horizontal = 16.dp),
                     fontFamily = FontFamily(Font(R.font.jost_medium)),
                     fontSize = 30.sp,
                     color = Color(0xff212121)
                 )
             }
 
-            items(getActivityItemListData()) { activity ->
-                ActivityInsightCard(activity.icon, activity.taskTag, activity.totalTimeInMinutes)
+            val totalTaskTime = sessionState
+                .groupBy { it.taskTag }
+                .mapValues { entry -> entry.value.sumOf { it.duration } }
+
+
+            val listOfTaskWithTotalTime = totalTaskTime.map { it}.toList()
+
+            Log.d(INSIGHTSVIEWMODELCHECKING, "Activity Card List Data:- $listOfTaskWithTotalTime")
+
+            items(
+                items = listOfTaskWithTotalTime,
+                key = { (taskTag, duration) -> "$taskTag-$duration" }  // Use the unique TaskTag as the key
+            ) { (taskTag, duration) ->
+                ActivityInsightCard(
+                    R.drawable.books,
+                    taskTag,
+                    TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt()
+                )
             }
         }
     }
@@ -411,20 +438,4 @@ private fun InsightsScreenPreview() {
     }
 }
 
-data class activityItemList(
-    @DrawableRes val icon: Int,
-    val taskTag: TaskTag,
-    val totalTimeInMinutes: Int
-)
 
-fun getActivityItemListData(): List<activityItemList> {
-    return listOf(
-        activityItemList(R.drawable.books, TaskTag.STUDY, 210),
-        activityItemList(R.drawable.person_with_ball, TaskTag.SPORT, 10),
-        activityItemList(R.drawable.sleeping_accommodation, TaskTag.RELAX, 140),
-        activityItemList(R.drawable.person_doing_cartwheel, TaskTag.EXERCISE, 2370),
-        activityItemList(R.drawable.books, TaskTag.STUDY, 61),
-        activityItemList(R.drawable.person_with_ball, TaskTag.SPORT, 10),
-        activityItemList(R.drawable.sleeping_accommodation, TaskTag.RELAX, 140),
-    )
-}

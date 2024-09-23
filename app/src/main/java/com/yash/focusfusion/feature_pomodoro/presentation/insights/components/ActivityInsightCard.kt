@@ -48,13 +48,16 @@ fun ActivityInsightCard(
     totalMinutesForActivity: Int,
     modifier: Modifier = Modifier
 ) {
-
-    val hours by remember { mutableStateOf(totalMinutesForActivity / 60) }
-    val minutes by remember { mutableStateOf(totalMinutesForActivity % 60) }
+    val timeInMinutesState by remember {
+        mutableStateOf(totalMinutesForActivity)
+    }
+    println("TIME IN MINUTES CARD:- "+timeInMinutesState)
+    val hours = timeInMinutesState / 60
+    val minutes = timeInMinutesState % 60
 
     Row(
         modifier = modifier
-            .padding(10.dp)
+            .padding(horizontal = 15.dp, vertical = 10.dp)
             .fillMaxWidth()
             .shadow(2.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
