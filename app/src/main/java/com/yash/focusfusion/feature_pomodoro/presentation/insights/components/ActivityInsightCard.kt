@@ -32,6 +32,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,7 +53,7 @@ fun ActivityInsightCard(
     val timeInMinutesState by remember {
         mutableStateOf(totalMinutesForActivity)
     }
-    println("TIME IN MINUTES CARD:- "+timeInMinutesState)
+    println("TIME IN MINUTES CARD:- " + timeInMinutesState)
     val hours = timeInMinutesState / 60
     val minutes = timeInMinutesState % 60
 
@@ -73,22 +75,33 @@ fun ActivityInsightCard(
 
             Box(
                 modifier = Modifier
-                    .background(Color(0xffF0F0F0), RoundedCornerShape(100.dp))
+                    .background(
+                        Color(0xffF0F0F0),
+                        RoundedCornerShape(100.dp)
+                    )
                     .padding(5.dp)
+                    .weight(0.5f),
+                contentAlignment = Alignment.Center
             ) {
                 Image(
                     painter = painterResource(icon), "",
                     modifier = Modifier.size(25.dp)
                 )
             }
-            Text(text = "${
-                taskTag.name.toLowerCase(Locale.getDefault())
-                    .replaceFirstChar { it.uppercase() }
-            }",
-                modifier = Modifier.padding(start = 5.dp),
-                fontSize = 20.sp,
+            Text(
+                text = "${
+                    if (taskTag == TaskTag.ENTERTAINMENT) taskTag.name.toLowerCase(Locale.getDefault())
+                        .replaceFirstChar { it.uppercase() }.dropLast(4)+"..." else
+                        taskTag.name.toLowerCase(Locale.getDefault())
+                            .replaceFirstChar { it.uppercase() }
+                }",
+                modifier = Modifier
+                    .padding(horizontal = 5.dp)
+                    .weight(1f),
+                fontSize = 17.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                color = Color(0xff212121)
+                color = Color(0xff212121),
+                textAlign = TextAlign.Center,
             )
         }
 
@@ -148,6 +161,16 @@ private fun ActivityInsightCardPreview() {
         ActivityInsightCard(
             R.drawable.books,
             TaskTag.STUDY,
+            130
+        )
+        ActivityInsightCard(
+            R.drawable.books,
+            TaskTag.EXERCISE,
+            130
+        )
+        ActivityInsightCard(
+            R.drawable.books,
+            TaskTag.ENTERTAINMENT,
             130
         )
     }
