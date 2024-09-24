@@ -84,7 +84,16 @@ fun ActivityInsightCard(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(icon), "",
+                    painter = when(taskTag){
+                        TaskTag.WORK -> painterResource(R.drawable.work)
+                        TaskTag.STUDY -> painterResource(R.drawable.books)
+                        TaskTag.EXERCISE -> painterResource(R.drawable.gym)
+                        TaskTag.SPORT -> painterResource(R.drawable.person_with_ball)
+                        TaskTag.RELAX -> painterResource(R.drawable.sleeping_accommodation)
+                        TaskTag.ENTERTAINMENT -> painterResource(R.drawable.entertainment)
+                        TaskTag.SOCIAL -> painterResource(R.drawable.social)
+                        TaskTag.OTHER -> painterResource(R.drawable.other)
+                    }, "",
                     modifier = Modifier.size(25.dp)
                 )
             }

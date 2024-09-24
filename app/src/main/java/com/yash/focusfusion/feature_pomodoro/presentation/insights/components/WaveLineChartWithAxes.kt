@@ -576,7 +576,7 @@ fun WaveLineChartWithAxes(
                 drawPath(
                     path = fillPath,
                     brush = Brush.verticalGradient(
-                        colors = listOf(lineColor.copy(alpha = 0.3f), Color.Transparent),
+                        colors = listOf(lineColor.copy(alpha = 0.5f), Color.Transparent),
                         startY = 0f,
                         endY = size.height
                     ),
