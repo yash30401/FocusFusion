@@ -5,6 +5,10 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -407,7 +411,7 @@ fun InsightsScreen(
                 .mapValues { entry -> entry.value.sumOf { it.duration } }
 
 
-            val listOfTaskWithTotalTime = totalTaskTime.map { it}.toList()
+            val listOfTaskWithTotalTime = totalTaskTime.map { it }.toList()
 
             Log.d(INSIGHTSVIEWMODELCHECKING, "Activity Card List Data:- $listOfTaskWithTotalTime")
 
@@ -415,11 +419,26 @@ fun InsightsScreen(
                 items = listOfTaskWithTotalTime,
                 key = { (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }  // Use the unique TaskTag as the key
             ) { (taskTag, duration) ->
-                ActivityInsightCard(
-                    R.drawable.books,
-                    taskTag,
-                    TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt()
-                )
+
+                var isVisible by remember { mutableStateOf(false) }
+
+                // Animated visibility for sliding in items
+                LaunchedEffect(Unit) {
+                    isVisible = true // Trigger the animation once when the item enters composition
+                }
+
+                AnimatedVisibility(
+                    visible = isVisible, enter = slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(durationMillis = 1000)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 1000))
+                ) {
+                    ActivityInsightCard(
+                        R.drawable.books,
+                        taskTag,
+                        TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt()
+                    )
+                }
             }
         }
     }
