@@ -5,6 +5,18 @@ import android.graphics.Paint
 import android.os.Build
 import androidx.annotation.IntegerRes
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.rememberTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +37,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +50,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
@@ -48,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.yash.focusfusion.R
@@ -61,6 +76,7 @@ import java.util.Locale
 import java.util.Random
 import java.util.concurrent.TimeUnit
 
+@SuppressLint("UnrememberedAnimatable")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun WaveLineChartWithAxes(
@@ -142,7 +158,32 @@ fun WaveLineChartWithAxes(
         mutableStateOf(overallTotalDurationInMinutes)
     }
 
-    println("Wave Chart Duration:- "+overallTotalDurationState.toString())
+    val pathProgress = remember(minutesData) { Animatable(0f) }
+    val waveDropAnimation = remember(minutesData) { Animatable(0f) }
+
+    // Trigger the animation once on composition
+    LaunchedEffect(minutesData) {
+        pathProgress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 2000, easing = LinearEasing)
+        )
+
+        waveDropAnimation.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(1000, easing = LinearEasing)
+        )
+    }
+
+
+//    val drawWaveLineAnimation by rememberInfiniteTransition()
+//        .animateFloat(
+//            initialValue = 0f, targetValue = 1f, animationSpec = infiniteRepeatable(
+//                animation = tween(2000, easing = LinearEasing),
+//                repeatMode = RepeatMode.Restart
+//            )
+//        )
+
+    println("Wave Chart Duration:- " + overallTotalDurationState.toString())
 
     val currentImmutableWeekRange = todaysDate.with(
         TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
@@ -198,7 +239,7 @@ fun WaveLineChartWithAxes(
                             currentDate = currentDate.minusDays(1)
                             formattedDate = currentDate.format(formatter)
 
-                        onPreviousClick(formattedDate, null, null)
+                            onPreviousClick(formattedDate, null, null)
 
                         }
 
@@ -232,7 +273,7 @@ fun WaveLineChartWithAxes(
                             currentMonthInWord = previousMonth.month.toString()
                             currentYear = previousMonth.year
 
-                        onPreviousClick(
+                            onPreviousClick(
                                 null, currentMonth,
                                 currentYear.toString()
                             )
@@ -340,7 +381,7 @@ fun WaveLineChartWithAxes(
                             currentDate =
                                 if (currentDate < LocalDate.now()) currentDate.plusDays(1) else currentDate
                             formattedDate = currentDate.format(formatter)
-                          onNextClick(formattedDate, null, null)
+                            onNextClick(formattedDate, null, null)
 
                         }
 
@@ -356,7 +397,7 @@ fun WaveLineChartWithAxes(
                                     if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
                                     else startOfWeek.month.value.toString()
                                 }"
-                            onNextClick(
+                                onNextClick(
                                     currentWeekRange,
                                     currentMonth,
                                     currentYear.toString()
@@ -384,7 +425,7 @@ fun WaveLineChartWithAxes(
                                 currentYear = nextMonth.year
                             }
 
-                                onNextClick(null, currentMonth, currentYear.toString())
+                            onNextClick(null, currentMonth, currentYear.toString())
 
                         }
 
@@ -393,7 +434,7 @@ fun WaveLineChartWithAxes(
                                 val nextYear = currentYear.plus(1)
                                 currentYear = nextYear
                             }
-                             onNextClick(null, null, currentYear.toString())
+                            onNextClick(null, null, currentYear.toString())
 
                         }
                     }
@@ -468,6 +509,7 @@ fun WaveLineChartWithAxes(
                     textAlign = Paint.Align.RIGHT
                 }
 
+
                 // Y-axis labels
                 for (i in 0..numberOfSteps) {
                     val yLabelValue = minValue + i * yAxisStep
@@ -537,12 +579,27 @@ fun WaveLineChartWithAxes(
                         colors = listOf(lineColor.copy(alpha = 0.3f), Color.Transparent),
                         startY = 0f,
                         endY = size.height
-                    )
+                    ),
+                    alpha = waveDropAnimation.value
+                )
+
+                // Measure the total length of the path
+                val pathMeasure = PathMeasure()
+                pathMeasure.setPath(wavePath, false)
+                val pathLength = pathMeasure.length
+
+                // Create a segment of the path based on animation progress
+                val animatedSegment = Path()
+                pathMeasure.getSegment(
+                    startDistance = 0f,
+                    stopDistance = pathProgress.value * pathLength,
+                    destination = animatedSegment,
+                    startWithMoveTo = true
                 )
 
                 // Draw the wave line
                 drawPath(
-                    path = wavePath,
+                    path = animatedSegment,
                     color = lineColor,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )

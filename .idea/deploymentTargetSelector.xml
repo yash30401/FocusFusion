@@ -16,6 +16,9 @@
       <SelectionState runConfigName="InsertNote()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="PreviewWaveLineChartWithAxes">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>
