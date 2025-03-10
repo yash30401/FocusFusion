@@ -15,14 +15,19 @@ import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 
 @Composable
-fun GreetingHead(modifier: Modifier = Modifier) {
+fun GreetingHead(
+    nameOfPerson: String,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier.padding(10.dp)) {
-        Text("Good Morning,",
+        Text(
+            "Good Morning,",
             fontFamily = FontFamily(Font(R.font.jost_medium)),
             color = Color(0xffFF8D61),
             fontSize = 28.sp
         )
-        Text("Yashveer",
+        Text(
+            nameOfPerson,
             fontFamily = FontFamily(Font(R.font.jost_semi_bold)),
             fontSize = 28.sp
         )
@@ -32,5 +37,5 @@ fun GreetingHead(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun GreetingHeadPreview() {
-    GreetingHead()
+    GreetingHead("Yashveer")
 }
