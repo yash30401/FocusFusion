@@ -207,8 +207,6 @@ fun HomeScreenWaveLineChart(
         }
     }
 
-    val totalHours = overallTotalDurationInMinutes / 60
-    val totalMinutes = overallTotalDurationInMinutes % 60
 
     Box(
         modifier = modifier
@@ -224,47 +222,96 @@ fun HomeScreenWaveLineChart(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Row(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Column(
                     modifier = Modifier
+                        .padding(12.dp)
                         .background(
                             color = Color(
                                 0xffF0F0F0
                             ), RoundedCornerShape(10.dp)
                         )
-                        .padding(vertical = 10.dp, horizontal = 30.dp)
+                        .padding(vertical = 10.dp)
                         .weight(1f)
                 ) {
-                    Text("Streak",
+                    Text(
+                        "Streak",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontFamily = FontFamily(Font(R.font.jost_medium))
                     )
-                    Text("10 Days",
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                                    color = Color(0xff9463ED),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("10")
+                            }
+
+                            withStyle(
+                                style = SpanStyle(
+                                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                                    color = Color(0xff979797)
+                                )
+                            ) {
+                                append(" Days")
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center)
+                        textAlign = TextAlign.Center
+                    )
                 }
 
 
                 Column(
                     modifier = Modifier
+                        .padding(12.dp)
                         .background(
                             color = Color(
                                 0xffF0F0F0
                             ), RoundedCornerShape(10.dp)
                         )
-                        .padding(vertical = 10.dp, horizontal = 30.dp)
+                        .padding(vertical = 10.dp)
                         .weight(1f)
                 ) {
-                    Text("Streak",
+                    Text(
+                        "Today",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontFamily = FontFamily(Font(R.font.jost_medium))
                     )
-                    Text("10 Days",
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                                    color = Color(0xff9463ED),
+                                    fontWeight = FontWeight.Bold
+                                )
+                            ) {
+                                append("2")
+                            }
+
+                            withStyle(
+                                style = SpanStyle(
+                                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                                    color = Color(0xff979797)
+                                )
+                            ) {
+                                append(" Hours")
+                            }
+                        },
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center)
+                        textAlign = TextAlign.Center
+                    )
                 }
             }
 
