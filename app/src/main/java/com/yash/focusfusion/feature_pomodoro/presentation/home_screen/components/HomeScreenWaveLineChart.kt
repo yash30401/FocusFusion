@@ -2,6 +2,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.home_screen.component
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
+import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.annotation.IntegerRes
 import androidx.annotation.RequiresApi
@@ -32,7 +33,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForwardIos
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -211,7 +215,7 @@ fun HomeScreenWaveLineChart(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(280.dp)
+            .height(330.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
             .padding(5.dp),
@@ -486,6 +490,21 @@ fun HomeScreenWaveLineChart(
                     end = Offset(lastX, size.height),  // End at the last data point's X position
                     strokeWidth = 3f
                 )
+            }
+            Row(modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+                horizontalArrangement = Arrangement.End) {
+                Button( colors = ButtonColors(
+                    contentColor = Color(0xffffffff),
+                    containerColor = Color(0xffFF8D61),
+                    disabledContainerColor = Color(0xffFF8D61),
+                    disabledContentColor = Color(0xffFF8D61)
+                ), onClick = {}) {
+                    Text(text = "Insights")
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Arrow", Modifier.padding(start = 5.dp)
+                    )
+                }
             }
         }
     }
