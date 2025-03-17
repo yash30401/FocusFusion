@@ -1,8 +1,10 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
@@ -38,10 +41,13 @@ fun TimeDistributionCard(
     totalTimeInMinutes: Int,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier
+            .shadow(5.dp, shape = RoundedCornerShape(20.dp))
+    ) {
         Column(
             modifier = Modifier
-                .background(Color.Yellow)
+                .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
                 .padding(10.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -71,7 +77,7 @@ fun TimeDistributionCard(
 
             LinearProgressIndicator(
                 modifier = Modifier
-                    .height(25.dp)
+                    .height(28.dp)
                     .width(150.dp)
                     .padding(vertical = 10.dp),
                 progress = { 0.6f },
@@ -104,6 +110,7 @@ private fun TimeDistributionCardPreview() {
     TimeDistributionCard(
         R.drawable.books,
         "Study",
-        820
+        820,
+        modifier = Modifier.padding(10.dp)
     )
 }
