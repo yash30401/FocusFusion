@@ -4,6 +4,10 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,11 +21,12 @@ import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.GreetingHead
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HomeScreenWaveLineChart
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HomeScreenWaveLineChartPreview
+import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeDistributionCard
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeRange
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier) {
+fun HomeScreen(numberOfActivities: Int, modifier: Modifier = Modifier) {
     Column {
         GreetingHead("Yashveer Singh")
         HomeScreenWaveLineChart(
@@ -40,7 +45,15 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             fontSize = 25.sp,
             fontFamily = FontFamily(Font(R.font.jost_medium))
         )
-
+        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+            items(5) { item ->
+                TimeDistributionCard(
+                    R.drawable.books,
+                    "Study", 265,
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
+        }
     }
 }
 
@@ -48,5 +61,5 @@ fun HomeScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(5)
 }
