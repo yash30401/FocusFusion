@@ -41,12 +41,11 @@ fun TimeDistributionCard(
     totalTimeInMinutes: Int,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier
-            .shadow(5.dp, shape = RoundedCornerShape(20.dp))
-    ) {
+
         Column(
-            modifier = Modifier
+            modifier = modifier
+                .padding(horizontal = 10.dp, vertical = 10.dp)
+                .shadow(2.dp, shape = RoundedCornerShape(20.dp))
                 .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
                 .padding(10.dp)
         ) {
@@ -97,7 +96,7 @@ fun TimeDistributionCard(
                 fontFamily = FontFamily(Font(R.font.jost_medium))
             )
         }
-    }
+
 }
 
 @Preview(

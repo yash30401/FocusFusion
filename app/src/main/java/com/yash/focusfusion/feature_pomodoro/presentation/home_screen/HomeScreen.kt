@@ -28,7 +28,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 @Composable
 fun HomeScreen(numberOfActivities: Int, modifier: Modifier = Modifier) {
     Column {
-        GreetingHead("Yashveer Singh")
+        GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
         HomeScreenWaveLineChart(
             listOf(60f, 125f, 60f, 10f, 10f),
             TimeRange.Week,
@@ -46,11 +46,10 @@ fun HomeScreen(numberOfActivities: Int, modifier: Modifier = Modifier) {
             fontFamily = FontFamily(Font(R.font.jost_medium))
         )
         LazyVerticalGrid(columns = GridCells.Fixed(2)) {
-            items(5) { item ->
+            items(10) { item ->
                 TimeDistributionCard(
                     R.drawable.books,
                     "Study", 265,
-                    modifier = Modifier.padding(10.dp)
                 )
             }
         }

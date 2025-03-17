@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
+import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.HomeScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsViewModel
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
@@ -135,7 +136,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
 //                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
 
-                            InsightsScreen()
+                            HomeScreen(5)
 
 
 
