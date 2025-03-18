@@ -20,15 +20,9 @@ class HomeScreenViewModel @Inject constructor(
     val todaySessions: StateFlow<List<Session>> get() = _todaySessions
 
 
-    fun onEvent(event: InsightsEvent) {
+    fun onEvent(event: HomeEvent) {
         when (event) {
-            is InsightsEvent.DayEvent -> fetchSessionsForDay(event.date)
-
-            is InsightsEvent.MonthEvent,
-            is InsightsEvent.WeekEvent,
-            is InsightsEvent.YearEvent -> {
-                logUnexpectedEvent(event)
-            }
+            is HomeEvent.DayEvent -> fetchSessionsForDay(event.date)
         }
     }
 
@@ -45,12 +39,5 @@ class HomeScreenViewModel @Inject constructor(
             }
         }
     }
-
-
-    private fun logUnexpectedEvent(event: InsightsEvent) {
-        // Log.e("HomeScreenViewModel", "Unexpected event received: $event")
-        throw IllegalStateException("Unexpected event received: $event")
-    }
-
 
 }
