@@ -16,26 +16,33 @@ class HomeScreenViewModel @Inject constructor(
     private val sessionUseCases: SessionUseCases,
 ) : ViewModel() {
 
-    private val _todaySessions = MutableStateFlow<List<Session>>(emptyList())
-    val todaySessions: StateFlow<List<Session>> get() = _todaySessions
-
+    private val _weeklySessions = MutableStateFlow<List<Session>>(emptyList())
+    val weeklySessions: StateFlow<List<Session>> get() = _weeklySessions
 
     fun onEvent(event: HomeEvent) {
         when (event) {
-            is HomeEvent.DayEvent -> fetchSessionsForDay(event.date)
+            is HomeEvent.WeekEvent -> fetchSessionsForDay(
+                event.startDate,
+                event.endDate, event.month, event.year
+            )
         }
     }
 
-
-    private fun fetchSessionsForDay(date: Long) {
+    private fun fetchSessionsForDay(
+        startDate: String,
+        endDate: String,
+        month: String,
+        year: String,
+    ) {
         viewModelScope.launch {
             try {
-                sessionUseCases.getSessionsForDateUseCase(date).collect { sessions ->
-                    _todaySessions.value = sessions
-                }
+                sessionUseCases.getSessionsForWeekUseCase(startDate, endDate, month, year)
+                    .collect { sessions ->
+                        _weeklySessions.value = sessions
+                    }
             } catch (e: Exception) {
-                _todaySessions.value = emptyList()
-                 Log.e("HomeScreenViewModel", "Error fetching sessions for date: $date", e)
+                _weeklySessions.value = emptyList()
+                Log.e("HomeScreenViewModel", "Error fetching sessions for date: $startDate", e)
             }
         }
     }

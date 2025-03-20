@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.GreetingHead
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HomeScreenWaveLineChart
@@ -26,7 +27,10 @@ import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun HomeScreen(numberOfActivities: Int, modifier: Modifier = Modifier) {
+fun HomeScreen(
+    homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
+    modifier: Modifier = Modifier,
+) {
     Column {
         GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
         HomeScreenWaveLineChart(
@@ -60,5 +64,5 @@ fun HomeScreen(numberOfActivities: Int, modifier: Modifier = Modifier) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(5)
+    HomeScreen()
 }
