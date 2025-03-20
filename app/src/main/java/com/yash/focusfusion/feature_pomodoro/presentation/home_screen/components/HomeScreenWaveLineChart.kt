@@ -88,7 +88,6 @@ import java.util.concurrent.TimeUnit
 fun HomeScreenWaveLineChart(
     minutesData: List<Float>,
     timeRange: TimeRange,
-    overallTotalDurationInMinutes: Int,
     modifier: Modifier = Modifier,
     lineColor: Color = Color(0xFF9463ED),
     strokeWidth: Float = 5f,
@@ -158,9 +157,6 @@ fun HomeScreenWaveLineChart(
         )
     }
 
-    var overallTotalDurationState by remember {
-        mutableStateOf(overallTotalDurationInMinutes)
-    }
 
     val pathProgress = remember(minutesData) { Animatable(0f) }
     val waveDropAnimation = remember(minutesData) { Animatable(0f) }
@@ -186,7 +182,6 @@ fun HomeScreenWaveLineChart(
 //            )
 //        )
 
-    println("Wave Chart Duration:- " + overallTotalDurationState.toString())
 
     val currentImmutableWeekRange = todaysDate.with(
         TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
@@ -524,7 +519,6 @@ fun HomeScreenWaveLineChartPreview() {
     HomeScreenWaveLineChart(
         minutesData = minutesWorked,
         timeRange = TimeRange.Year,
-        overallTotalDurationInMinutes = 1321,
         modifier = Modifier
             .padding(16.dp),
         lineColor = Color(0xff9463ED),

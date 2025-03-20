@@ -136,7 +136,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
 //                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
 
-                            HomeScreen(5)
+                            HomeScreen()
 
 
 
