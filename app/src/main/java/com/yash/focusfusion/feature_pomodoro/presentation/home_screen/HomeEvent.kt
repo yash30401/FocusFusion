@@ -9,4 +9,6 @@ sealed class HomeEvent {
         val month: String,
         val year: String,
     ) : HomeEvent()
+
+    data class todaysHours(val date:Long):HomeEvent()
 }

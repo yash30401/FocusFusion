@@ -88,6 +88,7 @@ import java.util.concurrent.TimeUnit
 fun HomeScreenWaveLineChart(
     minutesData: List<Float>,
     timeRange: TimeRange,
+    currentDayTotalHours:Int,
     modifier: Modifier = Modifier,
     lineColor: Color = Color(0xFF9463ED),
     strokeWidth: Float = 5f,
@@ -296,7 +297,7 @@ fun HomeScreenWaveLineChart(
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
-                                append("2")
+                                append(currentDayTotalHours.toString())
                             }
 
                             withStyle(
@@ -521,6 +522,7 @@ fun HomeScreenWaveLineChartPreview() {
         timeRange = TimeRange.Year,
         modifier = Modifier
             .padding(16.dp),
+        currentDayTotalHours = 2,
         lineColor = Color(0xff9463ED),
         strokeWidth = 5f,
         xOffset = 90f,

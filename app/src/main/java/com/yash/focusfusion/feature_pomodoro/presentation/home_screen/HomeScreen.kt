@@ -30,6 +30,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HomeScreenWaveLineChart
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeDistributionCard
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeRange
+import java.sql.Time
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -46,6 +47,7 @@ fun HomeScreen(
 ) {
 
     val weeklySessionState by homeScreenViewModel.weeklySessions.collectAsState()
+    val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
 
     val todaysDate = LocalDate.now()
@@ -87,11 +89,11 @@ fun HomeScreen(
 
     initHomeViewModel(
         homeScreenViewModel,
-        listOfWeekRange,
         startDate,
         endWeek,
         currentMonth,
-        currentYear
+        currentYear,
+        date?.time
     )
 
     minutesFocused = getMappedDataForChart(weeklySessionState)
@@ -104,6 +106,7 @@ fun HomeScreen(
             TimeRange.Week,
             modifier = Modifier.padding(16.dp),
             lineColor = Color(0xff9463ED),
+            currentDayTotalHours = TimeUnit.SECONDS.toHours(currentDayTotalHours.toLong()).toInt(),
             strokeWidth = 5f,
             xOffset = 90f,
             waveAmplitude = 1f,
@@ -114,7 +117,10 @@ fun HomeScreen(
             fontSize = 25.sp,
             fontFamily = FontFamily(Font(R.font.jost_medium))
         )
-        LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier.padding(bottom = 20.dp)
+        ) {
             items(10) { item ->
                 TimeDistributionCard(
                     R.drawable.books,
@@ -142,11 +148,11 @@ fun getMappedDataForChart(weeklySessionState: List<Session>): List<Float> {
 
 fun initHomeViewModel(
     homeScreenViewModel: HomeScreenViewModel,
-    listOfWeekRange: List<String>,
     startDate: String,
     endWeek: String,
     currentMonth: String,
     currentYear: String,
+    todaysDateInMillis: Long?,
 ) {
     homeScreenViewModel.onEvent(
         HomeEvent.WeekEvent(
@@ -156,6 +162,8 @@ fun initHomeViewModel(
             currentYear
         )
     )
+
+    homeScreenViewModel.onEvent(HomeEvent.todaysHours(todaysDateInMillis ?: 0L))
 }
 
 //@RequiresApi(Build.VERSION_CODES.O)
