@@ -2,12 +2,18 @@ package com.yash.focusfusion.feature_pomodoro.presentation.home_screen
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,14 +28,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
+import com.yash.focusfusion.core.util.getDifferentTasksWeekluDuration
 import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.core.util.getTotalDurationWeeklyUsingHashMap
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.GreetingHead
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HomeScreenWaveLineChart
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeDistributionCard
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeRange
+import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.ActivityInsightCard
 import java.sql.Time
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
@@ -98,7 +107,6 @@ fun HomeScreen(
 
     minutesFocused = getMappedDataForChart(weeklySessionState)
 
-
     Column {
         GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
         HomeScreenWaveLineChart(
@@ -121,11 +129,36 @@ fun HomeScreen(
             columns = GridCells.Fixed(2),
             modifier = Modifier.padding(bottom = 20.dp)
         ) {
-            items(10) { item ->
-                TimeDistributionCard(
-                    R.drawable.books,
-                    "Study", 265,
-                )
+            val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
+                it.taskTag
+            }.mapValues {
+                it.value.sumOf { it.duration }
+            }
+
+            val listOfTotalDurationInWeekByTask = weeklyTimeDistributionByTag.map { it }.toList()
+
+            items(items = listOfTotalDurationInWeekByTask,
+                key = { (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
+            ) { (taskTag, duration) ->
+                var isVisible by remember { mutableStateOf(false) }
+
+                // Animated visibility for sliding in items
+                LaunchedEffect(Unit) {
+                    isVisible = true // Trigger the animation once when the item enters composition
+                }
+
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = isVisible, enter = slideInHorizontally(
+                        initialOffsetX = { fullWidth -> -fullWidth },
+                        animationSpec = tween(durationMillis = 1000)
+                    ) + fadeIn(animationSpec = tween(durationMillis = 1000))
+                ) {
+                    TimeDistributionCard(
+                        R.drawable.books,
+                        taskTag,
+                        TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt()
+                    )
+                }
             }
         }
     }
