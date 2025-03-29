@@ -107,7 +107,7 @@ fun HomeScreen(
 
     minutesFocused = getMappedDataForChart(weeklySessionState)
 
-    Column {
+    Column(modifier = modifier.padding(bottom = 20.dp)) {
         GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
         HomeScreenWaveLineChart(
             minutesFocused,
@@ -161,6 +161,7 @@ fun HomeScreen(
                 }
             }
         }
+        Text("FocusFusion")
     }
 }
 
