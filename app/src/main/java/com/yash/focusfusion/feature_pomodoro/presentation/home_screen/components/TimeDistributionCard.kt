@@ -18,6 +18,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -40,8 +43,16 @@ fun TimeDistributionCard(
     @DrawableRes icon: Int,
     task: TaskTag,
     totalTimeInMinutes: Int,
+    totalTimeInMinutesLastWeek: Int,
     modifier: Modifier = Modifier,
 ) {
+
+    val progress by remember {
+        mutableStateOf(
+            if (totalTimeInMinutesLastWeek == 0) 100f
+            else (totalTimeInMinutes * 100 / totalTimeInMinutesLastWeek) / 100f
+        )
+    }
 
     Column(
         modifier = modifier
@@ -80,7 +91,7 @@ fun TimeDistributionCard(
                 .height(28.dp)
                 .width(150.dp)
                 .padding(vertical = 10.dp),
-            progress = { 0.6f },
+            progress = { progress },
             color = Color(0xff9463ED),
             trackColor = Color(0xffF0F0F0),
             strokeCap = StrokeCap.Round
@@ -112,7 +123,8 @@ private fun TimeDistributionCardPreview() {
     TimeDistributionCard(
         R.drawable.books,
         TaskTag.STUDY,
-        820,
+        8,
+        92,
         modifier = Modifier.padding(10.dp)
     )
 }

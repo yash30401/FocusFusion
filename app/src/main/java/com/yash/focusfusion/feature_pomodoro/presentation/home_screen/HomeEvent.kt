@@ -10,5 +10,12 @@ sealed class HomeEvent {
         val year: String,
     ) : HomeEvent()
 
+    data class LastWeekEvent(
+        val startDate: String,
+        val endDate: String,
+        val month: String,
+        val year: String
+    ):HomeEvent()
+
     data class todaysHours(val date:Long):HomeEvent()
 }

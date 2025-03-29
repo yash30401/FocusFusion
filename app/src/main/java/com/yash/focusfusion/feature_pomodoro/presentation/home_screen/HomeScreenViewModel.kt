@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,6 +20,9 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor(
     private val sessionUseCases: SessionUseCases,
 ) : ViewModel() {
+
+    private val _lastWeekSessions = MutableStateFlow<List<Session>>(emptyList())
+    val lastWeekSessions: StateFlow<List<Session>> get() = _lastWeekSessions
 
     private val _weeklySessions = MutableStateFlow<List<Session>>(emptyList())
     val weeklySessions: StateFlow<List<Session>> get() = _weeklySessions
@@ -28,9 +32,16 @@ class HomeScreenViewModel @Inject constructor(
 
     fun onEvent(event: HomeEvent) {
         when (event) {
-            is HomeEvent.WeekEvent -> fetchSessionsForDay(
+            is HomeEvent.WeekEvent -> fetchSessionsForWeek(
                 event.startDate,
                 event.endDate, event.month, event.year
+            )
+
+            is HomeEvent.LastWeekEvent -> fetchSessionsForLastWeek(
+                event.startDate,
+                event.endDate,
+                event.month,
+                event.year
             )
 
             is HomeEvent.todaysHours -> {
@@ -39,7 +50,7 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    private fun fetchSessionsForDay(
+    private fun fetchSessionsForWeek(
         startDate: String,
         endDate: String,
         month: String,
@@ -55,6 +66,25 @@ class HomeScreenViewModel @Inject constructor(
             } catch (e: Exception) {
                 _weeklySessions.value = emptyList()
                 Log.e("HomeScreenViewModel", "Error fetching sessions for a week: $startDate", e)
+            }
+        }
+    }
+
+    private fun fetchSessionsForLastWeek(
+        startDate: String,
+        endDate: String,
+        month: String,
+        year: String,
+    ) {
+        viewModelScope.launch {
+            try {
+                sessionUseCases.getSessionsForWeekUseCase(startDate, endDate, month, year)
+                    .collect { sessions ->
+                        _lastWeekSessions.value = sessions
+                    }
+            } catch (e: Exception) {
+                _lastWeekSessions.value = emptyList()
+                Log.e("HomeScreenViewModel", "Error fetching sessions for last week: $startDate", e)
             }
         }
     }
