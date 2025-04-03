@@ -45,6 +45,7 @@ import com.yash.focusfusion.core.util.getExtractedListOfMonthsHashMap
 import com.yash.focusfusion.core.util.getListOfDatesNameWithDuration
 import com.yash.focusfusion.core.util.getListOfMonthsNameWithDuration
 import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
+import com.yash.focusfusion.core.util.getTaskTagIconRes
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.core.util.getTotalDurationForDifferentHour
 import com.yash.focusfusion.core.util.getTotalDurationWeeklyUsingHashMap
@@ -63,6 +64,7 @@ import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.util.Date
@@ -198,20 +200,27 @@ fun InsightsScreen(
                             val listOfWeekRange = currentWeekRange.split('-')
                             println(listOfWeekRange)
 
-                            val startDate =
-                                if (listOfWeekRange[0].toInt() < 10) "0${listOfWeekRange.get(0)}" else listOfWeekRange[0]
-                            println(startDate)
 
-                            val endWeek =
-                                if (listOfWeekRange[1].toInt() < 10) "0${listOfWeekRange.get(1)}" else listOfWeekRange[1]
-                            println(endWeek)
+                            val currentWeekStartDate = LocalDate.now()
+                                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+
+                            val currentWeekEndDate = currentWeekStartDate.plusDays(6)
+
+                            val currentWeekStartTimestamp = currentWeekStartDate
+                                .atStartOfDay(ZoneId.systemDefault())
+                                .toInstant()
+                                .toEpochMilli()
+
+                            val currentWeekEndTimestamp = currentWeekEndDate
+                                .atTime(23, 59, 59)
+                                .atZone(ZoneId.systemDefault())
+                                .toInstant()
+                                .toEpochMilli()
 
                             insightsViewModel.onEvent(
                                 InsightsEvent.WeekEvent(
-                                    startDate,
-                                    endWeek,
-                                    monthSelectedFromWeekRange,
-                                    yearSelectedFromWeekRange
+                                  currentWeekStartTimestamp,
+                                    currentWeekEndTimestamp
                                 )
                             )
 
@@ -434,7 +443,7 @@ fun InsightsScreen(
                     ) + fadeIn(animationSpec = tween(durationMillis = 1000))
                 ) {
                     ActivityInsightCard(
-                        R.drawable.books,
+                        getTaskTagIconRes(taskTag),
                         taskTag,
                         TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt()
                     )

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class SessionRepositoryImpl(
-    private val dao: SessionDao
+    private val dao: SessionDao,
 ) : SessionRepository {
     override suspend fun insertSession(session: Session) {
         dao.insertSession(session.toSessionEntity())
@@ -36,12 +36,10 @@ class SessionRepositoryImpl(
     }
 
     override suspend fun getTotalSecondsForWeek(
-        startDay: String,
-        endDay: String,
-        month: String,
-        year: String
-    ):Int {
-        return dao.getTotalSecondsForWeek(startDay, endDay, month, year)
+        startTimestamp: Long,
+        endTimestamp: Long
+    ): Int {
+        return dao.getTotalSecondsForWeek(startTimestamp, endTimestamp)
     }
 
     override suspend fun getTotalSecondsForMonth(month: String, year: String): Int {
@@ -57,12 +55,11 @@ class SessionRepositoryImpl(
     }
 
     override fun getSessionsForWeek(
-        startWeek: String,
-        endWeek: String,
-        month: String,
-        year: String
+        startTimestamp: Long,
+        endTimestamp: Long
     ): Flow<List<Session>> {
-        return dao.getSessionsForWeek(startWeek,endWeek, month, year).map { it.map { it.toSession() } }
+        return dao.getSessionsForWeek(startTimestamp,endTimestamp)
+            .map { it.map { it.toSession() } }
     }
 
     override fun getSessionsForMonth(month: String, year: String): Flow<List<Session>> {

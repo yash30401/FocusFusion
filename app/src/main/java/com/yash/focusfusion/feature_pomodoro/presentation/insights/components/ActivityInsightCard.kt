@@ -48,7 +48,7 @@ fun ActivityInsightCard(
     @DrawableRes icon: Int,
     taskTag: TaskTag,
     totalMinutesForActivity: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val timeInMinutesState by remember {
         mutableStateOf(totalMinutesForActivity)
@@ -72,7 +72,6 @@ fun ActivityInsightCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-
             Box(
                 modifier = Modifier
                     .background(
@@ -84,23 +83,16 @@ fun ActivityInsightCard(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = when(taskTag){
-                        TaskTag.WORK -> painterResource(R.drawable.work)
-                        TaskTag.STUDY -> painterResource(R.drawable.books)
-                        TaskTag.EXERCISE -> painterResource(R.drawable.gym)
-                        TaskTag.SPORT -> painterResource(R.drawable.person_with_ball)
-                        TaskTag.RELAX -> painterResource(R.drawable.sleeping_accommodation)
-                        TaskTag.ENTERTAINMENT -> painterResource(R.drawable.entertainment)
-                        TaskTag.SOCIAL -> painterResource(R.drawable.social)
-                        TaskTag.OTHER -> painterResource(R.drawable.other)
-                    }, "",
+                    painter = painterResource(icon),
+                    "",
                     modifier = Modifier.size(25.dp)
                 )
             }
             Text(
                 text = "${
-                    if (taskTag == TaskTag.ENTERTAINMENT) taskTag.name.toLowerCase(Locale.getDefault())
-                        .replaceFirstChar { it.uppercase() }.dropLast(4)+"..." else
+                    if (taskTag == TaskTag.ENTERTAINMENT) taskTag.name
+                        .toLowerCase(Locale.getDefault())
+                        .replaceFirstChar { it.uppercase() }.dropLast(4) + "..." else
                         taskTag.name.toLowerCase(Locale.getDefault())
                             .replaceFirstChar { it.uppercase() }
                 }",
@@ -161,7 +153,6 @@ fun ActivityInsightCard(
     }
 
 }
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

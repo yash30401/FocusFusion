@@ -8,11 +8,9 @@ import javax.inject.Inject
 class GetSessionsForWeekUseCase @Inject constructor(private val respository: SessionRepository) {
 
     operator fun invoke(
-        startWeek: String,
-        endWeek: String,
-        month: String,
-        year: String
+        startTimestamp: Long,
+        endTimestamp: Long
     ): Flow<List<Session>> {
-        return respository.getSessionsForWeek(startWeek, endWeek, month, year)
+        return respository.getSessionsForWeek(startTimestamp,endTimestamp)
     }
 }

@@ -36,18 +36,15 @@ interface SessionDao {
     @Query(
         """
     SELECT SUM(duration) FROM sessions
-    WHERE strftime('%d', time / 1000, 'unixepoch', 'localtime') BETWEEN :startDay AND :endDay
-    AND strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month
-    AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year
+    WHERE time BETWEEN :startTimestamp AND :endTimestamp
 """
     )
-    fun getTotalSecondsForWeek(startDay: String, endDay: String, month: String, year: String): Int
-
+    fun getTotalSecondsForWeek(startTimestamp: Long,endTimestamp: Long): Int
 
     @Query(
         "SELECT SUM(duration) FROM sessions\n" +
-                "WHERE strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
-                "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year"
+            "WHERE strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
+            "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year"
     )
     fun getTotalSecondsForMonth(month: String, year: String): Int
 
@@ -57,23 +54,30 @@ interface SessionDao {
     @Query("SELECT * FROM sessions WHERE DATE(time / 1000, 'unixepoch', 'localtime') = DATE(:date / 1000, 'unixepoch', 'localtime')")
     fun getSessionsForDate(date: Long): Flow<List<SessionEntity>>
 
-    @Query(
-        "SELECT * FROM sessions\n" +
-                "WHERE strftime('%d', time / 1000, 'unixepoch', 'localtime') BETWEEN :startDay AND :endDay\n" +
-                "AND strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
-                "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year\n"
-    )
+//    @Query(
+//        "SELECT * FROM sessions\n" +
+//            "WHERE strftime('%d', time / 1000, 'unixepoch', 'localtime') BETWEEN :startDay AND :endDay\n" +
+//            "AND strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
+//            "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year\n"
+//    )
+//    fun getSessionsForWeek(
+//        startDay: String,
+//        endDay: String,
+//        month: String,
+//        year: String,
+//    ): Flow<List<SessionEntity>>
+
+    @Query("SELECT * FROM sessions WHERE time BETWEEN :startTimestamp AND :endTimestamp")
     fun getSessionsForWeek(
-        startDay: String,
-        endDay: String,
-        month: String,
-        year: String
+        startTimestamp: Long,
+        endTimestamp: Long,
     ): Flow<List<SessionEntity>>
+
 
     @Query(
         "SELECT * FROM sessions\n" +
-                "WHERE strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
-                "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year\n"
+            "WHERE strftime('%m', time / 1000, 'unixepoch', 'localtime') = :month\n" +
+            "AND strftime('%Y', time / 1000, 'unixepoch', 'localtime') = :year\n"
     )
     fun getSessionsForMonth(month: String, year: String): Flow<List<SessionEntity>>
 

@@ -4,17 +4,13 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsEvent
 
 sealed class HomeEvent {
     data class WeekEvent(
-        val startDate: String,
-        val endDate: String,
-        val month: String,
-        val year: String,
+        val startTimestamp:Long,
+        val endTimestamp:Long
     ) : HomeEvent()
 
     data class LastWeekEvent(
-        val startDate: String,
-        val endDate: String,
-        val month: String,
-        val year: String
+        val startTimestamp:Long,
+        val endTimestamp:Long
     ):HomeEvent()
 
     data class todaysHours(val date:Long):HomeEvent()

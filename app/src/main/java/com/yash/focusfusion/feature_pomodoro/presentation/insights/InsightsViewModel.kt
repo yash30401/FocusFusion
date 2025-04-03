@@ -118,10 +118,8 @@ class InsightsViewModel @Inject constructor(
                     val sessions = async {
                         try {
                             sessionUseCases.getSessionsForWeekUseCase.invoke(
-                                event.startDate,
-                                event.endDate,
-                                event.month,
-                                event.year
+                                event.startTimestamp,
+                                event.endTimestamp,
                             ).collect {
                                 _sessionListState.value = it
 //                            Log.d(
@@ -138,10 +136,8 @@ class InsightsViewModel @Inject constructor(
                         try {
                             val totaldDuration =
                                 sessionUseCases.getTotalSecondsForWeekUseCase.invoke(
-                                    event.startDate,
-                                    event.endDate,
-                                    event.month,
-                                    event.year
+                                    event.startTimestamp,
+                                    event.endTimestamp,
                                 )
                             totalDurationState.value = totaldDuration
 //                            Log.d(

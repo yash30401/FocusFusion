@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -70,7 +71,8 @@ fun TimeDistributionCard(
             ) {
                 Image(
                     painter = painterResource(icon),
-                    contentDescription = "$task"
+                    contentDescription = "$task",
+                    modifier = Modifier.size(25.dp)
                 )
             }
             Text(

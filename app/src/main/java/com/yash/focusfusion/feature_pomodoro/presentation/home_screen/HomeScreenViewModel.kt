@@ -33,15 +33,13 @@ class HomeScreenViewModel @Inject constructor(
     fun onEvent(event: HomeEvent) {
         when (event) {
             is HomeEvent.WeekEvent -> fetchSessionsForWeek(
-                event.startDate,
-                event.endDate, event.month, event.year
+                event.startTimestamp,
+                event.endTimestamp,
             )
 
             is HomeEvent.LastWeekEvent -> fetchSessionsForLastWeek(
-                event.startDate,
-                event.endDate,
-                event.month,
-                event.year
+                event.startTimestamp,
+                event.endTimestamp,
             )
 
             is HomeEvent.todaysHours -> {
@@ -51,40 +49,37 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun fetchSessionsForWeek(
-        startDate: String,
-        endDate: String,
-        month: String,
-        year: String,
+       startTimestamp: Long,
+        endTimestamp: Long
     ) {
         viewModelScope.launch {
             try {
-                sessionUseCases.getSessionsForWeekUseCase(startDate, endDate, month, year)
+                sessionUseCases.getSessionsForWeekUseCase(startTimestamp, endTimestamp)
                     .collect { sessions ->
                         _weeklySessions.value = sessions
                     }
 
             } catch (e: Exception) {
                 _weeklySessions.value = emptyList()
-                Log.e("HomeScreenViewModel", "Error fetching sessions for a week: $startDate", e)
+                Log.e("HomeScreenViewModel", "Error fetching sessions for a week: $startTimestamp", e)
             }
         }
     }
 
     private fun fetchSessionsForLastWeek(
-        startDate: String,
-        endDate: String,
-        month: String,
-        year: String,
+        startTimestamp:Long,
+        endTimestamp:Long
     ) {
         viewModelScope.launch {
             try {
-                sessionUseCases.getSessionsForWeekUseCase(startDate, endDate, month, year)
+                sessionUseCases.getSessionsForWeekUseCase(startTimestamp, endTimestamp)
                     .collect { sessions ->
                         _lastWeekSessions.value = sessions
+                        Log.d("LASTWEEKRANGE",sessions.toString())
                     }
             } catch (e: Exception) {
                 _lastWeekSessions.value = emptyList()
-                Log.e("HomeScreenViewModel", "Error fetching sessions for last week: $startDate", e)
+                Log.e("HomeScreenViewModel", "Error fetching sessions for last week: $startTimestamp", e)
             }
         }
     }
