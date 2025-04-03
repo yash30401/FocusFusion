@@ -72,13 +72,12 @@ import java.util.concurrent.TimeUnit
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.coroutineContext
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun InsightsScreen(
     insightsViewModel: InsightsViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     val sessionState by insightsViewModel.sessionListState.collectAsState()
@@ -94,7 +93,7 @@ fun InsightsScreen(
             todaysDate.with(
                 TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
             ).dayOfMonth.toString() + "-" +
-                    todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
+                todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
 
         )
     }
@@ -200,7 +199,6 @@ fun InsightsScreen(
                             val listOfWeekRange = currentWeekRange.split('-')
                             println(listOfWeekRange)
 
-
                             val currentWeekStartDate = LocalDate.now()
                                 .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
@@ -219,7 +217,7 @@ fun InsightsScreen(
 
                             insightsViewModel.onEvent(
                                 InsightsEvent.WeekEvent(
-                                  currentWeekStartTimestamp,
+                                    currentWeekStartTimestamp,
                                     currentWeekEndTimestamp
                                 )
                             )
@@ -309,7 +307,6 @@ fun InsightsScreen(
 
                             val timeListInFormattedWay =
                                 getTimeListInFormattedWayWithDuration(sessionState)
-
 
                             val extractedListOfDatesWithDuration = getListOfMonthsNameWithDuration(
                                 timeListInFormattedWay
@@ -419,7 +416,6 @@ fun InsightsScreen(
                 .groupBy { it.taskTag }
                 .mapValues { entry -> entry.value.sumOf { it.duration } }
 
-
             val listOfTaskWithTotalTime = totalTaskTime.map { it }.toList()
 
             Log.d(INSIGHTSVIEWMODELCHECKING, "Activity Card List Data:- $listOfTaskWithTotalTime")
@@ -452,7 +448,6 @@ fun InsightsScreen(
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)

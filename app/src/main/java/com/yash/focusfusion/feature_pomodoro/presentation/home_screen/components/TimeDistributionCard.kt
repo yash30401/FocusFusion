@@ -1,5 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,6 +51,7 @@ fun TimeDistributionCard(
             else (totalTimeInMinutes * 100 / totalTimeInMinutesLastWeek) / 100f
         )
     }
+    Log.d("PROGRESS",progress.toString())
 
     Column(
         modifier = modifier

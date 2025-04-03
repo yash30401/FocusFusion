@@ -62,7 +62,8 @@ fun HomeScreen(
     val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
 
-    val todaysDate = LocalDate.now()
+    Log.d("TOTALTIMETODAY", currentDayTotalHours.toString())
+    val todaysDate = remember { LocalDate.now() }
 
     val dateFormat = SimpleDateFormat("dd,MMM yyyy")
     var date: Date? by remember {
@@ -73,15 +74,6 @@ fun HomeScreen(
         )
     }
 
-    val currentWeekRange by remember {
-        mutableStateOf(
-            todaysDate.with(
-                TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
-            ).dayOfMonth.toString() + "-" +
-                todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
-
-        )
-    }
 
     val lastWeekStartDate = LocalDate.now()
         .minusWeeks(1)
@@ -118,7 +110,7 @@ fun HomeScreen(
 
 
 
-    fecthLastWeekSessions(homeScreenViewModel, lastWeekStartTimestamp, lastWeekEndTimestamp)
+    fetchLastWeekSessions(homeScreenViewModel, lastWeekStartTimestamp, lastWeekEndTimestamp)
 
     initHomeViewModel(
         homeScreenViewModel,
@@ -131,7 +123,7 @@ fun HomeScreen(
 
     Log.d("LASTWEEKSESSIONSTATE", lastWeekSessionState.toString())
 
-    Column(modifier = modifier.padding(bottom = 20.dp)) {
+    Column(modifier = modifier.padding(bottom = 30.dp)) {
         GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
         HomeScreenWaveLineChart(
             minutesFocused,
@@ -144,9 +136,9 @@ fun HomeScreen(
             waveAmplitude = 1f,
         )
         Text(
-            text = "Time Distribution",
+            text = "Weekly Time Distribution",
             modifier = Modifier.padding(start = 16.dp, top = 20.dp),
-            fontSize = 25.sp,
+            fontSize = 22.sp,
             fontFamily = FontFamily(Font(R.font.jost_medium))
         )
         LazyVerticalGrid(
@@ -159,27 +151,26 @@ fun HomeScreen(
                 it.value.sumOf { it.duration }
             }
 
-//            val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
-//                it.taskTag
-//            }.mapValues {
-//                it.value.sumOf { it.duration }
-//            }
+            val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
+                it.taskTag
+            }.mapValues {
+                it.value.sumOf { it.duration }
+            }
 
             val listOfTotalDurationInWeekByTask = weeklyTimeDistributionByTag.map { it }.toList()
-//            val listOfTotalDurationInLastWeekByTask =
-//                lastWeekTimeDistributionByTag.map { it }.toList()
+            val listOfTotalDurationInLastWeekByTask =
+                lastWeekTimeDistributionByTag.map { it }.toList()
 
             itemsIndexed(items = listOfTotalDurationInWeekByTask,
                 key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
             ) { index, (taskTag, duration) ->
                 var isVisible by remember { mutableStateOf(false) }
-//                Log.d(
-//                    "TOTALTIMELASTWEEK",
-//                    listOfTotalDurationInLastWeekByTask.toString()
-//                )
 //
-//                val lastWeekDuration =
-//                    listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
+//
+                val lastWeekDuration =
+                    listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
+
+                Log.d("LASTWEEKDURATION",lastWeekDuration.toString())
 
                 // Animated visibility for sliding in items
                 LaunchedEffect(Unit) {
@@ -196,7 +187,7 @@ fun HomeScreen(
                         getTaskTagIconRes(taskTag),
                         taskTag,
                         TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
-                        TimeUnit.SECONDS.toMinutes(1000.toLong()).toInt()
+                        TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
                     )
                 }
             }
@@ -204,7 +195,7 @@ fun HomeScreen(
     }
 }
 
-fun fecthLastWeekSessions(
+fun fetchLastWeekSessions(
     homeScreenViewModel: HomeScreenViewModel,
     lastWeekStartTimestamp: Long,
     lastWeekEndTimestamp: Long,
