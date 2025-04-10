@@ -1,4 +1,4 @@
-package com.yash.focusfusion.feature_pomodoro.presentation.navigation
+package com.yash.focusfusion.feature_pomodoro.presentation.navigation.model
 
 import androidx.annotation.DrawableRes
 import com.yash.focusfusion.R
@@ -16,7 +16,7 @@ sealed class BottomNavItem(
         "Home"
     )
 
-    object Profile:BottomNavItem(
+    object Profile: BottomNavItem(
         "Profile",
         R.drawable.profile_selected,
         R.drawable.profile_unselected,
