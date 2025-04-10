@@ -253,7 +253,7 @@ fun HomeScreenWaveLineChart(
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
-                                append("10")
+                                append("2")
                             }
 
                             withStyle(
