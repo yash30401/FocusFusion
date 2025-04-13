@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +33,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
 import com.yash.focusfusion.core.util.getTaskTagIconRes
@@ -40,6 +46,9 @@ import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HomeScreenWaveLineChart
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeDistributionCard
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeRange
+import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
+import com.yash.focusfusion.feature_pomodoro.presentation.navigation.CustomBottomNav
+import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -49,7 +58,6 @@ import java.time.temporal.TemporalAdjusters
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
@@ -73,7 +81,6 @@ fun HomeScreen(
             )
         )
     }
-
 
     val lastWeekStartDate = LocalDate.now()
         .minusWeeks(1)
@@ -121,79 +128,83 @@ fun HomeScreen(
 
     minutesFocused = getMappedDataForChart(weeklySessionState)
 
-    Log.d("LASTWEEKSESSIONSTATE", lastWeekSessionState.toString())
 
-    Column(modifier = modifier.padding(bottom = 30.dp)) {
-        GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
-        HomeScreenWaveLineChart(
-            minutesFocused,
-            TimeRange.Week,
-            modifier = Modifier.padding(16.dp),
-            lineColor = Color(0xff9463ED),
-            currentDayTotalHours = TimeUnit.SECONDS.toHours(currentDayTotalHours.toLong()).toInt(),
-            strokeWidth = 5f,
-            xOffset = 90f,
-            waveAmplitude = 1f,
-        )
-        Text(
-            text = "Weekly Time Distribution",
-            modifier = Modifier.padding(start = 16.dp, top = 20.dp),
-            fontSize = 22.sp,
-            fontFamily = FontFamily(Font(R.font.jost_medium))
-        )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.padding(bottom = 20.dp)
-        ) {
-            val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
-                it.taskTag
-            }.mapValues {
-                it.value.sumOf { it.duration }
-            }
 
-            val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
-                it.taskTag
-            }.mapValues {
-                it.value.sumOf { it.duration }
-            }
-
-            val listOfTotalDurationInWeekByTask = weeklyTimeDistributionByTag.map { it }.toList()
-            val listOfTotalDurationInLastWeekByTask =
-                lastWeekTimeDistributionByTag.map { it }.toList()
-
-            itemsIndexed(items = listOfTotalDurationInWeekByTask,
-                key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
-            ) { index, (taskTag, duration) ->
-                var isVisible by remember { mutableStateOf(false) }
-//
-//
-                val lastWeekDuration =
-                    listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
-
-                Log.d("LASTWEEKDURATION",lastWeekDuration.toString())
-
-                // Animated visibility for sliding in items
-                LaunchedEffect(Unit) {
-                    isVisible = true // Trigger the animation once when the item enters composition
+        Column(modifier = modifier) {
+            GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
+            HomeScreenWaveLineChart(
+                minutesFocused,
+                TimeRange.Week,
+                modifier = Modifier.padding(16.dp),
+                lineColor = Color(0xff9463ED),
+                currentDayTotalHours = TimeUnit.SECONDS.toHours(currentDayTotalHours.toLong())
+                    .toInt(),
+                strokeWidth = 5f,
+                xOffset = 90f,
+                waveAmplitude = 1f,
+            )
+            Text(
+                text = "Weekly Time Distribution",
+                modifier = Modifier.padding(start = 16.dp, top = 20.dp),
+                fontSize = 22.sp,
+                fontFamily = FontFamily(Font(R.font.jost_medium))
+            )
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier.padding(bottom = 20.dp)
+            ) {
+                val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
+                    it.taskTag
+                }.mapValues {
+                    it.value.sumOf { it.duration }
                 }
 
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = isVisible, enter = slideInHorizontally(
-                        initialOffsetX = { fullWidth -> -fullWidth },
-                        animationSpec = tween(durationMillis = 1000)
-                    ) + fadeIn(animationSpec = tween(durationMillis = 1000))
-                ) {
-                    TimeDistributionCard(
-                        getTaskTagIconRes(taskTag),
-                        taskTag,
-                        TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
-                        TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
-                    )
+                val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
+                    it.taskTag
+                }.mapValues {
+                    it.value.sumOf { it.duration }
+                }
+
+                val listOfTotalDurationInWeekByTask =
+                    weeklyTimeDistributionByTag.map { it }.toList()
+                val listOfTotalDurationInLastWeekByTask =
+                    lastWeekTimeDistributionByTag.map { it }.toList()
+
+                itemsIndexed(items = listOfTotalDurationInWeekByTask,
+                    key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
+                ) { index, (taskTag, duration) ->
+                    var isVisible by remember { mutableStateOf(false) }
+//
+//
+                    val lastWeekDuration =
+                        listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
+
+                    Log.d("LASTWEEKDURATION", lastWeekDuration.toString())
+
+                    // Animated visibility for sliding in items
+                    LaunchedEffect(Unit) {
+                        isVisible =
+                            true // Trigger the animation once when the item enters composition
+                    }
+
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = isVisible, enter = slideInHorizontally(
+                            initialOffsetX = { fullWidth -> -fullWidth },
+                            animationSpec = tween(durationMillis = 1000)
+                        ) + fadeIn(animationSpec = tween(durationMillis = 1000))
+                    ) {
+                        TimeDistributionCard(
+                            getTaskTagIconRes(taskTag),
+                            taskTag,
+                            TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
+                            TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
+                        )
+                    }
                 }
             }
         }
     }
-}
+
 
 fun fetchLastWeekSessions(
     homeScreenViewModel: HomeScreenViewModel,

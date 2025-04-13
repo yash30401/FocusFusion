@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -33,10 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.HomeScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsViewModel
+import com.yash.focusfusion.feature_pomodoro.presentation.navigation.CustomBottomNav
+import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
@@ -50,23 +56,22 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
 
     private var timeLeft: Long by mutableStateOf(1500000L) // Default to 25:00
-    private var cancelTimeLeft:Long by mutableStateOf(10000L)
+    private var cancelTimeLeft: Long by mutableStateOf(10000L)
 
     private lateinit var dataStoreManager: DatastoreManager
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
-    private val timerSharedViewModel:TimerSharedViewModel by viewModels()
-
+    private val timerSharedViewModel: TimerSharedViewModel by viewModels()
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             timeLeft = intent?.getLongExtra("TIME_LEFT", 0L) ?: 0L
             cancelTimeLeft = intent?.getLongExtra("CANCEL_TIME_LEFT", 0L) ?: 0L
-            Log.d("CANCEL_TIME_MAIN_ACITIVITY",cancelTimeLeft.toString())
+            Log.d("CANCEL_TIME_MAIN_ACITIVITY", cancelTimeLeft.toString())
             extraTime = intent?.getIntExtra("EXTRA_TIME", 0) ?: 0
-            isTimerRunning = timeLeft>0
+            isTimerRunning = timeLeft > 0
 
-            lifecycleScope.launch  (Dispatchers.IO){
+            lifecycleScope.launch(Dispatchers.IO) {
                 dataStoreManager.saveTimeLeft(timeLeft)
                 dataStoreManager.saveExtraTime(extraTime)
                 dataStoreManager.saveContinueTimer(isTimerRunning)
@@ -102,28 +107,28 @@ class MainActivity : ComponentActivity() {
             RECEIVER_EXPORTED
         )
 
-        lifecycleScope.launch  (Dispatchers.IO){
+        lifecycleScope.launch(Dispatchers.IO) {
             dataStoreManager.timeLeftFlow.collect { savedTimeLeft ->
                 timeLeft = savedTimeLeft
                 timerSharedViewModel.updateTimeLeft(savedTimeLeft)
             }
         }
 
-        lifecycleScope.launch (Dispatchers.IO){
-            dataStoreManager.cancelTimeFlow.collect{savedCancelTimeLeft->
+        lifecycleScope.launch(Dispatchers.IO) {
+            dataStoreManager.cancelTimeFlow.collect { savedCancelTimeLeft ->
                 cancelTimeLeft = savedCancelTimeLeft
                 timerSharedViewModel.updateCancelTimeLeft(savedCancelTimeLeft)
             }
         }
 
-        lifecycleScope.launch (Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             dataStoreManager.extraTime.collect { savedExtraTime ->
                 extraTime = savedExtraTime
                 timerSharedViewModel.updateExtraTime(savedExtraTime)
             }
         }
 
-        lifecycleScope.launch (Dispatchers.IO) {
+        lifecycleScope.launch(Dispatchers.IO) {
             dataStoreManager.continueTimerFlow.collect { shouldContinue ->
                 isTimerRunning = shouldContinue
                 timerSharedViewModel.updateIsRunning(shouldContinue)
@@ -132,16 +137,36 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             FocusFusionTheme {
-                val scrollState = rememberScrollState()
-                Scaffold(modifier = Modifier.fillMaxSize()) {
-//                    TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
+//                   TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
+                val navController = rememberNavController()
 
-                            HomeScreen()
-
-
-
+                Scaffold(bottomBar = {
+                    CustomBottomNav(
+                        navController = navController,
+                        items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
+                    )
                 }
+                ) { innerPadding ->
+
+                    NavHost(
+                        navController = navController,
+                        startDestination = BottomNavItem.Home.route,
+                        modifier = Modifier
+                            .padding(innerPadding)
+                            .navigationBarsPadding()
+                    )
+                    {
+                        composable(BottomNavItem.Home.route) {
+                            HomeScreen()
+                        }
+                        composable(BottomNavItem.Profile.route) {
+                            InsightsScreen()
+                        }
+                    }
+                }
+
             }
+
         }
     }
 
