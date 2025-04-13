@@ -10,6 +10,8 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -33,6 +35,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -61,6 +64,7 @@ import java.util.concurrent.TimeUnit
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
+    navController: NavController,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
@@ -129,10 +133,14 @@ fun HomeScreen(
     minutesFocused = getMappedDataForChart(weeklySessionState)
 
 
-
-        Column(modifier = modifier) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())  // Add scroll modifier
+        ) {
             GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
             HomeScreenWaveLineChart(
+                navController,
                 minutesFocused,
                 TimeRange.Week,
                 modifier = Modifier.padding(16.dp),
@@ -151,7 +159,9 @@ fun HomeScreen(
             )
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
-                modifier = Modifier.padding(bottom = 20.dp)
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .heightIn(max = 2000.dp)
             ) {
                 val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
                     it.taskTag
@@ -202,9 +212,11 @@ fun HomeScreen(
                     }
                 }
             }
+
+
         }
     }
-
+}
 
 fun fetchLastWeekSessions(
     homeScreenViewModel: HomeScreenViewModel,

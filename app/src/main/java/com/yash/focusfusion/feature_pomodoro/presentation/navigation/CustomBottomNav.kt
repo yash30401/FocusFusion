@@ -43,6 +43,8 @@ fun CustomBottomNav(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .shadow(3.dp)
+            .height(84.dp)
             .background(Color(0xffF8F8F8))
             .windowInsetsPadding(WindowInsets.navigationBars),
         horizontalArrangement = Arrangement.SpaceAround
@@ -73,7 +75,7 @@ fun CustomBottomNav(
                         item.unselectedIcon,
                     ),
                     contentDescription = "NavItems",
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(23.dp)
                 )
             }
         }

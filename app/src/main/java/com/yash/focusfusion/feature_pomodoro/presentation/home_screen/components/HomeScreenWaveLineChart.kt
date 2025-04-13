@@ -71,7 +71,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.R
+import com.yash.focusfusion.feature_pomodoro.presentation.navigation.currentRoute
+import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -86,15 +91,19 @@ import java.util.concurrent.TimeUnit
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenWaveLineChart(
+    navController: NavController,
     minutesData: List<Float>,
     timeRange: TimeRange,
-    currentDayTotalHours:Int,
+    currentDayTotalHours: Int,
     modifier: Modifier = Modifier,
     lineColor: Color = Color(0xFF9463ED),
     strokeWidth: Float = 5f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f, // Amplify the wave effect
 ) {
+
+    val currentRoute = currentRoute(navController)
+
     val minValue = 0f   // Y-axis min (0 minutes)
     val maxValue =
         (minutesData.maxOrNull() ?: minValue).coerceAtLeast(minValue)  // Y-axis max based on data
@@ -158,7 +167,6 @@ fun HomeScreenWaveLineChart(
         )
     }
 
-
     val pathProgress = remember(minutesData) { Animatable(0f) }
     val waveDropAnimation = remember(minutesData) { Animatable(0f) }
 
@@ -182,7 +190,6 @@ fun HomeScreenWaveLineChart(
 //                repeatMode = RepeatMode.Restart
 //            )
 //        )
-
 
     val currentImmutableWeekRange = todaysDate.with(
         TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
@@ -487,14 +494,29 @@ fun HomeScreenWaveLineChart(
                     strokeWidth = 3f
                 )
             }
-            Row(modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
-                horizontalArrangement = Arrangement.End) {
-                Button( colors = ButtonColors(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(colors = ButtonColors(
                     contentColor = Color(0xffffffff),
                     containerColor = Color(0xffFF8D61),
                     disabledContainerColor = Color(0xffFF8D61),
                     disabledContentColor = Color(0xffFF8D61)
-                ), onClick = {}) {
+                ), onClick = {
+                    if (currentRoute != BottomNavItem.Profile.route) {
+                        navController.navigate(BottomNavItem.Profile.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+
+                            restoreState = true
+                        }
+                    }
+                }) {
                     Text(text = "Insights")
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
@@ -515,9 +537,9 @@ fun HomeScreenWaveLineChartPreview() {
     }
     val minutesWorked = randomNumbers
 
-
-
+    val navController = rememberNavController()
     HomeScreenWaveLineChart(
+        navController,
         minutesData = minutesWorked,
         timeRange = TimeRange.Year,
         modifier = Modifier

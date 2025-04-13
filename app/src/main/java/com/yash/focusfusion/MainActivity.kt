@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
                     )
                     {
                         composable(BottomNavItem.Home.route) {
-                            HomeScreen()
+                            HomeScreen(navController)
                         }
                         composable(BottomNavItem.Profile.route) {
                             InsightsScreen()
