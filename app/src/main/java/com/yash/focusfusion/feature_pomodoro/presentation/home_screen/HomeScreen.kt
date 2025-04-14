@@ -151,12 +151,14 @@ fun HomeScreen(
                 xOffset = 90f,
                 waveAmplitude = 1f,
             )
-            Text(
-                text = "Weekly Time Distribution",
-                modifier = Modifier.padding(start = 16.dp, top = 20.dp),
-                fontSize = 22.sp,
-                fontFamily = FontFamily(Font(R.font.jost_medium))
-            )
+            if(!weeklySessionState.isNullOrEmpty()){
+                Text(
+                    text = "Weekly Time Distribution",
+                    modifier = Modifier.padding(start = 16.dp, top = 20.dp),
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.jost_medium))
+                )
+            }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier

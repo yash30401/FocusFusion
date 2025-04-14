@@ -129,8 +129,7 @@ fun TimerScreen(
 
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .background(Color(0xFFFFFDFC)),
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
