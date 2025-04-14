@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -218,7 +219,6 @@ fun HomeScreenWaveLineChart(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(330.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
             .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
             .padding(5.dp),
@@ -226,7 +226,8 @@ fun HomeScreenWaveLineChart(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .height(330.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -328,7 +329,7 @@ fun HomeScreenWaveLineChart(
 
             if (minutesData.sum().toInt() == 0) {
                 Box(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.height(200.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -338,178 +339,183 @@ fun HomeScreenWaveLineChart(
                         fontSize = 17.sp
                     )
                 }
-            }
-            // Canvas for the chart
-            Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)  // Adjust height for better fit
-                    .padding(vertical = 25.dp)
-                    .padding(start = 20.dp)
-            ) {
-                // X-axis labels for different time ranges
-                val xAxisLabels = when (timeRange) {
-                    TimeRange.Day -> listOf(
-                        "00:00", "", "", "", "", "", "06:00",
-                        "", "", "", "", "", "12:00",
-                        "", "", "", "", "", "18:00",
-                        "", "", "", "", "", ""
-                    )
+            } else {
+                // Canvas for the chart
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)  // Adjust height for better fit
+                        .padding(vertical = 25.dp)
+                        .padding(start = 20.dp)
+                ) {
+                    // X-axis labels for different time ranges
+                    val xAxisLabels = when (timeRange) {
+                        TimeRange.Day -> listOf(
+                            "00:00", "", "", "", "", "", "06:00",
+                            "", "", "", "", "", "12:00",
+                            "", "", "", "", "", "18:00",
+                            "", "", "", "", "", ""
+                        )
 
-                    TimeRange.Week -> listOf("M", "T", "W", "T", "F", "S", "S")
-                    TimeRange.Month -> {
-                        if (currentMonthDays == 30) {
-                            (1..30).map {
-                                if (it % 5 == 0) "${currentMonth}/${it}" else ""
+                        TimeRange.Week -> listOf("M", "T", "W", "T", "F", "S", "S")
+                        TimeRange.Month -> {
+                            if (currentMonthDays == 30) {
+                                (1..30).map {
+                                    if (it % 5 == 0) "${currentMonth}/${it}" else ""
+                                }
+                            } else {
+                                (1..31).map {
+                                    if (it % 5 == 0) "${currentMonth}/${it}" else ""
+                                }
                             }
-                        } else {
-                            (1..31).map {
-                                if (it % 5 == 0) "${currentMonth}/${it}" else ""
+                        }
+
+                        TimeRange.Year -> listOf(
+                            "01", "02", "03", "04", "05", "06",
+                            "07", "08", "09", "10", "11", "12"
+                        )
+                    }
+
+                    val leftPadding = xOffset
+                    val rightPadding = xOffset
+                    val widthPerLabel =
+                        (size.width - leftPadding - rightPadding) / (xAxisLabels.size - 1)
+                    val heightPerUnit =
+                        if (maxValue - minValue == 0f) 0f else size.height / (maxValue - minValue)
+
+                    val textPaint = Paint().apply {
+                        color = android.graphics.Color.GRAY
+                        textSize = 28f
+                        textAlign = Paint.Align.RIGHT
+                    }
+
+                    // Y-axis labels
+                    for (i in 0..numberOfSteps) {
+                        val yLabelValue = minValue + i * yAxisStep
+                        val y = size.height - (yLabelValue - minValue) * heightPerUnit
+                        drawContext.canvas.nativeCanvas.drawText(
+                            String.format("%.0f m", yLabelValue),
+                            leftPadding - 10f,
+                            y + 10f,  // Adjust for text height
+                            textPaint
+                        )
+                    }
+
+                    // X-axis labels
+                    for (i in xAxisLabels.indices) {
+                        val x = leftPadding + i * widthPerLabel
+                        // Ensure x does not exceed size.width - rightPadding
+                        val adjustedX = minOf(x, size.width - rightPadding)
+                        drawContext.canvas.nativeCanvas.drawText(
+                            xAxisLabels[i],
+                            adjustedX,
+                            size.height + 40f,  // Adjust padding below the chart
+                            Paint().apply {
+                                color = android.graphics.Color.GRAY
+                                textSize = 28f
+                                textAlign = Paint.Align.CENTER
                             }
+                        )
+                    }
+
+                    // Create path for the wave line
+                    val wavePath = Path().apply {
+                        val firstX = leftPadding
+                        val firstY = size.height - (minutesData[0] - minValue) * heightPerUnit
+                        moveTo(firstX, firstY)
+
+                        for (i in 1 until minutesData.size) {
+                            val prevX = leftPadding + (i - 1) * widthPerLabel
+                            val prevY =
+                                size.height - (minutesData[i - 1] - minValue) * heightPerUnit
+
+                            val currX = leftPadding + i * widthPerLabel
+                            val currY = size.height - (minutesData[i] - minValue) * heightPerUnit
+
+                            val controlX1 = prevX + widthPerLabel / 2 * waveAmplitude
+                            val controlY1 = prevY
+                            val controlX2 = currX - widthPerLabel / 2 * waveAmplitude
+                            val controlY2 = currY
+
+                            cubicTo(controlX1, controlY1, controlX2, controlY2, currX, currY)
                         }
                     }
 
-                    TimeRange.Year -> listOf(
-                        "01", "02", "03", "04", "05", "06",
-                        "07", "08", "09", "10", "11", "12"
-                    )
-                }
+                    val lastX = leftPadding + (minutesData.size - 1) * widthPerLabel
 
-                val leftPadding = xOffset
-                val rightPadding = xOffset
-                val widthPerLabel =
-                    (size.width - leftPadding - rightPadding) / (xAxisLabels.size - 1)
-                val heightPerUnit =
-                    if (maxValue - minValue == 0f) 0f else size.height / (maxValue - minValue)
-
-                val textPaint = Paint().apply {
-                    color = android.graphics.Color.GRAY
-                    textSize = 28f
-                    textAlign = Paint.Align.RIGHT
-                }
-
-                // Y-axis labels
-                for (i in 0..numberOfSteps) {
-                    val yLabelValue = minValue + i * yAxisStep
-                    val y = size.height - (yLabelValue - minValue) * heightPerUnit
-                    drawContext.canvas.nativeCanvas.drawText(
-                        String.format("%.0f m", yLabelValue),
-                        leftPadding - 10f,
-                        y + 10f,  // Adjust for text height
-                        textPaint
-                    )
-                }
-
-                // X-axis labels
-                for (i in xAxisLabels.indices) {
-                    val x = leftPadding + i * widthPerLabel
-                    // Ensure x does not exceed size.width - rightPadding
-                    val adjustedX = minOf(x, size.width - rightPadding)
-                    drawContext.canvas.nativeCanvas.drawText(
-                        xAxisLabels[i],
-                        adjustedX,
-                        size.height + 40f,  // Adjust padding below the chart
-                        Paint().apply {
-                            color = android.graphics.Color.GRAY
-                            textSize = 28f
-                            textAlign = Paint.Align.CENTER
-                        }
-                    )
-                }
-
-                // Create path for the wave line
-                val wavePath = Path().apply {
-                    val firstX = leftPadding
-                    val firstY = size.height - (minutesData[0] - minValue) * heightPerUnit
-                    moveTo(firstX, firstY)
-
-                    for (i in 1 until minutesData.size) {
-                        val prevX = leftPadding + (i - 1) * widthPerLabel
-                        val prevY = size.height - (minutesData[i - 1] - minValue) * heightPerUnit
-
-                        val currX = leftPadding + i * widthPerLabel
-                        val currY = size.height - (minutesData[i] - minValue) * heightPerUnit
-
-                        val controlX1 = prevX + widthPerLabel / 2 * waveAmplitude
-                        val controlY1 = prevY
-                        val controlX2 = currX - widthPerLabel / 2 * waveAmplitude
-                        val controlY2 = currY
-
-                        cubicTo(controlX1, controlY1, controlX2, controlY2, currX, currY)
+                    val fillPath = Path().apply {
+                        addPath(wavePath)
+                        lineTo(lastX, size.height)  // Line to the bottom of the last data point
+                        lineTo(
+                            leftPadding,
+                            size.height
+                        )  // Line back to the starting X position at the bottom
+                        close()
                     }
+
+                    drawPath(
+                        path = fillPath,
+                        brush = Brush.verticalGradient(
+                            colors = listOf(lineColor.copy(alpha = 0.5f), Color.Transparent),
+                            startY = 0f,
+                            endY = size.height
+                        ),
+                        alpha = waveDropAnimation.value
+                    )
+
+                    // Measure the total length of the path
+                    val pathMeasure = PathMeasure()
+                    pathMeasure.setPath(wavePath, false)
+                    val pathLength = pathMeasure.length
+
+                    // Create a segment of the path based on animation progress
+                    val animatedSegment = Path()
+                    pathMeasure.getSegment(
+                        startDistance = 0f,
+                        stopDistance = pathProgress.value * pathLength,
+                        destination = animatedSegment,
+                        startWithMoveTo = true
+                    )
+
+                    // Draw the wave line
+                    drawPath(
+                        path = animatedSegment,
+                        color = lineColor,
+                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                    )
+
+                    // Draw Y-axis line
+                    drawLine(
+                        color = Color.Gray,
+                        start = Offset(leftPadding, 0f),
+                        end = Offset(leftPadding, size.height),
+                        strokeWidth = 3f
+                    )
+
+                    // Draw X-axis line
+                    drawLine(
+                        color = Color.Gray,
+                        start = Offset(leftPadding, size.height),
+                        end = Offset(
+                            lastX,
+                            size.height
+                        ),  // End at the last data point's X position
+                        strokeWidth = 3f
+                    )
                 }
-
-                val lastX = leftPadding + (minutesData.size - 1) * widthPerLabel
-
-                val fillPath = Path().apply {
-                    addPath(wavePath)
-                    lineTo(lastX, size.height)  // Line to the bottom of the last data point
-                    lineTo(
-                        leftPadding,
-                        size.height
-                    )  // Line back to the starting X position at the bottom
-                    close()
-                }
-
-                drawPath(
-                    path = fillPath,
-                    brush = Brush.verticalGradient(
-                        colors = listOf(lineColor.copy(alpha = 0.5f), Color.Transparent),
-                        startY = 0f,
-                        endY = size.height
-                    ),
-                    alpha = waveDropAnimation.value
-                )
-
-                // Measure the total length of the path
-                val pathMeasure = PathMeasure()
-                pathMeasure.setPath(wavePath, false)
-                val pathLength = pathMeasure.length
-
-                // Create a segment of the path based on animation progress
-                val animatedSegment = Path()
-                pathMeasure.getSegment(
-                    startDistance = 0f,
-                    stopDistance = pathProgress.value * pathLength,
-                    destination = animatedSegment,
-                    startWithMoveTo = true
-                )
-
-                // Draw the wave line
-                drawPath(
-                    path = animatedSegment,
-                    color = lineColor,
-                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                )
-
-                // Draw Y-axis line
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(leftPadding, 0f),
-                    end = Offset(leftPadding, size.height),
-                    strokeWidth = 3f
-                )
-
-                // Draw X-axis line
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(leftPadding, size.height),
-                    end = Offset(lastX, size.height),  // End at the last data point's X position
-                    strokeWidth = 3f
-                )
             }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = 16.dp),
+                    .padding(end = 16.dp)
+                    .zIndex(2f),
                 horizontalArrangement = Arrangement.End
             ) {
-                Button(colors = ButtonColors(
-                    contentColor = Color(0xffffffff),
+                Button(colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xffFF8D61),
-                    disabledContainerColor = Color(0xffFF8D61),
-                    disabledContentColor = Color(0xffFF8D61)
-                ), onClick = {
+                    contentColor = Color.White,
+
+                    ), onClick = {
                     if (currentRoute != BottomNavItem.Profile.route) {
                         navController.navigate(BottomNavItem.Profile.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
