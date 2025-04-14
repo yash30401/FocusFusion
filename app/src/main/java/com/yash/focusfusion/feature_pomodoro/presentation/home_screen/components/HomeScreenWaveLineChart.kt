@@ -240,16 +240,17 @@ fun HomeScreenWaveLineChart(
                         .background(
                             color = Color(
                                 0xffF0F0F0
-                            ), RoundedCornerShape(10.dp)
+                            ), RoundedCornerShape(12.dp)
                         )
-                        .padding(vertical = 10.dp)
+                        .padding(vertical = 6.dp)
                         .weight(1f)
                 ) {
                     Text(
                         "Streak",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        fontFamily = FontFamily(Font(R.font.jost_medium))
+                        fontFamily = FontFamily(Font(R.font.jost_medium)),
+                        fontSize = 16.sp
                     )
                     Text(
                         text = buildAnnotatedString {
@@ -273,7 +274,8 @@ fun HomeScreenWaveLineChart(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp
                     )
                 }
 
@@ -284,16 +286,17 @@ fun HomeScreenWaveLineChart(
                         .background(
                             color = Color(
                                 0xffF0F0F0
-                            ), RoundedCornerShape(10.dp)
+                            ), RoundedCornerShape(12.dp)
                         )
-                        .padding(vertical = 10.dp)
+                        .padding(vertical = 6.dp)
                         .weight(1f)
                 ) {
                     Text(
                         "Today",
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        fontFamily = FontFamily(Font(R.font.jost_medium))
+                        fontFamily = FontFamily(Font(R.font.jost_medium)),
+                        fontSize = 16.sp
                     )
                     Text(
                         text = buildAnnotatedString {
@@ -317,7 +320,8 @@ fun HomeScreenWaveLineChart(
                             }
                         },
                         modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp
                     )
                 }
             }
