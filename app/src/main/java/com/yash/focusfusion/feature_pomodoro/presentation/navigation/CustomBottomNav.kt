@@ -104,7 +104,16 @@ fun CustomBottomNav(
                 .offset(y = (-26).dp) // Half outside the navigation bar
         ) {
             FloatingActionButton(
-                onClick = { /* Handle play button click */ },
+                onClick = {   if (currentRoute != BottomNavItem.Timer.route) {
+                    navController.navigate(BottomNavItem.Timer.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+
+                        restoreState = true
+                    }
+                } },
                 containerColor = Color(0xFFFF8D61),
                 contentColor = Color.White,
                 modifier = Modifier

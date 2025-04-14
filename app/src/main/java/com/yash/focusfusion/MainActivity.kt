@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
@@ -161,6 +162,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(BottomNavItem.Profile.route) {
                             InsightsScreen()
+                        }
+                        composable(BottomNavItem.Timer.route) {
+                            TimerScreen(LocalContext.current, timerSharedViewModel)
                         }
                     }
                 }

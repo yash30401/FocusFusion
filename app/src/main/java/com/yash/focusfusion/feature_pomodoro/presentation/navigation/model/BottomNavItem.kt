@@ -5,8 +5,8 @@ import com.yash.focusfusion.R
 
 sealed class BottomNavItem(
     val title: String,
-    @DrawableRes val selectedIcon: Int,
-    @DrawableRes val unselectedIcon: Int,
+    @DrawableRes val selectedIcon: Int = 0,
+    @DrawableRes val unselectedIcon: Int = 0,
     val route: String,
 ) {
     object Home : BottomNavItem(
@@ -16,10 +16,16 @@ sealed class BottomNavItem(
         "Home"
     )
 
+    object Timer : BottomNavItem(
+        "Insights",
+        route = "Insights"
+    )
+
     object Profile: BottomNavItem(
         "Profile",
         R.drawable.profile_selected,
         R.drawable.profile_unselected,
         "Profile"
     )
+
 }
