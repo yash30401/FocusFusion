@@ -1,5 +1,9 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.navigation
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,7 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +57,16 @@ fun CustomBottomNav(
     modifier: Modifier = Modifier,
 ) {
     val currentRoute = currentRoute(navController)
+
+    val offset = remember { Animatable(0f) }
+
+    LaunchedEffect(Unit) {
+        offset.animateTo(
+            targetValue = 300f,
+            animationSpec = tween(durationMillis = 3000)
+        )
+
+    }
 
     Box(
         modifier = modifier
@@ -100,20 +118,23 @@ fun CustomBottomNav(
 
         Box(
             modifier = Modifier
+                .offset(x = if (navController.currentDestination?.route == BottomNavItem.Timer.route) offset.value.dp else 0.dp)
                 .align(Alignment.TopCenter)
                 .offset(y = (-26).dp) // Half outside the navigation bar
         ) {
             FloatingActionButton(
-                onClick = {   if (currentRoute != BottomNavItem.Timer.route) {
-                    navController.navigate(BottomNavItem.Timer.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        launchSingleTop = true
+                onClick = {
+                    if (currentRoute != BottomNavItem.Timer.route) {
+                        navController.navigate(BottomNavItem.Timer.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
 
-                        restoreState = true
+                            restoreState = true
+                        }
                     }
-                } },
+                },
                 containerColor = Color(0xFFFF8D61),
                 contentColor = Color.White,
                 modifier = Modifier
@@ -133,6 +154,7 @@ fun CustomBottomNav(
                 )
             }
         }
+
     }
 }
 
