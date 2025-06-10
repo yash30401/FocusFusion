@@ -22,11 +22,11 @@ import kotlinx.coroutines.launch
 class TimerService : Service() {
 
     private var countDownTimer: CountDownTimer? = null
-    private var cancelTimeCountDownTimer:CountDownTimer?=null
+    private var cancelTimeCountDownTimer: CountDownTimer? = null
 
     private var timeLeft: Long = 0
     private var extraTime: Int = 0
-    private var cancelTimeLeft:Long = 0
+    private var cancelTimeLeft: Long = 0
 
     private lateinit var dataStoreManager: DatastoreManager
 
@@ -98,7 +98,7 @@ class TimerService : Service() {
             }
         }.start()
 
-        cancelTimeCountDownTimer = object :CountDownTimer(10000,1000){
+        cancelTimeCountDownTimer = object : CountDownTimer(10000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 this@TimerService.cancelTimeLeft = millisUntilFinished
 
@@ -189,6 +189,7 @@ class TimerService : Service() {
         broadcastIntent.putExtra("TIME_LEFT", timeLeft)
         broadcastIntent.putExtra("CANCEL_TIME_LEFT", cancelTimeLeft)
         broadcastIntent.putExtra("EXTRA_TIME", extraTime)
+        broadcastIntent.putExtra("IS_FINISHED", true) // // Signal that the timer has stopped
         sendBroadcast(broadcastIntent)
 
         stopForeground(true)

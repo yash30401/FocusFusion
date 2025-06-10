@@ -74,11 +74,14 @@ class MainActivity : ComponentActivity() {
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+
+            val isFinished = intent?.getBooleanExtra("IS_FINISHED", false) ?: false
+
             timeLeft = intent?.getLongExtra("TIME_LEFT", 0L) ?: 0L
             cancelTimeLeft = intent?.getLongExtra("CANCEL_TIME_LEFT", 0L) ?: 0L
             Log.d("CANCEL_TIME_MAIN_ACITIVITY", cancelTimeLeft.toString())
             extraTime = intent?.getIntExtra("EXTRA_TIME", 0) ?: 0
-            isTimerRunning = timeLeft > 0
+            isTimerRunning = if (isFinished) false else timeLeft > 0
 
             lifecycleScope.launch(Dispatchers.IO) {
                 dataStoreManager.saveTimeLeft(timeLeft)
@@ -159,7 +162,7 @@ class MainActivity : ComponentActivity() {
 
                     NavHost(
                         navController = navController,
-                        startDestination = BottomNavItem.Home.route,
+                        startDestination = if (isTimerRunning) BottomNavItem.Timer.route else BottomNavItem.Home.route,
                         modifier = Modifier
                             .padding(innerPadding)
                             .navigationBarsPadding()

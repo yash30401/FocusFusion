@@ -90,10 +90,6 @@ fun TimerScreen(
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
 
 
-    var isTimerStarted by remember {
-        mutableStateOf(isTimerRunning)
-    }
-
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
     }
@@ -187,7 +183,6 @@ fun TimerScreen(
                     .background(Color(0xFFFF8D61))
                     .clickable {
                         timerSharedViewModel.updateIsRunning(true)
-                        isTimerStarted = true
 
 
                         TimerService.startService(
@@ -210,20 +205,19 @@ fun TimerScreen(
 
             Button(
                 onClick = {
-                    if (TimeUnit.MILLISECONDS.toSeconds(cancelTime) > 0) {
-                        timerSharedViewModel.updateIsRunning(false)
-                        isTimerStarted = false
 
+                    val onStop = {
+                        timerSharedViewModel.updateIsRunning(false)
+                        // isTimerStarted = false // REMOVE THIS
                         TimerService.stopService(context.applicationContext)
+                    }
+
+                    if (TimeUnit.MILLISECONDS.toSeconds(cancelTime) > 0) {
+                        onStop()
                     } else {
 
                         val endTime = System.currentTimeMillis()
-                        timerSharedViewModel.updateIsRunning(false)
-                        isTimerStarted = false
-
-
-                        val extraTimeInSeconds = if (extraTime > 0) extraTime
-                             else 0
+                        val extraTimeInSeconds = if (extraTime > 0) extraTime else 0
 
 
 
@@ -258,7 +252,7 @@ fun TimerScreen(
 
                     }
 
-                    TimerService.stopService(context.applicationContext)
+                    onStop()
                 },
                 modifier = Modifier
                     .width(150.dp)
