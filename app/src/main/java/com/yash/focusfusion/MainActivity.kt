@@ -14,6 +14,12 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -159,13 +165,51 @@ class MainActivity : ComponentActivity() {
                             .navigationBarsPadding()
                     )
                     {
-                        composable(BottomNavItem.Home.route) {
+                        composable(
+                            BottomNavItem.Home.route,
+                            enterTransition = { fadeIn(animationSpec = tween(500)) },
+                            exitTransition = { fadeOut(animationSpec = tween(500)) },
+                            popEnterTransition = { fadeIn(animationSpec = tween(500)) },
+                            popExitTransition = { fadeOut(animationSpec = tween(500)) }
+                        ) {
                             HomeScreen(navController)
                         }
-                        composable(BottomNavItem.Profile.route) {
+                        composable(
+                            BottomNavItem.Profile.route,
+                            enterTransition = { fadeIn(animationSpec = tween(500)) },
+                            exitTransition = { fadeOut(animationSpec = tween(500)) },
+                            popEnterTransition = { fadeIn(animationSpec = tween(500)) },
+                            popExitTransition = { fadeOut(animationSpec = tween(500)) }
+                        ) {
                             InsightsScreen()
                         }
-                        composable(BottomNavItem.Timer.route) {
+                        composable(
+                            BottomNavItem.Timer.route,
+                            enterTransition = {
+                                slideInVertically(
+                                    initialOffsetY = { 1000 },
+                                    animationSpec = tween(500)
+                                )
+                            },
+                            exitTransition = {
+                                slideOutHorizontally(
+                                    targetOffsetX = { -1000 },
+                                    animationSpec = tween(500)
+                                )
+                            },
+                            popEnterTransition = {
+                                slideInHorizontally(
+                                    initialOffsetX = { -1000 },
+                                    animationSpec = tween(500)
+                                )
+                            },
+                            popExitTransition = {
+                                slideOutHorizontally(
+                                    targetOffsetX = { 1000 },
+                                    animationSpec = tween(300)
+                                )
+                            }
+                        ) {
                             TimerScreen(LocalContext.current, timerSharedViewModel)
                         }
                     }

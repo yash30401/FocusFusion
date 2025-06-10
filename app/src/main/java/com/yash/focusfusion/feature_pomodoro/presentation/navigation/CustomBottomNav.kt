@@ -1,12 +1,23 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.navigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 
@@ -37,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -58,15 +70,27 @@ fun CustomBottomNav(
 ) {
     val currentRoute = currentRoute(navController)
 
-    val offset = remember { Animatable(0f) }
+    // Interaction source to track button presses for the click animation
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    // Animate the scale of the FAB when pressed
+    val fabScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.9f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
+        label = "fabScale"
+    )
+
+    // This will control the FAB's vertical entry animation
+    val fabOffsetY = remember { Animatable(100f) }
 
     LaunchedEffect(Unit) {
-        offset.animateTo(
-            targetValue = 300f,
-            animationSpec = tween(durationMillis = 3000)
+        fabOffsetY.animateTo(
+            targetValue = 0f,
+            animationSpec = tween(durationMillis = 400, delayMillis = 100)
         )
-
     }
+
 
     Box(
         modifier = modifier
@@ -116,11 +140,16 @@ fun CustomBottomNav(
             }
         }
 
-        Box(
+        // --- Animation Wrapper for the FAB ---
+        AnimatedVisibility(
+            visible = currentRoute != BottomNavItem.Timer.route, // Hide FAB on the Timer screen
+            enter = slideInVertically { it } + fadeIn() + scaleIn(),
+            exit = fadeOut() + scaleOut(),
             modifier = Modifier
-                .offset(x = if (navController.currentDestination?.route == BottomNavItem.Timer.route) offset.value.dp else 0.dp)
                 .align(Alignment.TopCenter)
-                .offset(y = (-26).dp) // Half outside the navigation bar
+                // Apply the entry animation offset and the static "half outside" offset
+                .offset(y = fabOffsetY.value.dp)
+                .offset(y = (-26).dp)
         ) {
             FloatingActionButton(
                 onClick = {
@@ -135,9 +164,11 @@ fun CustomBottomNav(
                         }
                     }
                 },
+                interactionSource = interactionSource, // Attach the interaction source
                 containerColor = Color(0xFFFF8D61),
                 contentColor = Color.White,
                 modifier = Modifier
+                    .scale(fabScale) // Apply the click animation scale
                     .size(56.dp)
                     .shadow(
                         elevation = 5.dp,
