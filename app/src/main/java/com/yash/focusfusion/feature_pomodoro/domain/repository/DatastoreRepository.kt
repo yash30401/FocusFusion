@@ -8,10 +8,11 @@ interface DatastoreRepository {
     val extraTimeFlow: Flow<Int>
     val continueTimerFlow: Flow<Boolean>
     val cancelTimeFlow: Flow<Long>
+    val userNameFlow:Flow<String>
 
     suspend fun saveTimeLeft(time: Long)
     suspend fun saveExtraTime(extraTime: Int)
     suspend fun saveContinueTimer(shouldContinue: Boolean)
     suspend fun saveCancelTimeLeft(cancelTime: Long)
-
+    suspend fun saveUserName(name:String)
 }

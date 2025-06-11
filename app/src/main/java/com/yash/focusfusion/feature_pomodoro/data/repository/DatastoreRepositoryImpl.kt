@@ -19,6 +19,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) : 
     override val cancelTimeFlow: Flow<Long>
         get() = datastoreManager.cancelTimeFlow
 
+    override val userNameFlow: Flow<String>
+        get() = datastoreManager.userNameFlow
+
     override suspend fun saveTimeLeft(time: Long) {
         datastoreManager.saveTimeLeft(time)
     }
@@ -33,5 +36,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) : 
 
     override suspend fun saveCancelTimeLeft(cancelTime: Long) {
         datastoreManager.saveCancelTimeLeft(cancelTime)
+    }
+
+    override suspend fun saveUserName(name: String) {
+        datastoreManager.saveUserName(name)
     }
 }

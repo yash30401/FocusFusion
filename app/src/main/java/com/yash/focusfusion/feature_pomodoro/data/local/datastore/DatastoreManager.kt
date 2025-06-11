@@ -9,6 +9,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +25,7 @@ class DatastoreManager(private val context: Context) {
         val EXTRA_TIME_KEY = intPreferencesKey("EXTRA_TIME")
         val CONTINUE_TIMER_KEY = booleanPreferencesKey("CONTINUE_TIMER")
         val CANCEL_TIME_LEFT_KEY = longPreferencesKey("CANCEL_TIME_LEFT")
+        val USER_NAME_KEY = stringPreferencesKey("USER_NAME_KEY")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -40,9 +42,12 @@ class DatastoreManager(private val context: Context) {
             preferences[CONTINUE_TIMER_KEY] ?: false
         }
 
-
     val cancelTimeFlow: Flow<Long> = context.dataStore.data.map { prefrences ->
         prefrences[CANCEL_TIME_LEFT_KEY] ?: 10000L
+    }
+
+    val userNameFlow: Flow<String> = context.dataStore.data.map { prefrences ->
+        prefrences[USER_NAME_KEY] ?: ""
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -82,6 +87,16 @@ class DatastoreManager(private val context: Context) {
             }
         } catch (e: Exception) {
             Log.e(DATASTORELOGS, "Error saving Cancel Time state", e)
+        }
+    }
+
+    suspend fun saveUserName(name: String) {
+        try {
+            context.dataStore.edit { prefrences ->
+                prefrences[USER_NAME_KEY] = name
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving user's name", e)
         }
     }
 }
