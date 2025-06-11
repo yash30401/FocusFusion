@@ -1,12 +1,11 @@
 package com.yash.focusfusion.feature_pomodoro.data.repository
 
-
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.domain.repository.DatastoreRepository
 import kotlinx.coroutines.flow.Flow
 
-
-class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) : DatastoreRepository {
+class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
+    DatastoreRepository {
     override val timeLeftFlow: Flow<Long>
         get() = datastoreManager.timeLeftFlow
 
@@ -21,6 +20,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) : 
 
     override val userNameFlow: Flow<String>
         get() = datastoreManager.userNameFlow
+
+    override val isOnBoardingCompletedFlow: Flow<Boolean>
+        get() = datastoreManager.onBoardingCompletedFlow
 
     override suspend fun saveTimeLeft(time: Long) {
         datastoreManager.saveTimeLeft(time)
@@ -40,5 +42,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) : 
 
     override suspend fun saveUserName(name: String) {
         datastoreManager.saveUserName(name)
+    }
+
+    override suspend fun onBoardingCompleted(isCompleted: Boolean) {
+        datastoreManager.saveOnBoardingCompleted(isCompleted)
     }
 }

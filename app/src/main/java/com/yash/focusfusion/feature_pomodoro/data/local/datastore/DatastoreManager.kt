@@ -26,6 +26,7 @@ class DatastoreManager(private val context: Context) {
         val CONTINUE_TIMER_KEY = booleanPreferencesKey("CONTINUE_TIMER")
         val CANCEL_TIME_LEFT_KEY = longPreferencesKey("CANCEL_TIME_LEFT")
         val USER_NAME_KEY = stringPreferencesKey("USER_NAME_KEY")
+        val ON_BOARDING_COMPLETED_KEY = booleanPreferencesKey("ON_BOARDING_COMPLETED_KEY")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -48,6 +49,10 @@ class DatastoreManager(private val context: Context) {
 
     val userNameFlow: Flow<String> = context.dataStore.data.map { prefrences ->
         prefrences[USER_NAME_KEY] ?: ""
+    }
+
+    val onBoardingCompletedFlow: Flow<Boolean> = context.dataStore.data.map { prefrences ->
+        prefrences[ON_BOARDING_COMPLETED_KEY] ?: false
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -94,6 +99,16 @@ class DatastoreManager(private val context: Context) {
         try {
             context.dataStore.edit { prefrences ->
                 prefrences[USER_NAME_KEY] = name
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving user's name", e)
+        }
+    }
+
+    suspend fun saveOnBoardingCompleted(isCompleted: Boolean) {
+        try {
+            context.dataStore.edit { prefrences ->
+                prefrences[ON_BOARDING_COMPLETED_KEY] = isCompleted
             }
         } catch (e: Exception) {
             Log.e(DATASTORELOGS, "Error saving user's name", e)
