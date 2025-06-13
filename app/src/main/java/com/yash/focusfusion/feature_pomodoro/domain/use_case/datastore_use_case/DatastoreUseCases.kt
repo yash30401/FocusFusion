@@ -8,5 +8,8 @@ data class DatastoreUseCases(
     val saveTimeLeftUseCase: SaveTimeLeftUseCase,
     val saveExtraTimeUseCase: SaveExtraTimeUseCase,
     val saveContinueTimerUseCase: SaveContinueTimerUseCase,
-    val saveCancelTimeLeftUseCase: SaveCancelTimeLeftUseCase
+    val saveCancelTimeLeftUseCase: SaveCancelTimeLeftUseCase,
+    val saveUserNameUseCase: SaveUserNameUseCase,
+    val getUserNameUseCase: GetUserNameUseCase,
+    val onboardingUseCase: CompleteOnboardingUseCase
 )

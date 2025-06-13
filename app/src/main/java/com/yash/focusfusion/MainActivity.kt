@@ -43,6 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -52,11 +53,14 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScree
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsViewModel
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.CustomBottomNav
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
+import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.onBoardingScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -147,27 +151,56 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+
+
+
         setContent {
             FocusFusionTheme {
 //                   TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
                 val navController = rememberNavController()
 
+                val isOnBoardingCompleted by dataStoreManager.onBoardingCompletedFlow
+                    .collectAsState(initial = false)
+
                 Scaffold(bottomBar = {
-                    CustomBottomNav(
-                        navController = navController,
-                        items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
-                    )
+                    if (isOnBoardingCompleted) {
+                        CustomBottomNav(
+                            navController = navController,
+                            items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
+                        )
+                    }
                 }
                 ) { innerPadding ->
 
                     NavHost(
                         navController = navController,
-                        startDestination = if (isTimerRunning) BottomNavItem.Timer.route else BottomNavItem.Home.route,
+                        startDestination = if (isTimerRunning)
+                            BottomNavItem.Timer.route
+                        else if (!isOnBoardingCompleted) "OnBoarding"
+                        else BottomNavItem.Home.route,
                         modifier = Modifier
                             .padding(innerPadding)
                             .navigationBarsPadding()
                     )
                     {
+                        composable(
+                            "OnBoarding",
+                            enterTransition = { fadeIn(animationSpec = tween(500)) },
+                            exitTransition = { fadeOut(animationSpec = tween(500)) },
+                            popEnterTransition = { fadeIn(animationSpec = tween(500)) },
+                            popExitTransition = { fadeOut(animationSpec = tween(500)) }
+                        ) {
+                            onBoardingScreen({
+                                navController.navigate(BottomNavItem.Home.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            })
+                        }
+
                         composable(
                             BottomNavItem.Home.route,
                             enterTransition = { fadeIn(animationSpec = tween(500)) },

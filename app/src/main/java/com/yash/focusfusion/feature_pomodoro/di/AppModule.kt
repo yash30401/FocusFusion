@@ -9,15 +9,18 @@ import com.yash.focusfusion.feature_pomodoro.data.repository.DatastoreRepository
 import com.yash.focusfusion.feature_pomodoro.data.repository.SessionRepositoryImpl
 import com.yash.focusfusion.feature_pomodoro.domain.repository.DatastoreRepository
 import com.yash.focusfusion.feature_pomodoro.domain.repository.SessionRepository
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.CompleteOnboardingUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.DatastoreUseCases
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetCancelTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetContinueTimerUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetExtraTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetTimeLeftUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveCancelTimeLeftUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveContinueTimerUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveExtraTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveTimeLeftUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.DeleteSessionUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetAllSessionsUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.GetSessionByIdUseCase
@@ -101,7 +104,10 @@ object AppModule {
             saveTimeLeftUseCase = SaveTimeLeftUseCase(datastoreRepository),
             saveExtraTimeUseCase = SaveExtraTimeUseCase(datastoreRepository),
             saveContinueTimerUseCase = SaveContinueTimerUseCase(datastoreRepository),
-            saveCancelTimeLeftUseCase = SaveCancelTimeLeftUseCase(datastoreRepository)
+            saveCancelTimeLeftUseCase = SaveCancelTimeLeftUseCase(datastoreRepository),
+            saveUserNameUseCase = SaveUserNameUseCase(datastoreRepository),
+            getUserNameUseCase = GetUserNameUseCase(datastoreRepository),
+            onboardingUseCase = CompleteOnboardingUseCase(datastoreRepository)
         )
     }
 

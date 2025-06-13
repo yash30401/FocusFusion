@@ -9,6 +9,7 @@ sealed class BottomNavItem(
     @DrawableRes val unselectedIcon: Int = 0,
     val route: String,
 ) {
+
     object Home : BottomNavItem(
         "Home",
         R.drawable.home_selected,
@@ -21,7 +22,7 @@ sealed class BottomNavItem(
         route = "Insights"
     )
 
-    object Profile: BottomNavItem(
+    object Profile : BottomNavItem(
         "Profile",
         R.drawable.profile_selected,
         R.drawable.profile_unselected,
