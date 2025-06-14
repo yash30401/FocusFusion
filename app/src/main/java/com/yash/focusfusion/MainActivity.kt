@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,6 +66,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -166,241 +169,262 @@ class MainActivity : ComponentActivity() {
 //                   TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
                 val navController = rememberNavController()
 
-                val isOnBoardingCompleted by dataStoreManager.onBoardingCompletedFlow
-                    .collectAsState(initial = false)
+                var isLoading by remember { mutableStateOf(true) }
 
+                var startDestination by remember { mutableStateOf("OnBoarding") }
                 val userName by dataStoreManager.userNameFlow.collectAsState(initial = "")
 
-                Scaffold(bottomBar = {
-                    if (isOnBoardingCompleted) {
-                        CustomBottomNav(
-                            navController = navController,
-                            items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
-                        )
+                LaunchedEffect(Unit) {
+                    val isOnBoardingCompleted = dataStoreManager.onBoardingCompletedFlow.first()
+                    val continueTimer = dataStoreManager.continueTimerFlow.first()
+
+                    startDestination = when {
+                        continueTimer -> BottomNavItem.Timer.route
+                        !isOnBoardingCompleted -> "OnBoarding"
+                        else -> BottomNavItem.Home.route
                     }
+
+                    isLoading = false
+                }
+
+
+
+                Scaffold(bottomBar = {
+//                    if (isOnBoardingCompleted) {
+                    CustomBottomNav(
+                        navController = navController,
+                        items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
+                    )
+//                    }
                 }
                 ) { innerPadding ->
 
-                    NavHost(
-                        navController = navController,
-                        startDestination = if (isTimerRunning)
-                            BottomNavItem.Timer.route
-                        else if (!isOnBoardingCompleted) "OnBoarding"
-                        else BottomNavItem.Home.route,
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .navigationBarsPadding()
-                    )
-                    {
-                        composable(
-                            "OnBoarding",
-                            enterTransition = {
-                                fadeIn(
-                                    animationSpec = tween(
-                                        durationMillis = 400,
-                                        easing = EaseInOut
-                                    )
-                                )
-                            },
-                            exitTransition = {
-                                slideOutVertically(
-                                    targetOffsetY = { -it },
-                                    animationSpec = tween(
-                                        durationMillis = 400,
-                                        easing = EaseInOut
-                                    )
-                                ) + fadeOut(
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = EaseInOut
-                                    )
-                                )
-                            }
+                    if (isLoading) {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
                         ) {
-                            onBoardingScreen({
-                                navController.navigate(BottomNavItem.Home.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
-                                    }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            })
+                            CircularProgressIndicator()
                         }
-
-                        composable(
-                            BottomNavItem.Home.route,
-                            enterTransition = {
-                                when (initialState.destination.route) {
-                                    "OnBoarding" -> slideInVertically(
-                                        initialOffsetY = { it },
+                    } else {
+                        NavHost(
+                            navController = navController,
+                            startDestination = startDestination,
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .navigationBarsPadding()
+                        )
+                        {
+                            composable(
+                                "OnBoarding",
+                                enterTransition = {
+                                    fadeIn(
                                         animationSpec = tween(
                                             durationMillis = 400,
+                                            easing = EaseInOut
+                                        )
+                                    )
+                                },
+                                exitTransition = {
+                                    slideOutVertically(
+                                        targetOffsetY = { -it },
+                                        animationSpec = tween(
+                                            durationMillis = 400,
+                                            easing = EaseInOut
+                                        )
+                                    ) + fadeOut(
+                                        animationSpec = tween(
+                                            durationMillis = 300,
+                                            easing = EaseInOut
+                                        )
+                                    )
+                                }
+                            ) {
+                                onBoardingScreen({
+                                    navController.navigate(BottomNavItem.Home.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                })
+                            }
+
+                            composable(
+                                BottomNavItem.Home.route,
+                                enterTransition = {
+                                    when (initialState.destination.route) {
+                                        "OnBoarding" -> slideInVertically(
+                                            initialOffsetY = { it },
+                                            animationSpec = tween(
+                                                durationMillis = 400,
+                                                easing = EaseInOut
+                                            )
+                                        ) + fadeIn(
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        BottomNavItem.Profile.route -> slideInHorizontally(
+                                            initialOffsetX = { -it },
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        BottomNavItem.Timer.route -> slideInHorizontally(
+                                            initialOffsetX = { -it },
+                                            animationSpec = tween(
+                                                durationMillis = 400,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        else -> fadeIn(
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+                                    }
+                                },
+                                exitTransition = {
+                                    when (targetState.destination.route) {
+                                        BottomNavItem.Profile.route -> slideOutHorizontally(
+                                            targetOffsetX = { -it },
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        BottomNavItem.Timer.route -> slideOutHorizontally(
+                                            targetOffsetX = { -it },
+                                            animationSpec = tween(
+                                                durationMillis = 400,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        else -> fadeOut(
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+                                    }
+                                }
+                            ) {
+                                HomeScreen(navController, userName)
+                            }
+                            composable(
+                                BottomNavItem.Profile.route,
+                                enterTransition = {
+                                    when (initialState.destination.route) {
+                                        BottomNavItem.Home.route -> slideInHorizontally(
+                                            initialOffsetX = { it },
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        BottomNavItem.Timer.route -> slideInHorizontally(
+                                            initialOffsetX = { it },
+                                            animationSpec = tween(
+                                                durationMillis = 400,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        else -> fadeIn(
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+                                    }
+                                },
+                                exitTransition = {
+                                    when (targetState.destination.route) {
+                                        BottomNavItem.Home.route -> slideOutHorizontally(
+                                            targetOffsetX = { it },
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        BottomNavItem.Timer.route -> slideOutHorizontally(
+                                            targetOffsetX = { it },
+                                            animationSpec = tween(
+                                                durationMillis = 400,
+                                                easing = EaseInOut
+                                            )
+                                        )
+
+                                        else -> fadeOut(
+                                            animationSpec = tween(
+                                                durationMillis = 300,
+                                                easing = EaseInOut
+                                            )
+                                        )
+                                    }
+                                }
+                            ) {
+                                InsightsScreen()
+                            }
+                            composable(
+                                BottomNavItem.Timer.route,
+                                enterTransition = {
+                                    slideInVertically(
+                                        initialOffsetY = { it },
+                                        animationSpec = tween(
+                                            durationMillis = 500,
                                             easing = EaseInOut
                                         )
                                     ) + fadeIn(
                                         animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    BottomNavItem.Profile.route -> slideInHorizontally(
-                                        initialOffsetX = { -it },
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    BottomNavItem.Timer.route -> slideInHorizontally(
-                                        initialOffsetX = { -it },
-                                        animationSpec = tween(
                                             durationMillis = 400,
                                             easing = EaseInOut
                                         )
                                     )
-
-                                    else -> fadeIn(
+                                },
+                                exitTransition = {
+                                    slideOutVertically(
+                                        targetOffsetY = { it },
+                                        animationSpec = tween(
+                                            durationMillis = 400,
+                                            easing = EaseInOut
+                                        )
+                                    ) + fadeOut(
+                                        animationSpec = tween(
+                                            durationMillis = 300,
+                                            easing = EaseInOut
+                                        )
+                                    )
+                                },
+                                popExitTransition = {
+                                    slideOutVertically(
+                                        targetOffsetY = { it },
+                                        animationSpec = tween(
+                                            durationMillis = 400,
+                                            easing = EaseInOut
+                                        )
+                                    ) + fadeOut(
                                         animationSpec = tween(
                                             durationMillis = 300,
                                             easing = EaseInOut
                                         )
                                     )
                                 }
-                            },
-                            exitTransition = {
-                                when (targetState.destination.route) {
-                                    BottomNavItem.Profile.route -> slideOutHorizontally(
-                                        targetOffsetX = { -it },
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    BottomNavItem.Timer.route -> slideOutHorizontally(
-                                        targetOffsetX = { -it },
-                                        animationSpec = tween(
-                                            durationMillis = 400,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    else -> fadeOut(
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-                                }
+                            ) {
+                                TimerScreen(LocalContext.current, timerSharedViewModel)
                             }
-                        ) {
-                            HomeScreen(navController, userName)
-                        }
-                        composable(
-                            BottomNavItem.Profile.route,
-                            enterTransition = {
-                                when (initialState.destination.route) {
-                                    BottomNavItem.Home.route -> slideInHorizontally(
-                                        initialOffsetX = { it },
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    BottomNavItem.Timer.route -> slideInHorizontally(
-                                        initialOffsetX = { it },
-                                        animationSpec = tween(
-                                            durationMillis = 400,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    else -> fadeIn(
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-                                }
-                            },
-                            exitTransition = {
-                                when (targetState.destination.route) {
-                                    BottomNavItem.Home.route -> slideOutHorizontally(
-                                        targetOffsetX = { it },
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    BottomNavItem.Timer.route -> slideOutHorizontally(
-                                        targetOffsetX = { it },
-                                        animationSpec = tween(
-                                            durationMillis = 400,
-                                            easing = EaseInOut
-                                        )
-                                    )
-
-                                    else -> fadeOut(
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-                                }
-                            }
-                        ) {
-                            InsightsScreen()
-                        }
-                        composable(
-                            BottomNavItem.Timer.route,
-                            enterTransition = {
-                                slideInVertically(
-                                    initialOffsetY = { it },
-                                    animationSpec = tween(
-                                        durationMillis = 500,
-                                        easing = EaseInOut
-                                    )
-                                ) + fadeIn(
-                                    animationSpec = tween(
-                                        durationMillis = 400,
-                                        easing = EaseInOut
-                                    )
-                                )
-                            },
-                            exitTransition = {
-                                slideOutVertically(
-                                    targetOffsetY = { it },
-                                    animationSpec = tween(
-                                        durationMillis = 400,
-                                        easing = EaseInOut
-                                    )
-                                ) + fadeOut(
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = EaseInOut
-                                    )
-                                )
-                            },
-                            popExitTransition = {
-                                slideOutVertically(
-                                    targetOffsetY = { it },
-                                    animationSpec = tween(
-                                        durationMillis = 400,
-                                        easing = EaseInOut
-                                    )
-                                ) + fadeOut(
-                                    animationSpec = tween(
-                                        durationMillis = 300,
-                                        easing = EaseInOut
-                                    )
-                                )
-                            }
-                        ) {
-                            TimerScreen(LocalContext.current, timerSharedViewModel)
                         }
                     }
                 }
