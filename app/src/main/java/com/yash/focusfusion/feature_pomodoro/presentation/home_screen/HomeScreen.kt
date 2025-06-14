@@ -65,6 +65,7 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun HomeScreen(
     navController: NavController,
+    userName:String,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
@@ -73,6 +74,7 @@ fun HomeScreen(
     val weeklySessionState by homeScreenViewModel.weeklySessions.collectAsState()
     val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
+
 
     Log.d("TOTALTIMETODAY", currentDayTotalHours.toString())
     val todaysDate = remember { LocalDate.now() }
@@ -138,7 +140,7 @@ fun HomeScreen(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())  // Add scroll modifier
         ) {
-            GreetingHead("Yashveer Singh", modifier = Modifier.padding(top = 30.dp))
+            GreetingHead(userName, modifier = Modifier.padding(top = 30.dp))
             HomeScreenWaveLineChart(
                 navController,
                 minutesFocused,
