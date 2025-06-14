@@ -35,6 +35,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.HomeScreen
@@ -80,6 +82,7 @@ class MainActivity : ComponentActivity() {
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
     private val timerSharedViewModel: TimerSharedViewModel by viewModels()
+    private var isOnBoardingCompleted:Boolean=false
 
     private var userName: String = ""
 
@@ -175,7 +178,7 @@ class MainActivity : ComponentActivity() {
                 val userName by dataStoreManager.userNameFlow.collectAsState(initial = "")
 
                 LaunchedEffect(Unit) {
-                    val isOnBoardingCompleted = dataStoreManager.onBoardingCompletedFlow.first()
+                     isOnBoardingCompleted = dataStoreManager.onBoardingCompletedFlow.first()
                     val continueTimer = dataStoreManager.continueTimerFlow.first()
 
                     startDestination = when {
@@ -190,12 +193,17 @@ class MainActivity : ComponentActivity() {
 
 
                 Scaffold(bottomBar = {
-//                    if (isOnBoardingCompleted) {
+
+                    // Observe the current route
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+
+                    if (currentRoute != "OnBoarding") {
                     CustomBottomNav(
                         navController = navController,
                         items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
                     )
-//                    }
+                    }
                 }
                 ) { innerPadding ->
 
