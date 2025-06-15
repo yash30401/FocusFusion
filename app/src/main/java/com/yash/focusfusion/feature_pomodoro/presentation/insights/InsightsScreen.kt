@@ -88,15 +88,27 @@ fun InsightsScreen(
     }
     val todaysDate = LocalDate.now()
 
-    var currentWeekRange by remember {
-        mutableStateOf(
-            todaysDate.with(
-                TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
-            ).dayOfMonth.toString() + "-" +
-                todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
+    val currentWeekStartDate = LocalDate.now()
+        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
+    var currentWeekStartTimestamp by remember {
+        mutableStateOf(
+            currentWeekStartDate
+                .atStartOfDay(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
         )
     }
+    var currentWeekEndTimestamp by remember {
+        mutableStateOf(
+            (currentWeekStartDate.plusDays(6)
+                ).atTime(23, 59, 59)
+                .atZone(ZoneId.systemDefault())
+                .toInstant()
+                .toEpochMilli()
+        )
+    }
+
     var monthSelectedFromWeekRange by remember {
         mutableStateOf(
             if (todaysDate.month.value < 10) "0" + todaysDate.month.value.toString() else
@@ -196,24 +208,7 @@ fun InsightsScreen(
                         1 -> {
                             currentTimePeriodTab = TimeRange.Week
                             currentSelectedTimePeriod = 1
-                            val listOfWeekRange = currentWeekRange.split('-')
-                            println(listOfWeekRange)
 
-                            val currentWeekStartDate = LocalDate.now()
-                                .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-
-                            val currentWeekEndDate = currentWeekStartDate.plusDays(6)
-
-                            val currentWeekStartTimestamp = currentWeekStartDate
-                                .atStartOfDay(ZoneId.systemDefault())
-                                .toInstant()
-                                .toEpochMilli()
-
-                            val currentWeekEndTimestamp = currentWeekEndDate
-                                .atTime(23, 59, 59)
-                                .atZone(ZoneId.systemDefault())
-                                .toInstant()
-                                .toEpochMilli()
 
                             insightsViewModel.onEvent(
                                 InsightsEvent.WeekEvent(
@@ -359,8 +354,8 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Week -> {
-                                currentWeekRange = dateOrRange!!
-                                monthSelectedFromWeekRange = month!!
+                                currentWeekStartTimestamp = dateOrRange?.toLong()!!
+                                currentWeekEndTimestamp = month?.toLong()!!
                                 yearSelectedFromWeekRange = year!!
                             }
 
@@ -382,8 +377,8 @@ fun InsightsScreen(
                             }
 
                             TimeRange.Week -> {
-                                currentWeekRange = dateOrRange!!
-                                monthSelectedFromWeekRange = month!!
+                                currentWeekStartTimestamp = dateOrRange?.toLong()!!
+                                currentWeekEndTimestamp = month?.toLong()!!
                                 yearSelectedFromWeekRange = year!!
                             }
 

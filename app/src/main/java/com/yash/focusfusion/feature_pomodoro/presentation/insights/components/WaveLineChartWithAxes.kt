@@ -68,6 +68,7 @@ import androidx.compose.ui.zIndex
 import com.yash.focusfusion.R
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.Temporal
 import java.time.temporal.TemporalAdjuster
@@ -127,7 +128,7 @@ fun WaveLineChartWithAxes(
     var currentWeekRange by remember {
         mutableStateOf(
             startOfWeek.dayOfMonth.toString() + "-" +
-                    endOfWeek.dayOfMonth.toString()
+                endOfWeek.dayOfMonth.toString()
         )
     }
 
@@ -174,7 +175,6 @@ fun WaveLineChartWithAxes(
         )
     }
 
-
 //    val drawWaveLineAnimation by rememberInfiniteTransition()
 //        .animateFloat(
 //            initialValue = 0f, targetValue = 1f, animationSpec = infiniteRepeatable(
@@ -188,7 +188,7 @@ fun WaveLineChartWithAxes(
     val currentImmutableWeekRange = todaysDate.with(
         TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)
     ).dayOfMonth.toString() + "-" +
-            todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
+        todaysDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).dayOfMonth.toString()
 
     when (timeRange) {
         TimeRange.Day -> {
@@ -247,16 +247,20 @@ fun WaveLineChartWithAxes(
                             startOfWeek = startOfWeek.minusWeeks(1)
                             endOfWeek = endOfWeek.minusWeeks(1)
                             currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
-                                    endOfWeek.dayOfMonth.toString()
+                                endOfWeek.dayOfMonth.toString()
 
-                            currentMonth = "${
-                                if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
-                                else startOfWeek.month.value.toString()
-                            }"
+                            val startTimestamp = startOfWeek.atStartOfDay(ZoneId.systemDefault())
+                                .toInstant()
+                                .toEpochMilli()
+
+                            val endTimestamp = endOfWeek.atTime(23, 59, 59)
+                                .atZone(ZoneId.systemDefault())
+                                .toInstant()
+                                .toEpochMilli()
 
                             onPreviousClick(
-                                currentWeekRange,
-                                currentMonth, currentYear.toString()
+                                startTimestamp.toString(),
+                                endTimestamp.toString(), ""
                             )
 
                         }
@@ -288,7 +292,6 @@ fun WaveLineChartWithAxes(
 
                         }
                     }
-
 
                 }) {
                     Icon(
@@ -375,7 +378,6 @@ fun WaveLineChartWithAxes(
                 IconButton(onClick = {
                     // Next Date On Click
 
-
                     when (timeRange) {
                         TimeRange.Day -> {
                             currentDate =
@@ -391,16 +393,21 @@ fun WaveLineChartWithAxes(
                                 startOfWeek = startOfWeek.plusWeeks(1)
                                 endOfWeek = endOfWeek.plusWeeks(1)
                                 currentWeekRange = startOfWeek.dayOfMonth.toString() + "-" +
-                                        endOfWeek.dayOfMonth.toString()
+                                    endOfWeek.dayOfMonth.toString()
 
-                                currentMonth = "${
-                                    if (startOfWeek.month.value < 10) "0" + startOfWeek.month.value.toString()
-                                    else startOfWeek.month.value.toString()
-                                }"
+                                val startTimestamp = startOfWeek.atStartOfDay(ZoneId.systemDefault())
+                                    .toInstant()
+                                    .toEpochMilli()
+
+                                val endTimestamp = endOfWeek.atTime(23, 59, 59)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toInstant()
+                                    .toEpochMilli()
+
                                 onNextClick(
-                                    currentWeekRange,
-                                    currentMonth,
-                                    currentYear.toString()
+                                    startTimestamp.toString(),
+                                    endTimestamp.toString(),
+                                    ""
                                 )
 
                             }
@@ -508,7 +515,6 @@ fun WaveLineChartWithAxes(
                     textSize = 28f
                     textAlign = Paint.Align.RIGHT
                 }
-
 
                 // Y-axis labels
                 for (i in 0..numberOfSteps) {
@@ -623,7 +629,6 @@ fun WaveLineChartWithAxes(
         }
     }
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
