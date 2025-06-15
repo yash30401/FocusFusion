@@ -29,6 +29,7 @@ class DatastoreManager(private val context: Context) {
         val USER_NAME_KEY = stringPreferencesKey("USER_NAME_KEY")
         val ON_BOARDING_COMPLETED_KEY = booleanPreferencesKey("ON_BOARDING_COMPLETED_KEY")
         val TASK_TAG = stringPreferencesKey("TASK_TAG")
+        val STREAK = intPreferencesKey("STREAK")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -59,6 +60,10 @@ class DatastoreManager(private val context: Context) {
 
     val taskTag: Flow<String> = context.dataStore.data.map { prefrences ->
         prefrences[TASK_TAG] ?: ""
+    }
+
+    val streak: Flow<Int> = context.dataStore.data.map { prefrences ->
+        prefrences[STREAK] ?: 0
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -128,6 +133,16 @@ class DatastoreManager(private val context: Context) {
             }
         } catch (e: Exception) {
             Log.e(DATASTORELOGS, "Error saving task tag", e)
+        }
+    }
+
+    suspend fun saveStreakCount(count: Int) {
+        try {
+            context.dataStore.edit { prefrences ->
+                prefrences[STREAK] = count
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving streak count", e)
         }
     }
 }

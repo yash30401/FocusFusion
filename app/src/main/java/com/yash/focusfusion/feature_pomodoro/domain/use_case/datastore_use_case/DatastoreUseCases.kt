@@ -11,5 +11,7 @@ data class DatastoreUseCases(
     val saveCancelTimeLeftUseCase: SaveCancelTimeLeftUseCase,
     val saveUserNameUseCase: SaveUserNameUseCase,
     val getUserNameUseCase: GetUserNameUseCase,
-    val onboardingUseCase: CompleteOnboardingUseCase
+    val onboardingUseCase: CompleteOnboardingUseCase,
+    val calculateAndSaveStreakUseCase: CalculateAndSaveStreakUseCase,
+    val getStreakCountUseCase: GetStreakCountUseCase
 )

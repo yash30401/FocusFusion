@@ -92,6 +92,7 @@ import java.util.concurrent.TimeUnit
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenWaveLineChart(
+    streak:Int,
     navController: NavController,
     minutesData: List<Float>,
     timeRange: TimeRange,
@@ -262,7 +263,7 @@ fun HomeScreenWaveLineChart(
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
-                                append("2")
+                                append(streak.toString())
                             }
 
                             withStyle(
@@ -549,6 +550,7 @@ fun HomeScreenWaveLineChartPreview() {
 
     val navController = rememberNavController()
     HomeScreenWaveLineChart(
+        2,
         navController,
         minutesData = minutesWorked,
         timeRange = TimeRange.Year,

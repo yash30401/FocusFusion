@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,6 +46,7 @@ import com.yash.focusfusion.core.util.getTaskTagIconRes
 import com.yash.focusfusion.core.util.getTimeListInFormattedWayWithDuration
 import com.yash.focusfusion.core.util.getTotalDurationWeeklyUsingHashMap
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.GreetingHead
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HomeScreenWaveLineChart
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.TimeDistributionCard
@@ -60,12 +62,14 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.util.Date
 import java.util.concurrent.TimeUnit
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     navController: NavController,
-    userName:String,
+    userName: String,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
@@ -74,6 +78,10 @@ fun HomeScreen(
     val weeklySessionState by homeScreenViewModel.weeklySessions.collectAsState()
     val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
+
+    val streak by homeScreenViewModel.streak.collectAsState()
+
+    Log.d("STREAKWORK", streak.toString())
 
 
     Log.d("TOTALTIMETODAY", currentDayTotalHours.toString())
@@ -122,7 +130,6 @@ fun HomeScreen(
         .toEpochMilli()
 
 
-
     fetchLastWeekSessions(homeScreenViewModel, lastWeekStartTimestamp, lastWeekEndTimestamp)
 
     initHomeViewModel(
@@ -142,6 +149,7 @@ fun HomeScreen(
         ) {
             GreetingHead(userName, modifier = Modifier.padding(top = 30.dp))
             HomeScreenWaveLineChart(
+                streak,
                 navController,
                 minutesFocused,
                 TimeRange.Week,
@@ -153,7 +161,7 @@ fun HomeScreen(
                 xOffset = 90f,
                 waveAmplitude = 1f,
             )
-            if(!weeklySessionState.isNullOrEmpty()){
+            if (!weeklySessionState.isNullOrEmpty()) {
                 Text(
                     text = "Weekly Time Distribution",
                     modifier = Modifier.padding(start = 16.dp, top = 20.dp),
@@ -184,7 +192,8 @@ fun HomeScreen(
                 val listOfTotalDurationInLastWeekByTask =
                     lastWeekTimeDistributionByTag.map { it }.toList()
 
-                itemsIndexed(items = listOfTotalDurationInWeekByTask,
+                itemsIndexed(
+                    items = listOfTotalDurationInWeekByTask,
                     key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
                 ) { index, (taskTag, duration) ->
                     var isVisible by remember { mutableStateOf(false) }
@@ -217,11 +226,11 @@ fun HomeScreen(
                 }
             }
 
-
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun fetchLastWeekSessions(
     homeScreenViewModel: HomeScreenViewModel,
     lastWeekStartTimestamp: Long,
@@ -251,6 +260,7 @@ fun getMappedDataForChart(weeklySessionState: List<Session>): List<Float> {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 fun initHomeViewModel(
     homeScreenViewModel: HomeScreenViewModel,
     currentWeekStartTimestamp: Long,
@@ -267,9 +277,98 @@ fun initHomeViewModel(
     homeScreenViewModel.onEvent(HomeEvent.todaysHours(todaysDateInMillis ?: 0L))
 }
 
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showBackground = true, showSystemUi = true)
-//@Composable
-//private fun HomeScreenPreview() {
-//    HomeScreen()
-//}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun HomeScreenPreview() {
+    val navController = rememberNavController()
+
+    val weeklySessionState = listOf<Session>(Session(1749576488000, 23, TaskTag.STUDY))
+    val lastWeekSessionState = listOf<Session>(Session(1749148088000, 2, TaskTag.STUDY))
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())  // Add scroll modifier
+        ) {
+            GreetingHead("Yash", modifier = Modifier.padding(top = 30.dp))
+            HomeScreenWaveLineChart(
+                2,
+                navController,
+                listOf(1f, 5f, 2f),
+                TimeRange.Week,
+                modifier = Modifier.padding(16.dp),
+                lineColor = Color(0xff9463ED),
+                currentDayTotalHours = TimeUnit.SECONDS.toHours(8.toLong())
+                    .toInt(),
+                strokeWidth = 5f,
+                xOffset = 90f,
+                waveAmplitude = 1f,
+            )
+            if (!weeklySessionState.isNullOrEmpty()) {
+                Text(
+                    text = "Weekly Time Distribution",
+                    modifier = Modifier.padding(start = 16.dp, top = 20.dp),
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.jost_medium))
+                )
+            }
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .heightIn(max = 2000.dp)
+            ) {
+                val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
+                    it.taskTag
+                }.mapValues {
+                    it.value.sumOf { it.duration }
+                }
+
+                val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
+                    it.taskTag
+                }.mapValues {
+                    it.value.sumOf { it.duration }
+                }
+
+                val listOfTotalDurationInWeekByTask =
+                    weeklyTimeDistributionByTag.map { it }.toList()
+                val listOfTotalDurationInLastWeekByTask =
+                    lastWeekTimeDistributionByTag.map { it }.toList()
+
+                itemsIndexed(
+                    items = listOfTotalDurationInWeekByTask,
+                    key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
+                ) { index, (taskTag, duration) ->
+                    var isVisible by remember { mutableStateOf(false) }
+//
+//
+                    val lastWeekDuration =
+                        listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
+
+                    Log.d("LASTWEEKDURATION", lastWeekDuration.toString())
+
+                    // Animated visibility for sliding in items
+                    LaunchedEffect(Unit) {
+                        isVisible =
+                            true // Trigger the animation once when the item enters composition
+                    }
+
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = isVisible, enter = slideInHorizontally(
+                            initialOffsetX = { fullWidth -> -fullWidth },
+                            animationSpec = tween(durationMillis = 1000)
+                        ) + fadeIn(animationSpec = tween(durationMillis = 1000))
+                    ) {
+                        TimeDistributionCard(
+                            getTaskTagIconRes(taskTag),
+                            taskTag,
+                            TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
+                            TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
+                        )
+                    }
+                }
+            }
+
+        }
+    }
+}

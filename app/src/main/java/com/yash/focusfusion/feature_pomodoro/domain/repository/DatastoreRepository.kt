@@ -10,6 +10,7 @@ interface DatastoreRepository {
     val cancelTimeFlow: Flow<Long>
     val userNameFlow: Flow<String>
     val isOnBoardingCompletedFlow: Flow<Boolean>
+    val streak: Flow<Int>
 
     suspend fun saveTimeLeft(time: Long)
     suspend fun saveExtraTime(extraTime: Int)
@@ -17,4 +18,5 @@ interface DatastoreRepository {
     suspend fun saveCancelTimeLeft(cancelTime: Long)
     suspend fun saveUserName(name: String)
     suspend fun onBoardingCompleted(isCompleted: Boolean)
+    suspend fun saveStreakCount(count:Int)
 }

@@ -14,11 +14,13 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetCancelTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetContinueTimerUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetExtraTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetStreakCountUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetTimeLeftUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveCancelTimeLeftUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveContinueTimerUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveExtraTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.CalculateAndSaveStreakUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveTimeLeftUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.DeleteSessionUseCase
@@ -95,7 +97,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatastoreUseCases(datastoreRepository: DatastoreRepository): DatastoreUseCases {
+    fun provideDatastoreUseCases(
+        datastoreRepository: DatastoreRepository,
+        sessionUseCases: SessionUseCases,
+    ): DatastoreUseCases {
         return DatastoreUseCases(
             getTimeLeftUseCase = GetTimeLeftUseCase(datastoreRepository),
             getExtraTimeUseCase = GetExtraTimeUseCase(datastoreRepository),
@@ -107,7 +112,12 @@ object AppModule {
             saveCancelTimeLeftUseCase = SaveCancelTimeLeftUseCase(datastoreRepository),
             saveUserNameUseCase = SaveUserNameUseCase(datastoreRepository),
             getUserNameUseCase = GetUserNameUseCase(datastoreRepository),
-            onboardingUseCase = CompleteOnboardingUseCase(datastoreRepository)
+            onboardingUseCase = CompleteOnboardingUseCase(datastoreRepository),
+            calculateAndSaveStreakUseCase = CalculateAndSaveStreakUseCase(
+                datastoreRepository,
+                sessionUseCases.getSessionsForDateUseCase
+            ),
+            getStreakCountUseCase = GetStreakCountUseCase(datastoreRepository)
         )
     }
 

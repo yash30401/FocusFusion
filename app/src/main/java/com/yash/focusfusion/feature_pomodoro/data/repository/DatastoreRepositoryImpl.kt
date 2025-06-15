@@ -24,6 +24,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
     override val isOnBoardingCompletedFlow: Flow<Boolean>
         get() = datastoreManager.onBoardingCompletedFlow
 
+    override val streak: Flow<Int>
+        get() = datastoreManager.streak
+
     override suspend fun saveTimeLeft(time: Long) {
         datastoreManager.saveTimeLeft(time)
     }
@@ -46,5 +49,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
 
     override suspend fun onBoardingCompleted(isCompleted: Boolean) {
         datastoreManager.saveOnBoardingCompleted(isCompleted)
+    }
+
+    override suspend fun saveStreakCount(count: Int) {
+        datastoreManager.saveStreakCount(count)
     }
 }
