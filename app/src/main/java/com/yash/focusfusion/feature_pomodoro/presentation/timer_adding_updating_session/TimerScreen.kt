@@ -1,6 +1,5 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session
 
-
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -73,7 +72,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun TimerScreen(
@@ -90,10 +88,10 @@ fun TimerScreen(
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
 
 
+
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
     }
-
 
     var isTakingExtraTime by remember {
         mutableStateOf(false)
@@ -187,7 +185,8 @@ fun TimerScreen(
 
                         TimerService.startService(
                             context.applicationContext,
-                            timer.toLong() * 60 * 1000
+                            timer.toLong() * 60 * 1000,
+                            taskTag.toString()
                         )
 
                     },
@@ -237,12 +236,12 @@ fun TimerScreen(
 
                         Log.d(
                             CHECKINGSESSIONDATA, "Time:- ${endTime}\n" +
-                                    "Duration:- ${
-                                        (TimeUnit.MINUTES.toSeconds(timer.toLong())
-                                            .toInt() - TimeUnit.MILLISECONDS.toSeconds(timeLeft)
-                                            .toInt()) + extraTimeInSeconds.toInt()
-                                    } Seconds\n" +
-                                    "Session Tag:- ${taskTag.name}"
+                                "Duration:- ${
+                                    (TimeUnit.MINUTES.toSeconds(timer.toLong())
+                                        .toInt() - TimeUnit.MILLISECONDS.toSeconds(timeLeft)
+                                        .toInt()) + extraTimeInSeconds.toInt()
+                                } Seconds\n" +
+                                "Session Tag:- ${taskTag.name}"
                         )
 
                         Log.d(
@@ -289,7 +288,8 @@ fun TimerScreen(
                 }
             }
         }
-        SnackbarHost(hostState = snackbarHostState,
+        SnackbarHost(
+            hostState = snackbarHostState,
             snackbar = { data ->
                 Snackbar(snackbarData = data)
             })

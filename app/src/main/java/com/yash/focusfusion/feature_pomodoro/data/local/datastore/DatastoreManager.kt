@@ -12,6 +12,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -27,6 +28,7 @@ class DatastoreManager(private val context: Context) {
         val CANCEL_TIME_LEFT_KEY = longPreferencesKey("CANCEL_TIME_LEFT")
         val USER_NAME_KEY = stringPreferencesKey("USER_NAME_KEY")
         val ON_BOARDING_COMPLETED_KEY = booleanPreferencesKey("ON_BOARDING_COMPLETED_KEY")
+        val TASK_TAG = stringPreferencesKey("TASK_TAG")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -53,6 +55,10 @@ class DatastoreManager(private val context: Context) {
 
     val onBoardingCompletedFlow: Flow<Boolean> = context.dataStore.data.map { prefrences ->
         prefrences[ON_BOARDING_COMPLETED_KEY] ?: false
+    }
+
+    val taskTag: Flow<String> = context.dataStore.data.map { prefrences ->
+        prefrences[TASK_TAG] ?: ""
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -112,6 +118,16 @@ class DatastoreManager(private val context: Context) {
             }
         } catch (e: Exception) {
             Log.e(DATASTORELOGS, "Error saving user's name", e)
+        }
+    }
+
+    suspend fun saveTaskTag(taskTag: String) {
+        try {
+            context.dataStore.edit { prefrences ->
+                prefrences[TASK_TAG] = taskTag
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving task tag", e)
         }
     }
 }

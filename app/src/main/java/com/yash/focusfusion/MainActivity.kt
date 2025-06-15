@@ -53,7 +53,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.yash.focusfusion.core.util.TaskTagMap
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.HomeScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsViewModel
@@ -78,16 +80,13 @@ class MainActivity : ComponentActivity() {
     private var timeLeft: Long by mutableStateOf(1500000L) // Default to 25:00
     private var cancelTimeLeft: Long by mutableStateOf(10000L)
 
+    private var taskTag: TaskTag by mutableStateOf(TaskTag.STUDY)
+
     private lateinit var dataStoreManager: DatastoreManager
     private var extraTime: Int by mutableStateOf(0)
     private var isTimerRunning: Boolean by mutableStateOf(false)
     private val timerSharedViewModel: TimerSharedViewModel by viewModels()
-    private var isOnBoardingCompleted:Boolean=false
-
-    private var userName: String = ""
-
-    // State to control when to show the UI (prevents flash)
-    private var isInitialized: Boolean by mutableStateOf(false)
+    private var isOnBoardingCompleted: Boolean = false
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -100,14 +99,20 @@ class MainActivity : ComponentActivity() {
             extraTime = intent?.getIntExtra("EXTRA_TIME", 0) ?: 0
             isTimerRunning = if (isFinished) false else timeLeft > 0
 
+            val taskToTaskTag = intent?.getStringExtra("TASK_TAG")
+
+            taskTag = TaskTagMap.mapTaskTagString(taskToTaskTag.toString())
+
             lifecycleScope.launch(Dispatchers.IO) {
                 dataStoreManager.saveTimeLeft(timeLeft)
                 dataStoreManager.saveExtraTime(extraTime)
                 dataStoreManager.saveContinueTimer(isTimerRunning)
+                dataStoreManager.saveTaskTag(taskTag.toString())
 
                 timerSharedViewModel.updateTimeLeft(timeLeft)
                 timerSharedViewModel.updateExtraTime(extraTime)
                 timerSharedViewModel.updateIsRunning(isTimerRunning)
+                timerSharedViewModel.updateWorkTag(taskTag)
             }
 
             lifecycleScope.launch(Dispatchers.IO) {
@@ -164,6 +169,13 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        lifecycleScope.launch(Dispatchers.IO) {
+            dataStoreManager.taskTag.collect { taskTag ->
+                timerSharedViewModel.updateWorkTag(TaskTagMap.mapTaskTagString(taskTag))
+                Log.d("TASKTAGFIND",taskTag.toString())
+            }
+        }
+
 
 
 
@@ -178,7 +190,7 @@ class MainActivity : ComponentActivity() {
                 val userName by dataStoreManager.userNameFlow.collectAsState(initial = "")
 
                 LaunchedEffect(Unit) {
-                     isOnBoardingCompleted = dataStoreManager.onBoardingCompletedFlow.first()
+                    isOnBoardingCompleted = dataStoreManager.onBoardingCompletedFlow.first()
                     val continueTimer = dataStoreManager.continueTimerFlow.first()
 
                     startDestination = when {
@@ -199,10 +211,10 @@ class MainActivity : ComponentActivity() {
                     val currentRoute = navBackStackEntry?.destination?.route
 
                     if (currentRoute != "OnBoarding") {
-                    CustomBottomNav(
-                        navController = navController,
-                        items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
-                    )
+                        CustomBottomNav(
+                            navController = navController,
+                            items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
+                        )
                     }
                 }
                 ) { innerPadding ->

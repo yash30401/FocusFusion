@@ -61,18 +61,17 @@ fun TimerProgressBar(
     onTaskTagChanged: (TaskTag) -> Unit,
 ) {
 
-
     val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
-
+    val workState by timerSharedViewModel.workState.collectAsState()
+    val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
 
     var taskTag by remember {
-        mutableStateOf(TaskTag.STUDY)
+        mutableStateOf(workState)
     }
 
     var showDialog by remember {
         mutableStateOf(false)
     }
-
 
     val progress = remember(timeLeft) {
         derivedStateOf {
@@ -201,18 +200,21 @@ fun TimerProgressBar(
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.width(90.dp)
             ) {
+
                 Text(
                     text = taskTag.name.toLowerCase().replaceFirstChar { it.uppercase() },
                     color = Color(0xFFFF8D61),
                     fontSize = if (taskTag.name.length > 6) 18.sp else 24.sp,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.clickable {
+                    modifier = if (!isTimerRunning) Modifier.clickable {
                         showDialog = true
-                    }
+                    } else Modifier.clickable {}
                 )
                 IconButton(onClick = {
-                    showDialog = true
+                    if (!isTimerRunning) {
+                        showDialog = true
+                    }
                 }) {
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_edit_24),
@@ -225,7 +227,6 @@ fun TimerProgressBar(
     }
 
 }
-
 
 @Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFFFFFFF)
 @Composable

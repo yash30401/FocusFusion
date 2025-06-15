@@ -13,6 +13,7 @@ import android.os.CountDownTimer
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
+import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -27,6 +28,7 @@ class TimerService : Service() {
     private var timeLeft: Long = 0
     private var extraTime: Int = 0
     private var cancelTimeLeft: Long = 0
+    private var taskTag: String = ""
 
     private lateinit var dataStoreManager: DatastoreManager
 
@@ -49,6 +51,7 @@ class TimerService : Service() {
         when (intent?.action) {
             Actions.START.toString() -> {
                 timeLeft = intent.getLongExtra("TIME_LEFT", 0L)
+                taskTag = intent.getStringExtra("TASK_TAG").toString()
                 startTimer(timeLeft)
             }
 
@@ -89,6 +92,7 @@ class TimerService : Service() {
 
 
                 broadcastIntent.putExtra("TIME_LEFT", millisUntilFinished)
+                broadcastIntent.putExtra("TASK_TAG", taskTag.toString())
                 sendBroadcast(broadcastIntent)
             }
 
@@ -115,6 +119,7 @@ class TimerService : Service() {
 
         scope.launch {
             dataStoreManager.saveContinueTimer(true)
+            dataStoreManager.saveTaskTag(taskTag)
         }
     }
 
@@ -168,11 +173,13 @@ class TimerService : Service() {
         timeLeft = 1500000L // 25 minutes
         extraTime = 0
         cancelTimeLeft = 10000L
+        taskTag = "STUDY"
 
         scope.launch {
             dataStoreManager.saveTimeLeft(timeLeft)
             dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
             dataStoreManager.saveExtraTime(extraTime)
+            dataStoreManager.saveTaskTag(taskTag)
         }
 
         val notification = NotificationCompat.Builder(this, "101")
@@ -189,7 +196,8 @@ class TimerService : Service() {
         broadcastIntent.putExtra("TIME_LEFT", timeLeft)
         broadcastIntent.putExtra("CANCEL_TIME_LEFT", cancelTimeLeft)
         broadcastIntent.putExtra("EXTRA_TIME", extraTime)
-        broadcastIntent.putExtra("IS_FINISHED", true) // // Signal that the timer has stopped
+        broadcastIntent.putExtra("IS_FINISHED", true)
+        broadcastIntent.putExtra("TASK_TAG", taskTag)
         sendBroadcast(broadcastIntent)
 
         stopForeground(true)
@@ -226,6 +234,7 @@ class TimerService : Service() {
             dataStoreManager.saveTimeLeft(timeLeft)
             dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
             dataStoreManager.saveExtraTime(extraTime)
+            dataStoreManager.saveTaskTag(taskTag)
         }
         super.onDestroy()
     }
@@ -236,10 +245,11 @@ class TimerService : Service() {
     }
 
     companion object {
-        fun startService(context: Context, timeLeft: Long) {
+        fun startService(context: Context, timeLeft: Long, taskTag: String) {
             val startIntent = Intent(context, TimerService::class.java).apply {
                 action = Actions.START.toString()
                 putExtra("TIME_LEFT", timeLeft)
+                putExtra("TASK_TAG", taskTag)
             }
             context.startService(startIntent)
         }
