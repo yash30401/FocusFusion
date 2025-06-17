@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.GreetingUtil
-import com.yash.focusfusion.core.util.GreetingUtil.getGreetingText
+import com.yash.focusfusion.core.util.GreetingUtil.getCurrentGreeting
 import java.time.LocalTime
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -27,7 +27,7 @@ fun GreetingHead(
 ) {
     Column(modifier = modifier.padding(10.dp)) {
         Text(
-            "${LocalTime.now().getGreetingText()},",
+            "${getCurrentGreeting()},",
             fontFamily = FontFamily(Font(R.font.jost_medium)),
             color = Color(0xffFF8D61),
             fontSize = 28.sp
