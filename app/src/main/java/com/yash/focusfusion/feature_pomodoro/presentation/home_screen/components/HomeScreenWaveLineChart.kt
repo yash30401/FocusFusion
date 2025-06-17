@@ -106,6 +106,7 @@ fun HomeScreenWaveLineChart(
 
     val currentRoute = currentRoute(navController)
 
+
     val minValue = 0f   // Y-axis min (0 minutes)
     val maxValue =
         (minutesData.maxOrNull() ?: minValue).coerceAtLeast(minValue)  // Y-axis max based on data

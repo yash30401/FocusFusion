@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.time.Instant
+import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
@@ -20,27 +22,49 @@ class CalculateAndSaveStreakUseCase @Inject constructor(
     private val getSessionsForDateUseCase: GetSessionsForDateUseCase,
 ) {
 
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     suspend operator fun invoke() = withContext(Dispatchers.IO) {
-        Log.d("STREAKWORK"," Start Cal")
+        Log.d("STREAKWORK", "Starting streak recalculation...")
 
-        var currentStreak: Int = datastoreRepository.streak.first()
-        Log.d("STREAKWORK"," Current Streak:- ${currentStreak}")
-        val todaysDate = Instant.now().toEpochMilli()
-//        val yesterdayDate = Instant.now().minus(1, ChronoUnit.DAYS).toEpochMilli()
+        var calculatedStreak = 0
+        var checkDate = LocalDate.now()
 
-        val todaysSessions = getSessionsForDateUseCase(todaysDate).first()
-        val todaysSessionsSize = todaysSessions.size
-//        val yesterdaySessionSize = getSessionsForDateUseCase.invoke(yesterdayDate).count()
-        Log.d("STREAKWORK"," SessionSize:- ${todaysSessionsSize}")
+        // First, check if the user has done any sessions today.
+        // If not, the streak is based on days up to and including yesterday.
+        val todaysSession = getSessionsForDateUseCase.invoke(
+            checkDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        ).first()
 
-        if (todaysSessionsSize >= 1) {
-            currentStreak++
-            datastoreRepository.saveStreakCount(currentStreak)
-        } else {
-            datastoreRepository.saveStreakCount(0)
+        if (todaysSession.isEmpty()) {
+            // If no sessions today yet, the streak is for consecutive days ending yesterday.
+            // So we start our backward check from yesterday.
+            checkDate = checkDate.minusDays(1)
+        }
+
+        while (true) {
+            val dateInMillis =
+                checkDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val sessionsOnDate = getSessionsForDateUseCase.invoke(dateInMillis).first()
+
+            if (sessionsOnDate.isNotEmpty()) {
+                // Found a day with sessions, increment streak and check the previous day.
+                calculatedStreak++
+                checkDate = checkDate.minusDays(1)
+            } else {
+                break
+            }
+
+            val oldStreak = datastoreRepository.streak.first()
+            if (oldStreak != calculatedStreak) {
+                datastoreRepository.saveStreakCount(calculatedStreak)
+                Log.d(
+                    "STREAKWORK",
+                    "Streak recalculated. Old value: $oldStreak, New value: $calculatedStreak"
+                )
+            } else {
+                Log.d("STREAKWORK", "Streak is up-to-date. Value: $calculatedStreak")
+            }
+
         }
     }
 

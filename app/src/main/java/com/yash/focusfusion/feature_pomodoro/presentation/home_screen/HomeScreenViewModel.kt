@@ -44,7 +44,7 @@ class HomeScreenViewModel @Inject constructor(
     val streak: StateFlow<Int> = _streak.asStateFlow()
 
     init {
-        calculateAndGetStreak()
+        getStreak()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -123,10 +123,10 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun calculateAndGetStreak() = viewModelScope.launch {
-
-        datastoreUseCases.calculateAndSaveStreakUseCase()
-        Log.d("STREAKWORK", " Viewmodel")
-        _streak.value = datastoreUseCases.getStreakCountUseCase().first()
+    private fun getStreak() = viewModelScope.launch {
+        datastoreUseCases.getStreakCountUseCase().collect {
+            _streak.value = it
+            Log.d("STREAKWORK", "Viewmodel Streak Count:- $it")
+        }
     }
 }
