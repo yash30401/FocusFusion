@@ -1,5 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -13,7 +15,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
+import com.yash.focusfusion.core.util.GreetingUtil
+import com.yash.focusfusion.core.util.GreetingUtil.getGreetingText
+import java.time.LocalTime
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun GreetingHead(
     nameOfPerson: String,
@@ -21,7 +27,7 @@ fun GreetingHead(
 ) {
     Column(modifier = modifier.padding(10.dp)) {
         Text(
-            "Good Morning,",
+            "${LocalTime.now().getGreetingText()},",
             fontFamily = FontFamily(Font(R.font.jost_medium)),
             color = Color(0xffFF8D61),
             fontSize = 28.sp
@@ -34,6 +40,7 @@ fun GreetingHead(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 private fun GreetingHeadPreview() {
