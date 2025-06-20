@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,11 +55,14 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
 )
 @Composable
 private fun SettingsScreenPreview() {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 20.dp)
+    ) {
 
         Box(
             modifier = Modifier
-                .background(Color.Yellow)
                 .padding(top = 40.dp),
             contentAlignment = Alignment.TopCenter
         ) {
@@ -75,9 +79,6 @@ private fun SettingsScreenPreview() {
 
             Column(
                 modifier = Modifier
-                    .padding(
-                        horizontal = 20.dp,
-                    )
                     .padding(top = 70.dp)
                     .fillMaxWidth()
                     .height(120.dp)
@@ -111,6 +112,48 @@ private fun SettingsScreenPreview() {
                 }
 
             }
+        }
+
+        Spacer(Modifier.height(40.dp))
+
+        Text(
+            text = "Timer Settings",
+            fontFamily = FontFamily(Font(R.font.jost_medium)),
+            fontSize = 30.sp
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(5.dp, RoundedCornerShape(20.dp))
+                .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
+
+        ) {
+
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 10.dp, horizontal = 20.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Timer Interval",
+                    modifier = Modifier.weight(1f),
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                )
+
+                IconButton(onClick = {}) {
+                    Icon(
+                        Icons.Outlined.Edit,
+                        contentDescription = "Edit Name",
+                        tint = Color.Black
+                    )
+                }
+            }
+
         }
     }
 }
