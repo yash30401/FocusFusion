@@ -2,7 +2,9 @@ package com.yash.focusfusion.feature_pomodoro.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetUserNameUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveFocusTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.OnboardingNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +19,8 @@ import javax.inject.Inject
 class SettingsViewModel @Inject constructor(
     private val saveUserNameUseCase: SaveUserNameUseCase,
     private val getUserNameUseCase: GetUserNameUseCase,
+    private val saveFocusTimeUseCase: SaveFocusTimeUseCase,
+    private val getFocusTimeUseCase: GetFocusTimeUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -34,8 +38,6 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
-
-
     private fun handleNameChange(name: String) = viewModelScope.launch {
         try {
             if (validateName(name)) {
@@ -52,8 +54,15 @@ class SettingsViewModel @Inject constructor(
 
     private fun handleTimeChange(time: Int) = viewModelScope.launch {
         try {
+            saveFocusTimeUseCase(time)
 
-        }catch (e: Exception){
+            getFocusTimeUseCase().collect {
+                _uiState.value = _uiState.value.copy(
+                    timeInterval = it,
+                    isLoading = false
+                )
+            }
+        } catch (e: Exception) {
             handleError("An unexpected error occurred while changing the time.")
         }
     }

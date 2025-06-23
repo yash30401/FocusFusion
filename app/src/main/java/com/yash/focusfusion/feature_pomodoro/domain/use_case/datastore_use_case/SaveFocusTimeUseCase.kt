@@ -10,6 +10,6 @@ class SaveFocusTimeUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(time:Int) = withContext(Dispatchers.IO) {
-
+        datastoreRepository.saveFocusTime(time)
     }
 }
