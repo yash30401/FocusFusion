@@ -27,6 +27,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
     override val streak: Flow<Int>
         get() = datastoreManager.streak
 
+    override val focusTime: Flow<Int>
+        get() = datastoreManager.focusTime
+
     override suspend fun saveTimeLeft(time: Long) {
         datastoreManager.saveTimeLeft(time)
     }
@@ -53,5 +56,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
 
     override suspend fun saveStreakCount(count: Int) {
         datastoreManager.saveStreakCount(count)
+    }
+
+    override suspend fun saveFocusTime(time: Int) {
+        datastoreManager.saveFocusTime(time)
     }
 }

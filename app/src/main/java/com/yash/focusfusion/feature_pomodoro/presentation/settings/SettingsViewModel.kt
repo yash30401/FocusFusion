@@ -6,6 +6,7 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.OnboardingNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,9 +28,13 @@ class SettingsViewModel @Inject constructor(
                 handleNameChange(event.name)
             }
 
-            is SettingsUiEvent.onTimerChange -> {}
+            is SettingsUiEvent.onTimerChange -> {
+                handleTimeChange(event.time)
+            }
         }
     }
+
+
 
     private fun handleNameChange(name: String) = viewModelScope.launch {
         try {
@@ -42,6 +47,14 @@ class SettingsViewModel @Inject constructor(
             )
         } catch (e: Exception) {
             handleError("An unexpected error occurred")
+        }
+    }
+
+    private fun handleTimeChange(time: Int) = viewModelScope.launch {
+        try {
+
+        }catch (e: Exception){
+            handleError("An unexpected error occurred while changing the time.")
         }
     }
 
