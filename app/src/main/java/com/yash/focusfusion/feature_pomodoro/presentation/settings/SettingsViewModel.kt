@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -27,53 +28,93 @@ class SettingsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
-    init {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                name = getUserNameUseCase()
-            )
-        }
+    // Track ongoing operations to prevent concurrent modifications
+    private var saveNameJob: Job? = null
+    private var saveTimeJob: Job? = null
 
+    init {
+        loadInitialData()
+    }
+
+    private fun loadInitialData() = viewModelScope.launch {
+        try {
+
+            val userName = getUserNameUseCase()
+            val focusTime = getFocusTimeUseCase().first()
+
+            _uiState.value = _uiState.value.copy(
+                name = userName,
+                timeInterval = focusTime,
+                isLoading = false
+            )
+
+        } catch (e: Exception) {
+            handleError("Failed to load settings: ${e.message}")
+        }
     }
 
     fun onEvent(event: SettingsUiEvent) {
         when (event) {
             is SettingsUiEvent.onNameChanged -> {
-                handleNameChange(event.name)
+                saveNameJob?.cancel()  // Cancel previous operation
+                saveNameJob = handleNameChange(event.name)
             }
 
             is SettingsUiEvent.onTimerChange -> {
-                handleTimeChange(event.time)
+                saveTimeJob?.cancel()
+                saveTimeJob = handleTimeChange(event.time)
             }
         }
     }
 
     private fun handleNameChange(name: String) = viewModelScope.launch {
+        val trimmedName = name.trim()
+
+        // Update UI immediately for better UX
+        _uiState.value = _uiState.value.copy(
+            name = name, // Show what user typed
+            isLoading = true,
+            error = null
+        )
+
         try {
-            if (validateName(name)) {
+            if (validateName(trimmedName)) {
                 saveUserNameUseCase(name)
+                _uiState.value = _uiState.value.copy(
+                    name = trimmedName,
+                    isLoading = false,
+                )
+            } else {
+                handleError("Name must be at least 2 characters long")
             }
-            _uiState.value = _uiState.value.copy(
-                name = getUserNameUseCase(),
-                isLoading = false,
-            )
         } catch (e: Exception) {
-            handleError("An unexpected error occurred")
+            // Revert to previous valid state
+            val previousName = getUserNameUseCase()
+            _uiState.value = _uiState.value.copy(
+                name = previousName,
+                isLoading = false
+            )
+            handleError("Failed to save name: ${e.message}")
         }
     }
 
     private fun handleTimeChange(time: Int) = viewModelScope.launch {
+        _uiState.value = _uiState.value.copy(
+            isLoading = true,
+            error = null
+        )
         try {
             saveFocusTimeUseCase(time)
 
-            getFocusTimeUseCase().collect {
-                _uiState.value = _uiState.value.copy(
-                    timeInterval = it,
-                    isLoading = false
-                )
-            }
+            // Verify the save was successful
+            val savedTime = getFocusTimeUseCase().first()
+            _uiState.value = _uiState.value.copy(
+                timeInterval = savedTime,
+                isLoading = false
+            )
+
         } catch (e: Exception) {
-            handleError("An unexpected error occurred while changing the time.")
+            handleError("Failed to save focus time: ${e.message}")
         }
     }
 
@@ -86,6 +127,12 @@ class SettingsViewModel @Inject constructor(
             isLoading = false,
             error = message
         )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        saveNameJob?.cancel()
+        saveTimeJob?.cancel()
     }
 
 }
