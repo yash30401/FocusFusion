@@ -1,5 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.settings
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
@@ -8,6 +9,7 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.OnboardingNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -41,6 +43,10 @@ class SettingsViewModel @Inject constructor(
 
             val userName = getUserNameUseCase()
             val focusTime = getFocusTimeUseCase().first()
+
+            Log.d(
+                "FOCUSTIMEINTERVAL", focusTime.toString()
+            )
 
             _uiState.value = _uiState.value.copy(
                 name = userName,

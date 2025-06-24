@@ -1,5 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.settings
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +37,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -119,7 +121,7 @@ fun SettingsScreen(
                     )
 
                     IconButton(onClick = {
-                        
+
                     }) {
                         Icon(
                             Icons.Outlined.Edit,
@@ -165,8 +167,11 @@ fun SettingsScreen(
 
                 var expanded by remember { mutableStateOf(false) }
                 val items = listOf(15, 25, 30, 45, 50)
-                val poistionOfSelectedItem = items.indexOf(uiState.timeInterval)
-                var selectedItem by remember {
+                Log.d("FOCUSTIMEINTERVAL", "Ui State:- ${uiState.timeInterval}")
+                val poistionOfSelectedItem =
+                    items.indexOf(uiState.timeInterval)
+
+                var selectedItem by remember(poistionOfSelectedItem) {
                     mutableStateOf(items[poistionOfSelectedItem])
                 }
 
