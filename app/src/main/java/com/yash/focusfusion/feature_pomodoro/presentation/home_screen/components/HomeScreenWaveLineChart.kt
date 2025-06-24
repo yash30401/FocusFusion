@@ -518,8 +518,8 @@ fun HomeScreenWaveLineChart(
                     contentColor = Color.White,
 
                     ), onClick = {
-                    if (currentRoute != BottomNavItem.Profile.route) {
-                        navController.navigate(BottomNavItem.Profile.route) {
+                    if (currentRoute != "Insights") {
+                        navController.navigate("Insights") {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }

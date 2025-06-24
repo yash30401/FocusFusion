@@ -62,6 +62,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsViewM
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.CustomBottomNav
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.onBoardingScreen
+import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
@@ -87,6 +88,7 @@ class MainActivity : ComponentActivity() {
     private var isTimerRunning: Boolean by mutableStateOf(false)
     private val timerSharedViewModel: TimerSharedViewModel by viewModels()
     private var isOnBoardingCompleted: Boolean = false
+    private var focusTime: Int = 1
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -172,11 +174,16 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             dataStoreManager.taskTag.collect { taskTag ->
                 timerSharedViewModel.updateWorkTag(TaskTagMap.mapTaskTagString(taskTag))
-                Log.d("TASKTAGFIND",taskTag.toString())
+                Log.d("TASKTAGFIND", taskTag.toString())
             }
         }
 
 
+        lifecycleScope.launch(Dispatchers.IO) {
+            dataStoreManager.focusTime.collect {
+                focusTime = it
+            }
+        }
 
 
         setContent {
@@ -396,6 +403,11 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             ) {
+                                SettingsScreen()
+                            }
+                            composable(
+                                "Insights"
+                            ) {
                                 InsightsScreen()
                             }
                             composable(
@@ -443,7 +455,10 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             ) {
-                                TimerScreen(LocalContext.current, timerSharedViewModel)
+                                TimerScreen(
+                                    LocalContext.current, timerSharedViewModel,
+                                    timer = focusTime
+                                )
                             }
                         }
                     }
