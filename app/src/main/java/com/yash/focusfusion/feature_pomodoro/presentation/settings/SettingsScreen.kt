@@ -114,7 +114,7 @@ fun SettingsScreen(
                         text = uiState.name,
                         modifier = Modifier,
                         textAlign = TextAlign.Center,
-                        fontSize = 30.sp,
+                        fontSize = 20.sp,
                         fontFamily = FontFamily(Font(R.font.jost_medium)),
                     )
 
@@ -159,7 +159,7 @@ fun SettingsScreen(
                 Text(
                     text = "Timer Interval",
                     modifier = Modifier.weight(1f),
-                    fontSize = 22.sp,
+                    fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.jost_medium)),
                 )
 
@@ -170,7 +170,7 @@ fun SettingsScreen(
                     mutableStateOf(items[poistionOfSelectedItem])
                 }
 
-                Box(modifier = Modifier.padding(5.dp)) {
+                Box(modifier = Modifier.padding(1.dp)) {
                     Button(
                         onClick = { expanded = true },
                         colors = ButtonDefaults.buttonColors(
@@ -181,8 +181,8 @@ fun SettingsScreen(
                             selectedItem.toString() + "min",
                             fontFamily = FontFamily(Font(R.font.jost_medium)),
                             color = Color(0xff212121),
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(end = 15.dp)
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(end = 10.dp)
                         )
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
@@ -275,7 +275,7 @@ private fun SettingsScreenPreview() {
                         text = "Yashveer",
                         modifier = Modifier,
                         textAlign = TextAlign.Center,
-                        fontSize = 30.sp,
+                        fontSize = 20.sp,
                         fontFamily = FontFamily(Font(R.font.jost_medium)),
                     )
 
