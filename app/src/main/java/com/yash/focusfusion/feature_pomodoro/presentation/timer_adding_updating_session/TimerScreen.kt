@@ -64,6 +64,7 @@ import com.yash.focusfusion.core.util.Constants.CHECKINGSESSIONDATA
 import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.Dispatchers
@@ -78,15 +79,14 @@ fun TimerScreen(
     context: Context,
     timerSharedViewModel: TimerSharedViewModel,
     modifier: Modifier = Modifier,
-    timer: Int = 1,
     viewModel: SessionViewModel = hiltViewModel(),
 ) {
 
+    val timer by timerSharedViewModel.initialFocusTime.collectAsState()
     val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
     val extraTime by timerSharedViewModel.extraTime.collectAsState()
     val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
-
 
 
     var taskTag by remember {
@@ -141,7 +141,6 @@ fun TimerScreen(
         )
 
         TimerProgressBar(
-            timeInMinutes = timer,
             timerSharedViewModel = timerSharedViewModel,
             onTaskTagChanged = {
                 taskTag = it
@@ -207,6 +206,7 @@ fun TimerScreen(
 
                     val onStop = {
                         timerSharedViewModel.updateIsRunning(false)
+                        timerSharedViewModel.updateFocusTime(timer)
                         // isTimerStarted = false // REMOVE THIS
                         TimerService.stopService(context.applicationContext)
                     }

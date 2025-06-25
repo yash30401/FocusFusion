@@ -73,6 +73,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -181,10 +183,14 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch(Dispatchers.IO) {
             dataStoreManager.focusTime.collect {
+                Log.d("PROGRESSSTARTTIME", "Main Ac:- ${it}")
                 focusTime = it
+                withContext(Dispatchers.Main) {
+                    timerSharedViewModel.updateFocusTime(it)
+                }
             }
-        }
 
+        }
 
         setContent {
             FocusFusionTheme {
@@ -457,7 +463,6 @@ class MainActivity : ComponentActivity() {
                             ) {
                                 TimerScreen(
                                     LocalContext.current, timerSharedViewModel,
-                                    timer = focusTime
                                 )
                             }
                         }

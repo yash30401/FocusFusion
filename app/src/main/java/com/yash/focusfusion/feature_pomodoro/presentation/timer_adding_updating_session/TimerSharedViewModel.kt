@@ -2,13 +2,23 @@ package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 class TimerSharedViewModel() : ViewModel() {
+
+    private val _initialFocusTime = MutableStateFlow(25)
+    val initialFocusTime: StateFlow<Int> get() = _initialFocusTime.asStateFlow()
 
     private val _timeLeft = MutableStateFlow(1500000L)
     val timeLeft: StateFlow<Long> get() = _timeLeft
@@ -24,6 +34,13 @@ class TimerSharedViewModel() : ViewModel() {
 
     private val _workState = MutableStateFlow(TaskTag.STUDY)
     val workState: StateFlow<TaskTag> = _workState.asStateFlow()
+
+    fun updateFocusTime(value: Int) {
+        _initialFocusTime.value = value
+        if (!_isRunning.value) {
+            updateTimeLeft(value * 60000L)
+        }
+    }
 
     fun updateTimeLeft(time: Long) {
         _timeLeft.value = time

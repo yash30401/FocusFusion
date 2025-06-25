@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
@@ -54,13 +55,14 @@ import kotlin.math.sin
 
 @Composable
 fun TimerProgressBar(
-    timeInMinutes: Int,
     timerSharedViewModel: TimerSharedViewModel,
     strokeWidth: Dp = 4.dp,
     modifier: Modifier = Modifier,
     onTaskTagChanged: (TaskTag) -> Unit,
 ) {
 
+    val timeInMinutes by timerSharedViewModel.initialFocusTime.collectAsState()
+    Log.d("PROGRESSSTARTTIME", "Progress component:- ${timeInMinutes.toString()}")
     val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
     val workState by timerSharedViewModel.workState.collectAsState()
     val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
@@ -234,7 +236,6 @@ private fun TimerCircularBarPreview() {
 
     val timerSharedViewModel = TimerSharedViewModel()
     TimerProgressBar(
-        25,
         timerSharedViewModel = timerSharedViewModel
     ) {}
 
