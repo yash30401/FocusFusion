@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class TimerService : Service() {
@@ -170,18 +171,18 @@ class TimerService : Service() {
     }
 
     private fun resetTimer() {
-        timeLeft = 1500000L // 25 minutes
-        extraTime = 0
-        cancelTimeLeft = 10000L
-        taskTag = "STUDY"
-
         scope.launch {
+            val savedFocusTime = dataStoreManager.focusTime.first()
+            timeLeft = savedFocusTime * 60_000L
+            cancelTimeLeft = 10_000L
+            extraTime = 0
+            taskTag = "STUDY"
+
             dataStoreManager.saveTimeLeft(timeLeft)
             dataStoreManager.saveCancelTimeLeft(cancelTimeLeft)
             dataStoreManager.saveExtraTime(extraTime)
             dataStoreManager.saveTaskTag(taskTag)
         }
-
         val notification = NotificationCompat.Builder(this, "101")
             .setContentTitle("FocusFusion")
             .setContentText("Time remaining: $timeLeft")

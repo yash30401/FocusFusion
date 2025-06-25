@@ -88,7 +88,6 @@ fun TimerScreen(
     val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
 
-
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
     }
@@ -206,7 +205,7 @@ fun TimerScreen(
 
                     val onStop = {
                         timerSharedViewModel.updateIsRunning(false)
-                        timerSharedViewModel.updateFocusTime(timer)
+
                         // isTimerStarted = false // REMOVE THIS
                         TimerService.stopService(context.applicationContext)
                     }

@@ -7,9 +7,11 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -35,10 +37,11 @@ class TimerSharedViewModel() : ViewModel() {
     private val _workState = MutableStateFlow(TaskTag.STUDY)
     val workState: StateFlow<TaskTag> = _workState.asStateFlow()
 
+
     fun updateFocusTime(value: Int) {
         _initialFocusTime.value = value
         if (!_isRunning.value) {
-            updateTimeLeft(value * 60000L)
+            _timeLeft.value = value * 60000L
         }
     }
 

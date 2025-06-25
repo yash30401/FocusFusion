@@ -64,6 +64,7 @@ fun TimerProgressBar(
     val timeInMinutes by timerSharedViewModel.initialFocusTime.collectAsState()
     Log.d("PROGRESSSTARTTIME", "Progress component:- ${timeInMinutes.toString()}")
     val timeLeft by timerSharedViewModel.timeLeft.collectAsState()
+    Log.d("PROGRESSSTARTTIME", "Time Left component:- ${timeLeft.toString()}")
     val workState by timerSharedViewModel.workState.collectAsState()
     val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
 
