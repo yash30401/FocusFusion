@@ -66,6 +66,8 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yash.focusfusion.R
+import com.yash.focusfusion.core.annotations.DevicePreviews
+import kotlin.math.sin
 
 @Composable
 fun SettingsScreen(
@@ -94,17 +96,17 @@ fun SettingsScreen(
                 painter = painterResource(R.drawable.profile_char),
                 contentDescription = "Profile Char",
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(100.dp)
                     .zIndex(1f)
-                    .offset(y = -10.dp)
+                    .offset(y = -20.dp)
 
             )
 
             Column(
                 modifier = Modifier
-                    .padding(top = 70.dp)
+                    .padding(top = 30.dp)
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(100.dp)
                     .shadow(5.dp, RoundedCornerShape(20.dp))
                     .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
 
@@ -112,7 +114,7 @@ fun SettingsScreen(
 
                 Row(
                     modifier = Modifier
-                        .padding(top = 50.dp)
+                        .padding(top = 40.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -131,7 +133,8 @@ fun SettingsScreen(
                         Icon(
                             Icons.Outlined.Edit,
                             contentDescription = "Edit Name",
-                            tint = Color.Black
+                            tint = Color.Black,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
@@ -144,7 +147,7 @@ fun SettingsScreen(
         Text(
             text = "Timer Settings",
             fontFamily = FontFamily(Font(R.font.jost_medium)),
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
 
         Spacer(Modifier.height(12.dp))
@@ -166,7 +169,7 @@ fun SettingsScreen(
                 Text(
                     text = "Timer Interval",
                     modifier = Modifier.weight(1f),
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.jost_medium)),
                 )
 
@@ -191,8 +194,8 @@ fun SettingsScreen(
                             selectedItem.toString() + "min",
                             fontFamily = FontFamily(Font(R.font.jost_medium)),
                             color = Color(0xff212121),
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(end = 10.dp)
+                            fontSize = 12.sp,
+                            modifier = Modifier.padding(end = 5.dp)
                         )
                         Icon(
                             imageVector = Icons.Filled.ArrowDropDown,
@@ -304,9 +307,9 @@ private fun SettingsScreenPreview() {
                 painter = painterResource(R.drawable.profile_char),
                 contentDescription = "Profile Char",
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(120.dp)
                     .zIndex(1f)
-                    .offset(y = -10.dp)
+                    .offset(y = 0.dp)
 
             )
 
@@ -314,7 +317,7 @@ private fun SettingsScreenPreview() {
                 modifier = Modifier
                     .padding(top = 70.dp)
                     .fillMaxWidth()
-                    .height(120.dp)
+                    .height(100.dp)
                     .shadow(5.dp, RoundedCornerShape(20.dp))
                     .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
 
@@ -322,7 +325,7 @@ private fun SettingsScreenPreview() {
 
                 Row(
                     modifier = Modifier
-                        .padding(top = 50.dp)
+                        .padding(top = 30.dp)
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
@@ -339,7 +342,8 @@ private fun SettingsScreenPreview() {
                         Icon(
                             Icons.Outlined.Edit,
                             contentDescription = "Edit Name",
-                            tint = Color.Black
+                            tint = Color.Black,
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                 }
