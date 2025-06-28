@@ -34,8 +34,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -72,6 +74,9 @@ fun SettingsScreen(
 ) {
 
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+    var inputName by remember {
+        mutableStateOf("")
+    }
 
     Column(
         modifier = Modifier
@@ -121,7 +126,7 @@ fun SettingsScreen(
                     )
 
                     IconButton(onClick = {
-
+                        settingsViewModel.onEvent(SettingsUiEvent.ShowNameChangeDialog)
                     }) {
                         Icon(
                             Icons.Outlined.Edit,
@@ -227,6 +232,52 @@ fun SettingsScreen(
             }
 
         }
+    }
+
+
+
+    if(uiState.isNameDialogvisible) {
+        AlertDialog(
+            onDismissRequest = {
+                settingsViewModel.onEvent(SettingsUiEvent.HideNameChangeDialog)
+            },
+            title = {
+                Text(text = "Change Name")
+            },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = inputName,
+                        onValueChange = { inputName = it },
+                        label = { Text("Name") },
+                        isError = uiState.error != null
+                    )
+                    if (uiState.error != null) {
+                        Text(
+                            text = uiState.error ?: "",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    settingsViewModel.onEvent(
+                        SettingsUiEvent.onNameChanged(
+                            inputName
+                        )
+                    )
+                }) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { settingsViewModel.onEvent(SettingsUiEvent.HideNameChangeDialog) }) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
 

@@ -70,6 +70,18 @@ class SettingsViewModel @Inject constructor(
                 saveTimeJob?.cancel()
                 saveTimeJob = handleTimeChange(event.time)
             }
+
+            SettingsUiEvent.HideNameChangeDialog -> {
+                _uiState.value = _uiState.value.copy(
+                    isNameDialogvisible = false
+                )
+            }
+
+            SettingsUiEvent.ShowNameChangeDialog -> {
+                _uiState.value = _uiState.value.copy(
+                    isNameDialogvisible = true
+                )
+            }
         }
     }
 
@@ -89,6 +101,7 @@ class SettingsViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     name = trimmedName,
                     isLoading = false,
+                    isNameDialogvisible = false
                 )
             } else {
                 handleError("Name must be at least 2 characters long")
