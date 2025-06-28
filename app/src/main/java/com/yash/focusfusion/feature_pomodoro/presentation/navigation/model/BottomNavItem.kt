@@ -18,8 +18,8 @@ sealed class BottomNavItem(
     )
 
     object Timer : BottomNavItem(
-        "Insights",
-        route = "Insights"
+        "Timer",
+        route = "Timer"
     )
 
     object Profile : BottomNavItem(

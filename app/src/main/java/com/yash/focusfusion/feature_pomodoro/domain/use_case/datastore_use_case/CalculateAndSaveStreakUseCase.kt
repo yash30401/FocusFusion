@@ -42,29 +42,25 @@ class CalculateAndSaveStreakUseCase @Inject constructor(
         }
 
         while (true) {
-            val dateInMillis =
-                checkDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val sessionsOnDate = getSessionsForDateUseCase.invoke(dateInMillis).first()
+            val dateInMillis = checkDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val sessionsOnDate = getSessionsForDateUseCase(dateInMillis).first()
 
             if (sessionsOnDate.isNotEmpty()) {
                 // Found a day with sessions, increment streak and check the previous day.
                 calculatedStreak++
                 checkDate = checkDate.minusDays(1)
             } else {
+                // Found a day with no sessions, the streak is broken. Stop counting.
                 break
             }
+        }
 
-            val oldStreak = datastoreRepository.streak.first()
-            if (oldStreak != calculatedStreak) {
-                datastoreRepository.saveStreakCount(calculatedStreak)
-                Log.d(
-                    "STREAKWORK",
-                    "Streak recalculated. Old value: $oldStreak, New value: $calculatedStreak"
-                )
-            } else {
-                Log.d("STREAKWORK", "Streak is up-to-date. Value: $calculatedStreak")
-            }
-
+        val oldStreak = datastoreRepository.streak.first()
+        if (oldStreak != calculatedStreak) {
+            datastoreRepository.saveStreakCount(calculatedStreak)
+            Log.d("STREAKWORK", "Streak recalculated. Old value: $oldStreak, New value: $calculatedStreak")
+        } else {
+            Log.d("STREAKWORK", "Streak is up-to-date. Value: $calculatedStreak")
         }
     }
 

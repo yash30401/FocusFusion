@@ -124,6 +124,7 @@ class HomeScreenViewModel @Inject constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getStreak() = viewModelScope.launch {
+        datastoreUseCases.calculateAndSaveStreakUseCase()
         datastoreUseCases.getStreakCountUseCase().collect {
             _streak.value = it
             Log.d("STREAKWORK", "Viewmodel Streak Count:- $it")
