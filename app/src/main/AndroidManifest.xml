@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
 
     <application
         android:name=".FocusFusionApp"
@@ -31,14 +31,14 @@
         </activity>
 
         <service
-            android:name="TimerService"
+            android:name=".TimerService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="specialUse"
-            android:stopWithTask="false">
+            android:stopWithTask="false" >
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
-                android:value="timer" />
+                android:value="focus_timer" />
         </service>
 
     </application>
