@@ -2,6 +2,8 @@ package com.yash.focusfusion
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -11,6 +13,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
+import android.os.PowerManager
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
@@ -121,6 +125,7 @@ class TimerService : Service() {
         scope.launch {
             dataStoreManager.saveContinueTimer(true)
             dataStoreManager.saveTaskTag(taskTag)
+            dataStoreManager.saveTimerStartTime(System.currentTimeMillis())
         }
     }
 
@@ -217,12 +222,20 @@ class TimerService : Service() {
                 "101",
                 "Timer Running",
                 NotificationManager.IMPORTANCE_HIGH
-            )
+            ).apply {
+                description = "Shows the current timer progress"
+                setShowBadge(true)
+                lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+            }
             val channel2 = NotificationChannel(
                 "102",
                 "Timer Completed",
                 NotificationManager.IMPORTANCE_HIGH
-            )
+            ).apply {
+                description = "Notifies when timer is completed"
+                setShowBadge(true)
+                lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+            }
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannels(listOf(channel1, channel2))
@@ -252,7 +265,11 @@ class TimerService : Service() {
                 putExtra("TIME_LEFT", timeLeft)
                 putExtra("TASK_TAG", taskTag)
             }
-            context.startService(startIntent)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(startIntent)
+            } else {
+                context.startService(startIntent)
+            }
         }
 
         fun stopService(context: Context) {

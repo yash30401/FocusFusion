@@ -31,6 +31,7 @@ class DatastoreManager(private val context: Context) {
         val TASK_TAG = stringPreferencesKey("TASK_TAG")
         val STREAK = intPreferencesKey("STREAK")
         val FOCUS_TIME_KEY = intPreferencesKey("FOCUS_TIME_KEY")
+        val TIMER_START_TIME = longPreferencesKey("TIMER_START_TIME")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -69,6 +70,10 @@ class DatastoreManager(private val context: Context) {
 
     val focusTime: Flow<Int> = context.dataStore.data.map { prefrences ->
         prefrences[FOCUS_TIME_KEY] ?: 25
+    }
+
+    val timerStartTime: Flow<Long> = context.dataStore.data.map { prefrences ->
+        prefrences[TIMER_START_TIME] ?: 0
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -155,6 +160,16 @@ class DatastoreManager(private val context: Context) {
         try {
             context.dataStore.edit { prefrences ->
                 prefrences[FOCUS_TIME_KEY] = time
+            }
+        } catch (e: Exception) {
+            Log.e(DATASTORELOGS, "Error saving focus time.", e)
+        }
+    }
+
+    suspend fun saveTimerStartTime(time: Long) {
+        try {
+            context.dataStore.edit { prefrences ->
+                prefrences[TIMER_START_TIME] = time
             }
         } catch (e: Exception) {
             Log.e(DATASTORELOGS, "Error saving focus time.", e)

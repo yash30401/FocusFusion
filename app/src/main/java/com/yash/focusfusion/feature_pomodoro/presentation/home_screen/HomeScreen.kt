@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -79,7 +80,7 @@ fun HomeScreen(
     val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
 
-    val streak by homeScreenViewModel.streak.collectAsState()
+    val streak by homeScreenViewModel.streak.collectAsStateWithLifecycle()
 
     Log.d("STREAKWORK", streak.toString())
 

@@ -2,12 +2,16 @@ package com.yash.focusfusion
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -132,6 +136,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         dataStoreManager = DatastoreManager(this)
+        val timerLeft = TimeUnit.MINUTES.toMillis(5)
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(
