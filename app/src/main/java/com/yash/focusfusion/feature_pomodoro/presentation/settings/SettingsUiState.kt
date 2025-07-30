@@ -8,4 +8,5 @@ data class SettingsUiState(
     val isNameValid: Boolean = true,
     val isNameDialogvisible: Boolean = false,
     val nameInput: String = "",
-    )
+    val isPrivacyPolicyDialogVisible: Boolean = false,
+)

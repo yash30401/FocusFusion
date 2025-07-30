@@ -82,6 +82,14 @@ class SettingsViewModel @Inject constructor(
                     isNameDialogvisible = true
                 )
             }
+
+            SettingsUiEvent.HidePrivacyPolicyDialog -> _uiState.value = _uiState.value.copy(
+                isPrivacyPolicyDialogVisible = false
+            )
+
+            SettingsUiEvent.ShowPrivacyPolicyDialog -> _uiState.value = _uiState.value.copy(
+                isPrivacyPolicyDialogVisible = true
+            )
         }
     }
 
