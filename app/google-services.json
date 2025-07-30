@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "361196869098",
+    "project_id": "focusfusion-2fd92",
+    "storage_bucket": "focusfusion-2fd92.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361196869098:android:067821b353262563938e93",
+        "android_client_info": {
+          "package_name": "com.yash.focusfusion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCd-WdcoscjhP2gaQxv69BUKeYxZ-_IEpg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,6 +4,7 @@ plugins {
     kotlin("kapt")
     kotlin("plugin.compose")      // Uses version from root 'plugins' block (Kotlin 2.0.0)
     id("com.google.dagger.hilt.android") // Uses version from root 'plugins' block if declared there
+    id("com.google.gms.google-services")
 }
 
 android {

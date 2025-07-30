@@ -57,6 +57,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.analytics
 import com.yash.focusfusion.core.util.TaskTagMap
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
@@ -83,6 +86,9 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class MainActivity : ComponentActivity() {
+
+
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private var timeLeft: Long by mutableStateOf(1500000L) // Default to 25:00
     private var cancelTimeLeft: Long by mutableStateOf(10000L)
@@ -134,6 +140,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Obtain the FirebaseAnalytics instance.
+        firebaseAnalytics = Firebase.analytics
 
         dataStoreManager = DatastoreManager(this)
         val timerLeft = TimeUnit.MINUTES.toMillis(5)
