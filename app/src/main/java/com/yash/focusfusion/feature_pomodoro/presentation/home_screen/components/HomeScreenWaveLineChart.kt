@@ -19,6 +19,7 @@ import androidx.compose.animation.core.rememberTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -60,6 +61,8 @@ import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -92,7 +95,7 @@ import java.util.concurrent.TimeUnit
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreenWaveLineChart(
-    streak:Int,
+    streak: Int,
     navController: NavController,
     minutesData: List<Float>,
     timeRange: TimeRange,
@@ -105,7 +108,6 @@ fun HomeScreenWaveLineChart(
 ) {
 
     val currentRoute = currentRoute(navController)
-
 
     val minValue = 0f   // Y-axis min (0 minutes)
     val maxValue =
@@ -217,6 +219,11 @@ fun HomeScreenWaveLineChart(
         }
     }
 
+    val outerBoxOfCartHeight by remember(minutesData) {
+        derivedStateOf {
+            if (minutesData.sum().toInt() == 0) 250.dp else 330.dp
+        }
+    }
 
     Box(
         modifier = modifier
@@ -229,7 +236,7 @@ fun HomeScreenWaveLineChart(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(330.dp),
+                .height(outerBoxOfCartHeight),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -334,12 +341,21 @@ fun HomeScreenWaveLineChart(
                     modifier = Modifier.height(200.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        "No Chart Data For This ${timeRange.name}",
-                        color = Color(0xff9E9E9E),
-                        fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                        fontSize = 17.sp
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Image(
+                            painter = painterResource(R.drawable.no_chart_data),
+                            contentDescription = "No Chart Data Icon",
+                            modifier = Modifier.size(48.dp)
+                        )
+
+                        Text(
+                            "No Chart Data For This ${timeRange.name}",
+                            color = Color(0xff9E9E9E),
+                            fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
+                            fontSize = 17.sp,
+                            modifier = Modifier.padding(top = 15.dp)
+                        )
+                    }
                 }
             } else {
                 // Canvas for the chart
@@ -513,22 +529,23 @@ fun HomeScreenWaveLineChart(
                     .zIndex(2f),
                 horizontalArrangement = Arrangement.End
             ) {
-                Button(colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xffFF8D61),
-                    contentColor = Color.White,
+                Button(
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xffFF8D61),
+                        contentColor = Color.White,
 
-                    ), onClick = {
-                    if (currentRoute != "Insights") {
-                        navController.navigate("Insights") {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                        ), onClick = {
+                        if (currentRoute != "Insights") {
+                            navController.navigate("Insights") {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+
+                                restoreState = true
                             }
-                            launchSingleTop = true
-
-                            restoreState = true
                         }
-                    }
-                }) {
+                    }) {
                     Text(text = "Insights")
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
@@ -546,7 +563,7 @@ fun HomeScreenWaveLineChart(
 fun HomeScreenWaveLineChartPreview() {
     val randomNumbers = (1..12).map {
         kotlin.random.Random.nextInt(0, 300).toFloat()
-    }
+    }.toMutableList()
     val minutesWorked = randomNumbers
 
     val navController = rememberNavController()
