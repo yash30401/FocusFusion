@@ -148,7 +148,7 @@ fun HomeScreen(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())  // Add scroll modifier
         ) {
-            GreetingHead(userName, modifier = Modifier.padding(top = 20.dp))
+            GreetingHead(userName, modifier = Modifier)
             HomeScreenWaveLineChart(
                 streak,
                 navController,
@@ -292,7 +292,7 @@ private fun HomeScreenPreview() {
             modifier = Modifier
                 .verticalScroll(rememberScrollState())  // Add scroll modifier
         ) {
-            GreetingHead("Yash", modifier = Modifier.padding(top = 20.dp))
+            GreetingHead("Yash", modifier = Modifier)
             HomeScreenWaveLineChart(
                 2,
                 navController,
