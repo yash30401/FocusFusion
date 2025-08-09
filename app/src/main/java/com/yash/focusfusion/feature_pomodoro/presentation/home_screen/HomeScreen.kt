@@ -7,12 +7,19 @@ import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -28,8 +35,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
@@ -169,6 +178,29 @@ fun HomeScreen(
                     fontSize = 22.sp,
                     fontFamily = FontFamily(Font(R.font.jost_medium))
                 )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Spacer(Modifier.height(40.dp))
+                    Image(
+                        painter = painterResource(R.drawable.no_data_home_screen),
+                        contentDescription = "No Data To Show",
+                        Modifier.size(58.dp)
+                        )
+
+                    Text(
+                        text = "No Data",
+                        modifier = Modifier.padding(top = 15.dp),
+                        fontSize = 17.sp,
+                        color = Color(0xff9E9E9E),
+                        fontFamily = FontFamily(Font(R.font.jost_medium))
+                    )
+                }
             }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
@@ -278,9 +310,8 @@ fun initHomeViewModel(
     homeScreenViewModel.onEvent(HomeEvent.todaysHours(todaysDateInMillis ?: 0L))
 }
 
-
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
 @Composable
 private fun HomeScreenPreview() {
     val navController = rememberNavController()
@@ -306,13 +337,36 @@ private fun HomeScreenPreview() {
                 xOffset = 90f,
                 waveAmplitude = 1f,
             )
-            if (!weeklySessionState.isNullOrEmpty()) {
+            if (!weeklySessionState.isNotEmpty()) {
                 Text(
                     text = "Weekly Time Distribution",
                     modifier = Modifier.padding(start = 16.dp, top = 20.dp),
                     fontSize = 22.sp,
                     fontFamily = FontFamily(Font(R.font.jost_medium))
                 )
+            } else {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    ,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Spacer(Modifier.height(100.dp))
+                    Image(
+                        painter = painterResource(R.drawable.no_data_home_screen),
+                        contentDescription = "No Data To Show",
+
+                        )
+
+                    Text(
+                        text = "No Data",
+                        modifier = Modifier.padding(top = 20.dp),
+                        fontSize = 22.sp,
+                        color = Color(0xff898989),
+                        fontFamily = FontFamily(Font(R.font.jost_medium))
+                    )
+                }
             }
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
