@@ -219,11 +219,6 @@ fun HomeScreenWaveLineChart(
         }
     }
 
-    val outerBoxOfCartHeight by remember(minutesData) {
-        derivedStateOf {
-            if (minutesData.sum().toInt() == 0) 250.dp else 330.dp
-        }
-    }
 
     Box(
         modifier = modifier
@@ -236,7 +231,7 @@ fun HomeScreenWaveLineChart(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(outerBoxOfCartHeight),
+                .height(330.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -345,7 +340,7 @@ fun HomeScreenWaveLineChart(
                         Image(
                             painter = painterResource(R.drawable.no_chart_data),
                             contentDescription = "No Chart Data Icon",
-                            modifier = Modifier.size(48.dp)
+                            modifier = Modifier.size(58.dp)
                         )
 
                         Text(
@@ -353,7 +348,7 @@ fun HomeScreenWaveLineChart(
                             color = Color(0xff9E9E9E),
                             fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                             fontSize = 17.sp,
-                            modifier = Modifier.padding(top = 15.dp)
+                            modifier = Modifier.padding(top = 20.dp)
                         )
                     }
                 }
