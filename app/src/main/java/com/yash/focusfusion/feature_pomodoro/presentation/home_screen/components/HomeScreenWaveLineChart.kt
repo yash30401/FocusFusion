@@ -81,6 +81,7 @@ import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.currentRoute
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
+import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.AnimatedPreloaderLottie
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -337,18 +338,19 @@ fun HomeScreenWaveLineChart(
                     contentAlignment = Alignment.Center
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Image(
-                            painter = painterResource(R.drawable.no_chart_data),
-                            contentDescription = "No Chart Data Icon",
-                            modifier = Modifier.size(52.dp)
-                        )
+                        Box {
+                            AnimatedPreloaderForChartAnim(
+                                modifier = Modifier
+                                    .size(80.dp)
+                                    .align(Alignment.Center)
+                            )
+                        }
 
                         Text(
                             "No Chart Data For This ${timeRange.name}",
                             color = Color(0xff9E9E9E),
                             fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                             fontSize = 17.sp,
-                            modifier = Modifier.padding(top = 20.dp)
                         )
                     }
                 }
