@@ -190,13 +190,13 @@ fun HomeScreen(
                     Image(
                         painter = painterResource(R.drawable.no_data_home_screen),
                         contentDescription = "No Data To Show",
-                        Modifier.size(58.dp)
+                        Modifier.size(52.dp)
                         )
 
                     Text(
                         text = "No Data",
                         modifier = Modifier.padding(top = 15.dp),
-                        fontSize = 17.sp,
+                        fontSize = 14.sp,
                         color = Color(0xff9E9E9E),
                         fontFamily = FontFamily(Font(R.font.jost_medium))
                     )

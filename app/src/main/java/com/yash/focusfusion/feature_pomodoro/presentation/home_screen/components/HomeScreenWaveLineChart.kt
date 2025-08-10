@@ -340,7 +340,7 @@ fun HomeScreenWaveLineChart(
                         Image(
                             painter = painterResource(R.drawable.no_chart_data),
                             contentDescription = "No Chart Data Icon",
-                            modifier = Modifier.size(58.dp)
+                            modifier = Modifier.size(52.dp)
                         )
 
                         Text(
