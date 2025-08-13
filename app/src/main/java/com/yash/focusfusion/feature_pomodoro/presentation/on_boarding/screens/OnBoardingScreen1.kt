@@ -50,6 +50,79 @@ import kotlinx.coroutines.delay
 @Composable
 fun OnBoardingScreen1(modifier: Modifier = Modifier) {
 
+    val itemVisibility = remember { mutableStateListOf<Boolean>() }
+    feautreListItem.forEach { itemVisibility.add(false) }
+
+    val hapticFeedback = LocalHapticFeedback.current
+
+
+    LaunchedEffect(key1 = Unit) {
+        // Trigger the animation for each item with a small delay
+        feautreListItem.forEachIndexed { index, _ ->
+            delay(500L) // Adjust this delay for a slower or faster cascade
+            hapticFeedback.performHapticFeedback(
+                HapticFeedbackType.TextHandleMove
+            )
+            itemVisibility[index] = true
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .padding(20.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(
+                text = "focus\nfusion",
+                fontFamily = FontFamily(Font(R.font.fugaz_one_regular)),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 20.dp),
+                fontSize = 50.sp,
+                color = Color(0xffFF8D61)
+            )
+
+
+            LazyColumn(
+                modifier = Modifier
+                    .padding(top = 20.dp)
+
+            ) {
+                itemsIndexed(feautreListItem) { index, item ->
+                    AnimatedVisibility(
+                        visible = itemVisibility[index],
+                        enter = slideInVertically(
+                            initialOffsetY = { -it / 2 }
+                        ) + fadeIn(
+                            animationSpec = tween(durationMillis = 500)
+                        )
+                    ) {
+                        FeatureList(item.image, item.featureText)
+                    }
+
+                }
+            }
+        }
+
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xffFF8D61)
+            ),
+            shape = RoundedCornerShape(32.dp)
+        ) {
+            Text(
+                text = "Get Started",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -96,11 +169,11 @@ private fun OnBoardingScreen1Prev() {
                     .padding(top = 20.dp)
 
             ) {
-                itemsIndexed(feautreListItem) {index,item ->
+                itemsIndexed(feautreListItem) { index, item ->
                     AnimatedVisibility(
                         visible = itemVisibility[index],
                         enter = slideInVertically(
-                            initialOffsetY = { -it/2 }
+                            initialOffsetY = { -it / 2 }
                         ) + fadeIn(
                             animationSpec = tween(durationMillis = 500)
                         )
