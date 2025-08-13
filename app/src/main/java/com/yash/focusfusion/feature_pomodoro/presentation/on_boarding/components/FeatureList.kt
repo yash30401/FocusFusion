@@ -52,7 +52,7 @@ fun FeatureList(
             )
         }
         Text(
-            text = featureText, fontSize = 18.sp,
+            text = featureText, fontSize = 16.sp,
             fontFamily = FontFamily(Font(R.font.roboto_regular)), modifier =
                 Modifier.padding(start = 10.dp)
         )
