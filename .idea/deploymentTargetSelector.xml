@@ -25,6 +25,9 @@
       <SelectionState runConfigName="OnBoardingScreen3Prev">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="OnBoardingScreen4Prev">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

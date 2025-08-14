@@ -48,7 +48,133 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun OnBoardingScreen3(modifier: Modifier = Modifier) {
+    var selectedIndex by remember {
+        mutableStateOf(-1)
+    }
 
+    val itemVisibility = remember { mutableStateListOf<Boolean>() }
+    sessionListItem.forEach { itemVisibility.add(false) }
+
+    val hapticFeedback = LocalHapticFeedback.current
+
+
+    LaunchedEffect(key1 = Unit) {
+        // Trigger the animation for each item with a small delay
+        sessionListItem.forEachIndexed { index, _ ->
+            delay(500L) // Adjust this delay for a slower or faster cascade
+            hapticFeedback.performHapticFeedback(
+                HapticFeedbackType.TextHandleMove
+            )
+            itemVisibility[index] = true
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .padding(20.dp)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily =
+                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
+                            fontSize = 40.sp,
+                            color = Color(0xff000000),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Set Your\n")
+                    }
+
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily =
+                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
+                            fontSize = 40.sp,
+                            color = Color(0xff000000),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Focus")
+                    }
+
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily =
+                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
+                            fontSize = 40.sp,
+                            color = Color(0xff8958E2),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append(" Goal")
+                    }
+                }
+
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            Text(
+                text = "How many sessions will you complete each day?",
+                fontFamily = FontFamily(listOf(Font(R.font.roboto_regular))),
+                color = Color(0xff000000),
+                fontSize = 17.sp
+            )
+            Spacer(Modifier.height(10.dp))
+
+
+            LazyColumn(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .heightIn(max = 1000.dp)
+
+            ) {
+                itemsIndexed(sessionListItem) { index, item ->
+
+                    AnimatedVisibility(
+                        visible = itemVisibility[index],
+                        enter = slideInVertically(
+                            initialOffsetY = { -it / 2 }
+                        ) + fadeIn(
+                            animationSpec = tween(durationMillis = 500)
+                        )
+                    ) {
+                        SessionsList(
+                            item.numberOfSessions, item.motivationQuote,
+                            isSelected = (selectedIndex == index), // Pass true if indexes match
+                            onClick = { selectedIndex = index })
+                    }
+
+                }
+            }
+        }
+
+        Spacer(Modifier.height(20.dp))
+
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xffFF8D61)
+            ),
+            shape = RoundedCornerShape(32.dp)
+        ) {
+            Text(
+                text = "Continue",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
@@ -176,7 +302,7 @@ private fun OnBoardingScreen3Prev() {
             shape = RoundedCornerShape(32.dp)
         ) {
             Text(
-                text = "Get Started",
+                text = "Continue",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )
