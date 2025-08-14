@@ -120,7 +120,7 @@ fun SettingsScreen(
                     .padding(top = 30.dp)
                     .fillMaxWidth()
                     .height(100.dp)
-                    .shadow(5.dp, RoundedCornerShape(20.dp))
+                    .shadow(1.dp, RoundedCornerShape(20.dp))
                     .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
 
             ) {
@@ -168,7 +168,7 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(5.dp, RoundedCornerShape(20.dp))
+                .shadow(1.dp, RoundedCornerShape(20.dp))
                 .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
 
         ) {
@@ -255,7 +255,7 @@ fun SettingsScreen(
         Text(
             text = "Contact & Policy",
             fontFamily = FontFamily(Font(R.font.jost_medium)),
-            fontSize = 30.sp
+            fontSize = 20.sp
         )
 
         Spacer(Modifier.height(12.dp))
@@ -263,16 +263,18 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(5.dp, RoundedCornerShape(20.dp))
+                .height(60.dp)
+                .shadow(1.dp, RoundedCornerShape(20.dp))
                 .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
                 .clickable {
                     settingsViewModel.onEvent(SettingsUiEvent.ShowPrivacyPolicyDialog)
-                }
+                },
+            verticalArrangement = Arrangement.Center
 
         ) {
             Text(
                 text = "Privacy Policy",
-                fontSize = 22.sp,
+                fontSize = 20.sp,
                 fontFamily = FontFamily(Font(R.font.jost_medium)),
                 modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp)
             )
@@ -397,7 +399,7 @@ private fun SettingsScreenPreview() {
                     .padding(top = 70.dp)
                     .fillMaxWidth()
                     .height(100.dp)
-                    .shadow(5.dp, RoundedCornerShape(20.dp))
+                    .shadow(1.dp, RoundedCornerShape(20.dp))
                     .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
 
             ) {
@@ -443,7 +445,7 @@ private fun SettingsScreenPreview() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(5.dp, RoundedCornerShape(20.dp))
+                .shadow(1.dp, RoundedCornerShape(20.dp))
                 .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
 
         ) {
@@ -525,7 +527,7 @@ private fun SettingsScreenPreview() {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(5.dp, RoundedCornerShape(20.dp))
+                .shadow(1.dp, RoundedCornerShape(20.dp))
                 .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
                 .clickable {
 
