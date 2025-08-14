@@ -3,6 +3,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -36,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureList
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.HorizontalDial
+import kotlinx.coroutines.delay
 
 @Composable
 fun OnBoardingScreen2(modifier: Modifier = Modifier) {
@@ -50,6 +57,13 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
 private fun OnBoardingScreen2Prev() {
 
     val hapticFeedback = LocalHapticFeedback.current
+
+    var isVisible by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(1000)
+        isVisible = !isVisible
+    }
 
     Column(
         modifier = Modifier
@@ -109,8 +123,19 @@ private fun OnBoardingScreen2Prev() {
                 fontSize = 16.sp
             )
             Spacer(Modifier.height(70.dp))
-            HorizontalDial {
-                hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+
+            AnimatedVisibility(
+                visible = isVisible,
+                enter = slideInHorizontally(
+                    initialOffsetX = { it / 2 },
+                    animationSpec = tween(2000)
+                ) + fadeIn(
+                    animationSpec = tween(1000)
+                )
+            ) {
+                HorizontalDial {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                }
             }
 
         }
