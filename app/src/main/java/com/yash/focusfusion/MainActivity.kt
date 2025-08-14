@@ -72,6 +72,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.onBoarding
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen1
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen2
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen3
+import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen4
 import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
@@ -290,7 +291,11 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("OnBoardingScreen3") {
-                                OnBoardingScreen3()
+                                OnBoardingScreen3(navController)
+                            }
+
+                            composable("OnBoardingScreen4") {
+                                OnBoardingScreen4()
                             }
 
                             composable(
