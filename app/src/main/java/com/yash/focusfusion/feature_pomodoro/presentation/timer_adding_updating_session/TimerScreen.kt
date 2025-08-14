@@ -3,6 +3,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
@@ -57,6 +58,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.yash.focusfusion.R
 import com.yash.focusfusion.TimerService
 import com.yash.focusfusion.core.util.Constants.CHECKINGSERVICESLOGS
@@ -87,6 +91,8 @@ fun TimerScreen(
     val extraTime by timerSharedViewModel.extraTime.collectAsState()
     val isTimerRunning by timerSharedViewModel.isRunning.collectAsState()
     val cancelTime by timerSharedViewModel.cancelTimeLeft.collectAsState()
+
+    val firebaseAnalytics = Firebase.analytics
 
     var taskTag by remember {
         mutableStateOf(TaskTag.STUDY)
@@ -220,6 +226,7 @@ fun TimerScreen(
 
 
                         scope.launch(Dispatchers.IO) {
+
                             viewModel.onEvent(
                                 SessionEvent.InsertSession(
                                     Session(
@@ -231,6 +238,19 @@ fun TimerScreen(
                                     )
                                 )
                             )
+
+                            val totalTimeInSeconds = (TimeUnit.MINUTES.toSeconds(timer.toLong())
+                                .toInt() - TimeUnit.MILLISECONDS.toSeconds(timeLeft)
+                                .toInt()) + extraTimeInSeconds.toInt()
+
+                            val bundle = Bundle()
+                            bundle.putLong("end_time", endTime)
+                            bundle.putInt(
+                                "duration_inMinutes",
+                                TimeUnit.SECONDS.toMinutes(totalTimeInSeconds.toLong()).toInt()
+                            )
+                            bundle.putString("taskTag", taskTag.toString())
+                            firebaseAnalytics.logEvent("Session_Complete", bundle)
 
                         }
 
