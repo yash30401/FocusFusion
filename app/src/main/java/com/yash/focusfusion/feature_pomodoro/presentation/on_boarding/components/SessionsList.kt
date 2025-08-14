@@ -2,6 +2,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,29 +27,40 @@ import com.yash.focusfusion.R
 @Composable
 fun SessionsList(
     numberOfSessions: String, motivationQuote: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    val backgroundColor = if (isSelected) Color(0xffFF8D61) else Color(0xffF9F9F9)
+    val sessionTextColor = if (isSelected) Color(0xffFFFFFF) else Color(0xff000000)
+    val motivationTextcolor = if (isSelected) Color(0xffFFE8DA) else Color(0xff747474)
+
     Row(
         modifier = modifier
             .padding(top = 10.dp)
             .background(
-                color = Color(0xffF9F9F9),
+                color = backgroundColor,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 15.dp)
             .fillMaxWidth()
-            .height(60.dp),
+            .height(60.dp)
+            .clickable {
+                onClick()
+            },
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = "$numberOfSessions", fontSize = 18.sp,
             fontFamily = FontFamily(Font(R.font.roboto_medium)),
+            color = sessionTextColor
         )
         Text(
             text = "$motivationQuote", fontSize = 16.sp,
             fontFamily = FontFamily(Font(R.font.roboto_regular)),
-            color = Color(0xff747474)
+            color = motivationTextcolor
         )
 
     }
@@ -60,5 +72,11 @@ fun SessionsList(
 )
 @Composable
 private fun SessionsListPrev() {
-    SessionsList("1 Session", "Quick Win", modifier = Modifier.padding(vertical = 60.dp))
+    SessionsList(
+        "1 Session",
+        "Quick Win",
+        isSelected = false,
+        {},
+        modifier = Modifier.padding(vertical = 60.dp)
+    )
 }

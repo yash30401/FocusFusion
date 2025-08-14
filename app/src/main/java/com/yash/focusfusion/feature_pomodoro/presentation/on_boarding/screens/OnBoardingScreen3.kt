@@ -23,8 +23,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -52,6 +55,10 @@ fun OnBoardingScreen3(modifier: Modifier = Modifier) {
 @Composable
 private fun OnBoardingScreen3Prev() {
 
+    var selectedIndex by remember {
+        mutableStateOf(-1)
+    }
+
     val itemVisibility = remember { mutableStateListOf<Boolean>() }
     sessionListItem.forEach { itemVisibility.add(false) }
 
@@ -74,8 +81,7 @@ private fun OnBoardingScreen3Prev() {
             .background(Color.White)
             .padding(20.dp)
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-        ,
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
@@ -147,7 +153,10 @@ private fun OnBoardingScreen3Prev() {
                             animationSpec = tween(durationMillis = 500)
                         )
                     ) {
-                        SessionsList(item.numberOfSessions, item.motivationQuote)
+                        SessionsList(
+                            item.numberOfSessions, item.motivationQuote,
+                            isSelected = (selectedIndex == index), // Pass true if indexes match
+                            onClick = { selectedIndex = index })
                     }
 
                 }
@@ -176,16 +185,16 @@ private fun OnBoardingScreen3Prev() {
 }
 
 val sessionListItem = listOf<SessionListItem>(
-    SessionListItem("1 Session","Quick Win"),
-    SessionListItem("2 Sessions","Daily Flow"),
-    SessionListItem("3 Sessions","Productivity Boost"),
-    SessionListItem("4 Sessions","Deep Work Mode"),
-    SessionListItem("5 Sessions","Master of Focus"),
-    SessionListItem("6 Sessions","Unstoppable"),
-    SessionListItem("7+ Sessions","Focus Legend"),
+    SessionListItem("1 Session", "Quick Win"),
+    SessionListItem("2 Sessions", "Daily Flow"),
+    SessionListItem("3 Sessions", "Productivity Boost"),
+    SessionListItem("4 Sessions", "Deep Work Mode"),
+    SessionListItem("5 Sessions", "Master of Focus"),
+    SessionListItem("6 Sessions", "Unstoppable"),
+    SessionListItem("7+ Sessions", "Focus Legend"),
 )
 
 data class SessionListItem(
-    val numberOfSessions:String,
-    val motivationQuote:String
+    val numberOfSessions: String,
+    val motivationQuote: String,
 )
