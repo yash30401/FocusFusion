@@ -15,6 +15,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class CalculateAndSaveStreakUseCase @Inject constructor(
@@ -42,8 +43,16 @@ class CalculateAndSaveStreakUseCase @Inject constructor(
         }
 
         while (true) {
-            val dateInMillis = checkDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
-            val sessionsOnDate = getSessionsForDateUseCase(dateInMillis).first()
+            val dateInMillis =
+                checkDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            val sessionsOnDate = getSessionsForDateUseCase.invoke(dateInMillis).first()
+
+            val totalTimeOnDate = sessionsOnDate.sumOf { it.duration }
+            val totalTimeOnDateInMinutes =
+                TimeUnit.SECONDS.toMinutes(totalTimeOnDate.toLong()).toString()
+
+            Log.d("CHECKINGTOTALTIMESPEND", totalTimeOnDateInMinutes)// Will implement this part later.
+
 
             if (sessionsOnDate.isNotEmpty()) {
                 // Found a day with sessions, increment streak and check the previous day.
@@ -58,7 +67,10 @@ class CalculateAndSaveStreakUseCase @Inject constructor(
         val oldStreak = datastoreRepository.streak.first()
         if (oldStreak != calculatedStreak) {
             datastoreRepository.saveStreakCount(calculatedStreak)
-            Log.d("STREAKWORK", "Streak recalculated. Old value: $oldStreak, New value: $calculatedStreak")
+            Log.d(
+                "STREAKWORK",
+                "Streak recalculated. Old value: $oldStreak, New value: $calculatedStreak"
+            )
         } else {
             Log.d("STREAKWORK", "Streak is up-to-date. Value: $calculatedStreak")
         }
