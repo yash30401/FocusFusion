@@ -3,7 +3,6 @@ package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,25 +11,25 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -41,26 +40,42 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureList
-import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.HorizontalDial
+import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.SessionsList
 import kotlinx.coroutines.delay
 
 @Composable
-fun OnBoardingScreen2(modifier: Modifier = Modifier) {
+fun OnBoardingScreen3(modifier: Modifier = Modifier) {
+
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+private fun OnBoardingScreen3Prev() {
+
+    val itemVisibility = remember { mutableStateListOf<Boolean>() }
+    sessionListItem.forEach { itemVisibility.add(false) }
 
     val hapticFeedback = LocalHapticFeedback.current
 
-    var isVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
-        delay(1000)
-        isVisible = !isVisible
+    LaunchedEffect(key1 = Unit) {
+        // Trigger the animation for each item with a small delay
+        sessionListItem.forEachIndexed { index, _ ->
+            delay(500L) // Adjust this delay for a slower or faster cascade
+            hapticFeedback.performHapticFeedback(
+                HapticFeedbackType.TextHandleMove
+            )
+            itemVisibility[index] = true
+        }
     }
 
     Column(
         modifier = Modifier
             .background(Color.White)
             .padding(20.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+        ,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
@@ -83,11 +98,11 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 40.sp,
-                            color = Color(0xff8958E2),
+                            color = Color(0xff000000),
                             fontWeight = FontWeight.Bold
                         )
                     ) {
-                        append("Session")
+                        append("Focus")
                     }
 
                     withStyle(
@@ -95,11 +110,11 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 40.sp,
-                            color = Color(0xff000000),
+                            color = Color(0xff8958E2),
                             fontWeight = FontWeight.Bold
                         )
                     ) {
-                        append(" Time")
+                        append(" Goal")
                     }
                 }
 
@@ -108,28 +123,38 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
             Spacer(Modifier.height(10.dp))
 
             Text(
-                text = "How much time do you want to spend in one focus session?",
+                text = "How many sessions will you complete each day?",
                 fontFamily = FontFamily(listOf(Font(R.font.roboto_regular))),
                 color = Color(0xff000000),
-                fontSize = 16.sp
+                fontSize = 17.sp
             )
-            Spacer(Modifier.height(70.dp))
+            Spacer(Modifier.height(10.dp))
 
-            AnimatedVisibility(
-                visible = isVisible,
-                enter = slideInHorizontally(
-                    initialOffsetX = { it / 2 },
-                    animationSpec = tween(2000)
-                ) + fadeIn(
-                    animationSpec = tween(1000)
-                )
+
+            LazyColumn(
+                modifier = Modifier
+                    .padding(top = 10.dp)
+                    .heightIn(max = 1000.dp)
+
             ) {
-                HorizontalDial {
-                    hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                itemsIndexed(sessionListItem) { index, item ->
+
+                    AnimatedVisibility(
+                        visible = itemVisibility[index],
+                        enter = slideInVertically(
+                            initialOffsetY = { -it / 2 }
+                        ) + fadeIn(
+                            animationSpec = tween(durationMillis = 500)
+                        )
+                    ) {
+                        SessionsList(item.numberOfSessions, item.motivationQuote)
+                    }
+
                 }
             }
-
         }
+
+        Spacer(Modifier.height(20.dp))
 
         Button(
             onClick = {},
@@ -142,7 +167,7 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
             shape = RoundedCornerShape(32.dp)
         ) {
             Text(
-                text = "Continue",
+                text = "Get Started",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             )
@@ -150,12 +175,17 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
     }
 }
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xffFFFFFF
+val sessionListItem = listOf<SessionListItem>(
+    SessionListItem("1 Session","Quick Win"),
+    SessionListItem("2 Sessions","Daily Flow"),
+    SessionListItem("3 Sessions","Productivity Boost"),
+    SessionListItem("4 Sessions","Deep Work Mode"),
+    SessionListItem("5 Sessions","Master of Focus"),
+    SessionListItem("6 Sessions","Unstoppable"),
+    SessionListItem("7+ Sessions","Focus Legend"),
 )
-@Composable
-private fun OnBoardingScreen2Prev() {
 
-   OnBoardingScreen2()
-}
+data class SessionListItem(
+    val numberOfSessions:String,
+    val motivationQuote:String
+)
