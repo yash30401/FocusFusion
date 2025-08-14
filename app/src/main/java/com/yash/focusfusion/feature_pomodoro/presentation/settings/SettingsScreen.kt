@@ -1,6 +1,9 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.settings
 
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
@@ -92,6 +95,7 @@ fun SettingsScreen(
     val htmlContent = remember {
         loadHtmlFromRaw(context, R.raw.privacy_policy)
     }
+    val packageName = context.packageName
 
     Column(
         modifier = Modifier
@@ -280,6 +284,72 @@ fun SettingsScreen(
             )
 
         }
+
+        Spacer(Modifier.height(12.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(1.dp, RoundedCornerShape(20.dp))
+                .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
+                .clickable {
+                    try {
+                        // Try to open the Play Store app directly
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=$packageName")
+                        )
+                        context.startActivity(intent)
+                    } catch (e: ActivityNotFoundException) {
+                        // If the Play Store is not available, open in a web browser
+                        val intent = Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                        )
+                        context.startActivity(intent)
+                    }
+                }
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
+
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Rate Us",
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+
+                    )
+
+                Row {
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                }
+            }
+
+        }
     }
 
 
@@ -341,7 +411,7 @@ fun SettingsScreen(
                 Column {
                     LazyColumn {
                         item {
-                             AndroidView(factory = {
+                            AndroidView(factory = {
                                 TextView(it).apply {
                                     text = htmlContent
                                     textSize = 16f
@@ -542,5 +612,57 @@ private fun SettingsScreenPreview() {
             )
 
         }
+
+        Spacer(Modifier.height(12.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .shadow(1.dp, RoundedCornerShape(20.dp))
+                .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
+                .clickable {
+                }
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.Center,
+        ) {
+
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Rate Us",
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+
+                    )
+
+                Row {
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                    Image(
+                        painter = painterResource(R.drawable.baseline_star_24),
+                        contentDescription = "star"
+                    )
+                }
+            }
+
+        }
+
     }
 }
