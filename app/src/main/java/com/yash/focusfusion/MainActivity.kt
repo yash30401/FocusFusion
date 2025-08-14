@@ -18,6 +18,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -143,6 +144,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
 
         // Obtain the FirebaseAnalytics instance.
         firebaseAnalytics = Firebase.analytics

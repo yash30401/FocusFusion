@@ -2,6 +2,7 @@ package com.yash.focusfusion.ui.theme
 
 import android.app.Activity
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -33,20 +34,19 @@ private val LightColorScheme = lightColorScheme(
     */
 )
 
+@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun FocusFusionTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
