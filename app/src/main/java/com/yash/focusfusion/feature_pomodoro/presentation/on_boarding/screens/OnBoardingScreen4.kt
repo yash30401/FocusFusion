@@ -53,23 +53,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun OnBoardingScreen4(modifier: Modifier = Modifier) {
 
-}
+    val minutesWorked = listOf(30f, 80f, 50f, 120f, 100f, 40f, 200f)
 
-@Preview(
-    showBackground = true, showSystemUi = true, backgroundColor =
-        0xffFFFFFF
-)
-@Composable
-private fun OnBoardingScreen4Prev() {
-
-
-    val minutesWorked = listOf(30f,80f,50f,120f,100f,40f,200f)
-
-    val hapticFeedback = LocalHapticFeedback.current
-
-    LaunchedEffect(key1 = Unit) {
-
-    }
 
     Column(
         modifier = Modifier
@@ -141,7 +126,7 @@ private fun OnBoardingScreen4Prev() {
             )
             TimePeriodTabs(1) { }
 
-            WaveLineChartForOnBoarding (
+            WaveLineChartForOnBoarding(
                 minutesData = minutesWorked,
                 timeRange = TimeRange.Week,
                 overallTotalDurationInMinutes = 620,
@@ -155,7 +140,122 @@ private fun OnBoardingScreen4Prev() {
                 onNextClick = { dayOrRange, month, year -> }
             )
 
+        }
 
+        Spacer(Modifier.height(20.dp))
+
+        Button(
+            onClick = {},
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xffFF8D61)
+            ),
+            shape = RoundedCornerShape(32.dp)
+        ) {
+            Text(
+                text = "Continue",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
+@Preview(
+    showBackground = true, showSystemUi = true, backgroundColor =
+        0xffFFFFFF
+)
+@Composable
+private fun OnBoardingScreen4Prev() {
+
+    val minutesWorked = listOf(30f, 80f, 50f, 120f, 100f, 40f, 200f)
+
+
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .padding(20.dp)
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily =
+                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
+                            fontSize = 40.sp,
+                            color = Color(0xff000000),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Track Your\n")
+                    }
+
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily =
+                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
+                            fontSize = 40.sp,
+                            color = Color(0xff8958E2),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("Progress")
+                    }
+                }
+
+            )
+
+            Spacer(Modifier.height(90.dp))
+
+
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily =
+                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
+                            fontSize = 20.sp,
+                            color = Color(0xff8958E2),
+                            fontWeight = FontWeight.Bold
+                        )
+                    ) {
+                        append("10 Hours")
+                    }
+
+                    withStyle(
+                        style = SpanStyle(
+                            fontFamily =
+                                FontFamily(listOf(Font(R.font.roboto_regular))),
+                            fontSize = 18.sp,
+                            color = Color(0xff000000),
+                        )
+                    ) {
+                        append(" This Week")
+                    }
+                }
+            )
+            TimePeriodTabs(1) { }
+
+            WaveLineChartForOnBoarding(
+                minutesData = minutesWorked,
+                timeRange = TimeRange.Week,
+                overallTotalDurationInMinutes = 620,
+                lineColor = Color(0xff9463ED),
+                strokeWidth = 5f,
+                xOffset = 90f,
+                waveAmplitude = 1f,
+                onPreviousClick = { dayOrRange, month, year ->
+
+                },
+                onNextClick = { dayOrRange, month, year -> }
+            )
 
         }
 
