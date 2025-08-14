@@ -39,16 +39,20 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureList
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.HorizontalDial
+import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsUiEvent
+import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun OnBoardingScreen2(
     navController: NavController,
+    settingsViewModel: SettingsViewModel = hiltViewModel<SettingsViewModel>(),
     modifier: Modifier = Modifier,
 ) {
 
@@ -132,6 +136,11 @@ fun OnBoardingScreen2(
             ) {
                 HorizontalDial {
                     hapticFeedback.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    settingsViewModel.onEvent(
+                        event = SettingsUiEvent.onTimerChange(
+                            it
+                        )
+                    )
                 }
             }
 

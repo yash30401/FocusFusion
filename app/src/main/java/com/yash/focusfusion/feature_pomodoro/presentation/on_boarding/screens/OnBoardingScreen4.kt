@@ -41,6 +41,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabItem
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
@@ -51,7 +53,10 @@ import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components
 import kotlinx.coroutines.delay
 
 @Composable
-fun OnBoardingScreen4(modifier: Modifier = Modifier) {
+fun OnBoardingScreen4(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+) {
 
     val minutesWorked = listOf(30f, 80f, 50f, 120f, 100f, 40f, 200f)
 
@@ -146,7 +151,15 @@ fun OnBoardingScreen4(modifier: Modifier = Modifier) {
         Spacer(Modifier.height(20.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+                navController.navigate("OnBoardingScreen") {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -263,7 +276,8 @@ private fun OnBoardingScreen4Prev() {
         Spacer(Modifier.height(20.dp))
 
         Button(
-            onClick = {},
+            onClick = {
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

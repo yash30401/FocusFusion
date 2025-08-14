@@ -165,7 +165,7 @@ fun OnBoardingScreen3(
         Spacer(Modifier.height(20.dp))
 
         Button(
-
+            enabled = if (selectedIndex == -1) false else true,
             onClick = {
                 navController.navigate("OnBoardingScreen4") {
                     popUpTo(navController.graph.findStartDestination().id) {

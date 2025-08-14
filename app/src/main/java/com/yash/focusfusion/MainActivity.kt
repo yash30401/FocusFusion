@@ -295,7 +295,19 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("OnBoardingScreen4") {
-                                OnBoardingScreen4()
+                                OnBoardingScreen4(navController)
+                            }
+
+                            composable("OnBoardingScreen") {
+                                onBoardingScreen({
+                                    navController.navigate(BottomNavItem.Home.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                })
                             }
 
                             composable(

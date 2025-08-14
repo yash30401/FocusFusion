@@ -159,8 +159,7 @@ fun onBoardingScreen(
                     .height(56.dp),
                 enabled = !uiState.isLoading && uiState.userName.trim().isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor =
-                        Color(0xff8958E2)
+                    containerColor = Color(0xffFF8D61)
                 ),
                 shape = RoundedCornerShape(32.dp)
             ) {
@@ -172,7 +171,7 @@ fun onBoardingScreen(
                     )
                 } else {
                     Text(
-                        text = "Get Started",
+                        text = "Let's Go",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
