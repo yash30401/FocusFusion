@@ -69,6 +69,8 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsViewM
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.CustomBottomNav
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.onBoardingScreen
+import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen1
+import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen2
 import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
@@ -86,7 +88,6 @@ import java.util.concurrent.TimeUnit
 @AndroidEntryPoint
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 class MainActivity : ComponentActivity() {
-
 
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
@@ -214,7 +215,7 @@ class MainActivity : ComponentActivity() {
 
                 var isLoading by remember { mutableStateOf(true) }
 
-                var startDestination by remember { mutableStateOf("OnBoarding") }
+                var startDestination by remember { mutableStateOf("OnBoardingScreen1") }
                 val userName by dataStoreManager.userNameFlow.collectAsState(initial = "")
 
                 LaunchedEffect(Unit) {
@@ -223,7 +224,7 @@ class MainActivity : ComponentActivity() {
 
                     startDestination = when {
                         continueTimer -> BottomNavItem.Timer.route
-                        !isOnBoardingCompleted -> "OnBoarding"
+                        !isOnBoardingCompleted -> "OnBoardingScreen1"
                         else -> BottomNavItem.Home.route
                     }
 
@@ -238,7 +239,11 @@ class MainActivity : ComponentActivity() {
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
 
-                    if (currentRoute != "OnBoarding") {
+                    if (currentRoute != "OnBoardingScreen1" && currentRoute?.contains(
+                            "OnBoarding",
+                            false
+                        ) != true
+                    ) {
                         CustomBottomNav(
                             navController = navController,
                             items = listOf(BottomNavItem.Home, BottomNavItem.Profile)
@@ -260,11 +265,11 @@ class MainActivity : ComponentActivity() {
                             startDestination = startDestination,
                             modifier = Modifier
                                 .padding(innerPadding)
-                                .navigationBarsPadding()
+
                         )
                         {
                             composable(
-                                "OnBoarding",
+                                "OnBoardingScreen1",
                                 enterTransition = {
                                     fadeIn(
                                         animationSpec = tween(
@@ -288,22 +293,28 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                             ) {
-                                onBoardingScreen({
-                                    navController.navigate(BottomNavItem.Home.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                })
+//                                onBoardingScreen({
+//                                    navController.navigate(BottomNavItem.Home.route) {
+//                                        popUpTo(navController.graph.findStartDestination().id) {
+//                                            saveState = true
+//                                        }
+//                                        launchSingleTop = true
+//                                        restoreState = true
+//                                    }
+//                                })
+
+                                OnBoardingScreen1(navController)
+                            }
+
+                            composable("OnBoardingScreen2") {
+                                OnBoardingScreen2()
                             }
 
                             composable(
                                 BottomNavItem.Home.route,
                                 enterTransition = {
                                     when (initialState.destination.route) {
-                                        "OnBoarding" -> slideInVertically(
+                                        "OnBoardingScreen1" -> slideInVertically(
                                             initialOffsetY = { it },
                                             animationSpec = tween(
                                                 durationMillis = 400,

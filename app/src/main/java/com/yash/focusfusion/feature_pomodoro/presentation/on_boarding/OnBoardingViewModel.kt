@@ -15,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class OnBoardingViewModel @Inject constructor(
     private val saveUserNameUseCase: SaveUserNameUseCase,
-    private val getUserNameUseCase: GetUserNameUseCase,
     private val onboardingUseCase: CompleteOnboardingUseCase,
 ) : ViewModel() {
 

@@ -41,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.OnBoardingUiEvent
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureList
@@ -48,7 +50,10 @@ import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components
 import kotlinx.coroutines.delay
 
 @Composable
-fun OnBoardingScreen1(modifier: Modifier = Modifier) {
+fun OnBoardingScreen1(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+) {
 
     val itemVisibility = remember { mutableStateListOf<Boolean>() }
     feautreListItem.forEach { itemVisibility.add(false) }
@@ -81,6 +86,7 @@ fun OnBoardingScreen1(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 20.dp),
                 fontSize = 50.sp,
+                lineHeight = 60.sp,
                 color = Color(0xffFF8D61)
             )
 
@@ -107,7 +113,15 @@ fun OnBoardingScreen1(modifier: Modifier = Modifier) {
         }
 
         Button(
-            onClick = {},
+            onClick = {
+                navController.navigate("OnBoardingScreen2") {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

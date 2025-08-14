@@ -65,6 +65,7 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
     ) {
         Column {
             Text(
+                lineHeight = 40.sp,
                 text = buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
