@@ -39,13 +39,18 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureList
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.HorizontalDial
 import kotlinx.coroutines.delay
 
 @Composable
-fun OnBoardingScreen2(modifier: Modifier = Modifier) {
+fun OnBoardingScreen2(
+    navController: NavController,
+    modifier: Modifier = Modifier,
+) {
 
     val hapticFeedback = LocalHapticFeedback.current
 
@@ -133,7 +138,15 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
         }
 
         Button(
-            onClick = {},
+            onClick = {
+                navController.navigate("OnBoardingScreen3") {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -158,5 +171,5 @@ fun OnBoardingScreen2(modifier: Modifier = Modifier) {
 @Composable
 private fun OnBoardingScreen2Prev() {
 
-   OnBoardingScreen2()
+//    OnBoardingScreen2()
 }

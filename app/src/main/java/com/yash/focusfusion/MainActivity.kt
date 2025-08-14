@@ -71,6 +71,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.Botto
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.onBoardingScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen1
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen2
+import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen3
 import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
@@ -269,29 +270,7 @@ class MainActivity : ComponentActivity() {
                         )
                         {
                             composable(
-                                "OnBoardingScreen1",
-                                enterTransition = {
-                                    fadeIn(
-                                        animationSpec = tween(
-                                            durationMillis = 400,
-                                            easing = EaseInOut
-                                        )
-                                    )
-                                },
-                                exitTransition = {
-                                    slideOutVertically(
-                                        targetOffsetY = { -it },
-                                        animationSpec = tween(
-                                            durationMillis = 400,
-                                            easing = EaseInOut
-                                        )
-                                    ) + fadeOut(
-                                        animationSpec = tween(
-                                            durationMillis = 300,
-                                            easing = EaseInOut
-                                        )
-                                    )
-                                }
+                                "OnBoardingScreen1"
                             ) {
 //                                onBoardingScreen({
 //                                    navController.navigate(BottomNavItem.Home.route) {
@@ -307,7 +286,11 @@ class MainActivity : ComponentActivity() {
                             }
 
                             composable("OnBoardingScreen2") {
-                                OnBoardingScreen2()
+                                OnBoardingScreen2(navController)
+                            }
+
+                            composable("OnBoardingScreen3") {
+                                OnBoardingScreen3()
                             }
 
                             composable(
