@@ -1,5 +1,8 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens
 
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -43,10 +46,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.OnBoardingUiEvent
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureList
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureListData
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -74,7 +79,7 @@ fun OnBoardingScreen1(
 
     Column(
         modifier = Modifier
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(20.dp)
             .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
@@ -87,7 +92,7 @@ fun OnBoardingScreen1(
                 modifier = Modifier.padding(top = 20.dp),
                 fontSize = 50.sp,
                 lineHeight = 60.sp,
-                color = Color(0xffFF8D61)
+                color = MaterialTheme.colorScheme.primary
             )
 
 
@@ -126,7 +131,7 @@ fun OnBoardingScreen1(
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xffFF8D61)
+                containerColor = MaterialTheme.colorScheme.primary
             ),
             shape = RoundedCornerShape(32.dp)
         ) {
@@ -139,83 +144,19 @@ fun OnBoardingScreen1(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true,
+//    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showSystemUi = true)
 @Composable
 private fun OnBoardingScreen1Prev() {
 
-    val itemVisibility = remember { mutableStateListOf<Boolean>() }
-    feautreListItem.forEach { itemVisibility.add(false) }
+    val navController = rememberNavController()
 
-    val hapticFeedback = LocalHapticFeedback.current
-
-
-    LaunchedEffect(key1 = Unit) {
-        // Trigger the animation for each item with a small delay
-        feautreListItem.forEachIndexed { index, _ ->
-            delay(500L) // Adjust this delay for a slower or faster cascade
-            hapticFeedback.performHapticFeedback(
-                HapticFeedbackType.TextHandleMove
-            )
-            itemVisibility[index] = true
-        }
+    FocusFusionTheme {
+        OnBoardingScreen1(navController)
     }
 
-    Column(
-        modifier = Modifier
-            .background(Color.White)
-            .padding(20.dp)
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text(
-                text = "focus\nfusion",
-                fontFamily = FontFamily(Font(R.font.fugaz_one_regular)),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 20.dp),
-                fontSize = 50.sp,
-                color = Color(0xffFF8D61)
-            )
-
-
-            LazyColumn(
-                modifier = Modifier
-                    .padding(top = 20.dp)
-
-            ) {
-                itemsIndexed(feautreListItem) { index, item ->
-                    AnimatedVisibility(
-                        visible = itemVisibility[index],
-                        enter = slideInVertically(
-                            initialOffsetY = { -it / 2 }
-                        ) + fadeIn(
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    ) {
-                        FeatureList(item.image, item.featureText)
-                    }
-
-                }
-            }
-        }
-
-        Button(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xffFF8D61)
-            ),
-            shape = RoundedCornerShape(32.dp)
-        ) {
-            Text(
-                text = "Get Started",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
-    }
 }
 
 val feautreListItem = listOf<FeatureListData>(
