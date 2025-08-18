@@ -69,6 +69,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScree
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.CustomBottomNav
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
+import com.yash.focusfusion.ui.theme.ThemeMode
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -86,6 +87,7 @@ fun HomeScreen(
     navController: NavController,
     userName: String,
     homeScreenViewModel: HomeScreenViewModel = hiltViewModel(),
+    mode: ThemeMode,
     modifier: Modifier = Modifier,
 ) {
 
@@ -196,7 +198,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Spacer(Modifier.height(40.dp))
-                    if(!LocalContext.current.theme.resources.configuration.isNightModeActive) {
+                    if(!LocalContext.current.theme.resources.configuration.isNightModeActive && mode!= ThemeMode.DARK) {
                         Image(
                             painter = painterResource(R.drawable.no_data_home_screen),
                             contentDescription = "No Data To Show",

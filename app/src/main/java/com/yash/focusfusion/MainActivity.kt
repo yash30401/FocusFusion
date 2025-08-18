@@ -386,7 +386,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             ) {
-                                HomeScreen(navController, userName)
+                                HomeScreen(navController, userName, mode= selectedTheme)
                             }
                             composable(
                                 BottomNavItem.Profile.route,
