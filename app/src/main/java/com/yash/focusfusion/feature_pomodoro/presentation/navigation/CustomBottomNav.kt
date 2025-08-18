@@ -100,6 +100,7 @@ fun CustomBottomNav(
         modifier = modifier
             .fillMaxWidth()
             .height(90.dp)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier

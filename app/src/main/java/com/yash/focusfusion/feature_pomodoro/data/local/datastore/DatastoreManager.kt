@@ -13,6 +13,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.yash.focusfusion.core.util.Constants.DATASTORELOGS
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
@@ -32,6 +33,7 @@ class DatastoreManager(private val context: Context) {
         val STREAK = intPreferencesKey("STREAK")
         val FOCUS_TIME_KEY = intPreferencesKey("FOCUS_TIME_KEY")
         val TIMER_START_TIME = longPreferencesKey("TIMER_START_TIME")
+        val THEME_ORDINAL = intPreferencesKey("theme_ordinal")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -74,6 +76,11 @@ class DatastoreManager(private val context: Context) {
 
     val timerStartTime: Flow<Long> = context.dataStore.data.map { prefrences ->
         prefrences[TIMER_START_TIME] ?: 0
+    }
+
+    val themeFlow = context.dataStore.data.map { preferences ->
+        val ordinal = preferences[THEME_ORDINAL] ?: ThemeMode.SYSTEM.ordinal
+        ThemeMode.values()[ordinal]
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -173,6 +180,12 @@ class DatastoreManager(private val context: Context) {
             }
         } catch (e: Exception) {
             Log.e(DATASTORELOGS, "Error saving focus time.", e)
+        }
+    }
+
+    suspend fun saveThemeMode(theme: ThemeMode) {
+        context.dataStore.edit { preferences ->
+            preferences[THEME_ORDINAL] = theme.ordinal
         }
     }
 }

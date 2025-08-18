@@ -4,10 +4,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetThemeModeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveFocusTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveThemeModeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.OnboardingNavigationEvent
+import com.yash.focusfusion.ui.theme.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,6 +19,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,14 +29,20 @@ class SettingsViewModel @Inject constructor(
     private val getUserNameUseCase: GetUserNameUseCase,
     private val saveFocusTimeUseCase: SaveFocusTimeUseCase,
     private val getFocusTimeUseCase: GetFocusTimeUseCase,
+    private val saveThemeModeUseCase: SaveThemeModeUseCase,
+    private val getThemeModeUseCase: GetThemeModeUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
+    val themeState = getThemeModeUseCase.invoke()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), ThemeMode.SYSTEM)
+
     // Track ongoing operations to prevent concurrent modifications
     private var saveNameJob: Job? = null
     private var saveTimeJob: Job? = null
+    private var saveThemeJob: Job? = null
 
     init {
         loadInitialData()
@@ -90,6 +100,11 @@ class SettingsViewModel @Inject constructor(
             SettingsUiEvent.ShowPrivacyPolicyDialog -> _uiState.value = _uiState.value.copy(
                 isPrivacyPolicyDialogVisible = true
             )
+
+            is SettingsUiEvent.OnThemeChanged -> {
+                saveThemeJob?.cancel()
+                saveThemeJob = handleThemeChange(event.theme)
+            }
         }
     }
 
@@ -156,10 +171,15 @@ class SettingsViewModel @Inject constructor(
         )
     }
 
+    private fun handleThemeChange(mode: ThemeMode) = viewModelScope.launch {
+        saveThemeModeUseCase.invoke(mode)
+    }
+
     override fun onCleared() {
         super.onCleared()
         saveNameJob?.cancel()
         saveTimeJob?.cancel()
+        saveThemeJob?.cancel()
     }
 
 }

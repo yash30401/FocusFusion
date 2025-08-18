@@ -1,5 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.domain.repository
 
+import com.yash.focusfusion.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 
 interface DatastoreRepository {
@@ -12,6 +13,7 @@ interface DatastoreRepository {
     val isOnBoardingCompletedFlow: Flow<Boolean>
     val streak: Flow<Int>
     val focusTime: Flow<Int>
+    val themeMode: Flow<ThemeMode>
 
     suspend fun saveTimeLeft(time: Long)
     suspend fun saveExtraTime(extraTime: Int)
@@ -21,4 +23,5 @@ interface DatastoreRepository {
     suspend fun onBoardingCompleted(isCompleted: Boolean)
     suspend fun saveStreakCount(count: Int)
     suspend fun saveFocusTime(time: Int)
+    suspend fun saveThemeMode(theme: ThemeMode)
 }

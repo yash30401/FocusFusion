@@ -84,7 +84,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.annotations.DevicePreviews
 import com.yash.focusfusion.core.util.loadHtmlFromRaw
+import com.yash.focusfusion.feature_pomodoro.presentation.settings.components.ThemePreferenceItem
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
+import com.yash.focusfusion.ui.theme.ThemeMode
 import kotlin.math.sin
 
 @Composable
@@ -109,6 +111,8 @@ fun SettingsScreen(
     val textColor = MaterialTheme.colorScheme.onSurface
     val headerColor = MaterialTheme.colorScheme.onBackground
     val iconColor = MaterialTheme.colorScheme.onSurface
+    
+    val theme by settingsViewModel.themeState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier
@@ -173,6 +177,21 @@ fun SettingsScreen(
 
             }
         }
+
+        Spacer(Modifier.height(20.dp))
+        Text(
+            text = "Appearance",
+            fontFamily = FontFamily(Font(R.font.jost_medium)),
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        Spacer(Modifier.height(12.dp))
+        ThemePreferenceItem(
+            selectedTheme = theme,
+            onThemeSelected = { newTheme ->
+                settingsViewModel.onEvent(SettingsUiEvent.OnThemeChanged(newTheme))
+            }
+        )
 
         Spacer(Modifier.height(40.dp))
 
@@ -511,6 +530,21 @@ private fun SettingsScreenPreview() {
 
                 }
             }
+
+            Spacer(Modifier.height(20.dp))
+            Text(
+                text = "Appearance",
+                fontFamily = FontFamily(Font(R.font.jost_medium)),
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            Spacer(Modifier.height(12.dp))
+            ThemePreferenceItem(
+                selectedTheme = ThemeMode.SYSTEM,
+                onThemeSelected = { newTheme ->
+
+                }
+            )
 
             Spacer(Modifier.height(40.dp))
 

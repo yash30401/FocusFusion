@@ -16,4 +16,6 @@ data class DatastoreUseCases(
     val getStreakCountUseCase: GetStreakCountUseCase,
     val saveFocusTimeUseCase: SaveFocusTimeUseCase,
     val getFocusTimeUseCase: GetFocusTimeUseCase,
+    val saveThemeModeUseCase: SaveThemeModeUseCase,
+    val getThemeModeUseCase: GetThemeModeUseCase
 )

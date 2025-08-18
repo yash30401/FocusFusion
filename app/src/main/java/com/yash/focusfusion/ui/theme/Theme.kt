@@ -47,10 +47,26 @@ private val LightColorScheme = lightColorScheme(
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun FocusFusionTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    selectedTheme: ThemeMode = ThemeMode.SYSTEM,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit,
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+
+    val darkTheme: Boolean = when (selectedTheme) {
+        ThemeMode.LIGHT -> false
+        ThemeMode.DARK -> true
+        ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    }
+
+    val colorScheme = when {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            val context = LocalContext.current
+            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        }
+        darkTheme -> DarkColorScheme
+        else -> LightColorScheme
+    }
+
     // This part handles the system status bar color
     val view = LocalView.current
     if (!view.isInEditMode) {

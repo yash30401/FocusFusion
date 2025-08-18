@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -75,6 +76,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.On
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen3
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens.OnBoardingScreen4
 import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsScreen
+import com.yash.focusfusion.feature_pomodoro.presentation.settings.SettingsViewModel
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
 import com.yash.focusfusion.ui.theme.FocusFusionTheme
@@ -105,6 +107,8 @@ class MainActivity : ComponentActivity() {
     private val timerSharedViewModel: TimerSharedViewModel by viewModels()
     private var isOnBoardingCompleted: Boolean = false
     private var focusTime: Int = 1
+
+    private val settingsViewModel: SettingsViewModel by viewModels()
 
     private val timerUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -212,7 +216,10 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            FocusFusionTheme {
+
+            val selectedTheme by settingsViewModel.themeState.collectAsStateWithLifecycle()
+
+            FocusFusionTheme(selectedTheme = selectedTheme) {
 //                   TimerScreen(context = this@MainActivity, timerSharedViewModel = timerSharedViewModel)
                 val navController = rememberNavController()
 

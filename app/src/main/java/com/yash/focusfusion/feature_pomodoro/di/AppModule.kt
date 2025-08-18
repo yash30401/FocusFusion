@@ -22,7 +22,9 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveExtraTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.CalculateAndSaveStreakUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetThemeModeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveFocusTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveThemeModeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveTimeLeftUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveUserNameUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.DeleteSessionUseCase
@@ -121,7 +123,9 @@ object AppModule {
             ),
             getStreakCountUseCase = GetStreakCountUseCase(datastoreRepository),
             saveFocusTimeUseCase = SaveFocusTimeUseCase(datastoreRepository),
-            getFocusTimeUseCase = GetFocusTimeUseCase(datastoreRepository)
+            getFocusTimeUseCase = GetFocusTimeUseCase(datastoreRepository),
+            saveThemeModeUseCase = SaveThemeModeUseCase(datastoreRepository),
+            getThemeModeUseCase = GetThemeModeUseCase(datastoreRepository)
         )
     }
 

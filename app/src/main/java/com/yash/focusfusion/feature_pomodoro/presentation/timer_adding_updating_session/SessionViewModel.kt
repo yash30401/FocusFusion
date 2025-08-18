@@ -9,10 +9,13 @@ import androidx.lifecycle.viewModelScope
 import com.yash.focusfusion.core.util.Constants.CHECKINGVIEWMODEL
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.DatastoreUseCases
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
+import com.yash.focusfusion.ui.theme.ThemeMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -20,7 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SessionViewModel @Inject constructor(
     private val sessionsUseCases: SessionUseCases,
-    private val datastoreUseCases: DatastoreUseCases
+    private val datastoreUseCases: DatastoreUseCases,
 ) : ViewModel() {
 
     var sessionState = mutableStateOf(SessionState())
@@ -28,6 +31,7 @@ class SessionViewModel @Inject constructor(
 
     private val _eventFlow = MutableSharedFlow<UIEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun onEvent(event: SessionEvent) {
@@ -100,7 +104,6 @@ class SessionViewModel @Inject constructor(
                     _eventFlow.emit(UIEvent.ShowSnackbar("Your Focus Tag Updated"))
                 }
             }
-
 
         }
     }

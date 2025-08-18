@@ -2,6 +2,7 @@ package com.yash.focusfusion.feature_pomodoro.data.repository
 
 import com.yash.focusfusion.feature_pomodoro.data.local.datastore.DatastoreManager
 import com.yash.focusfusion.feature_pomodoro.domain.repository.DatastoreRepository
+import com.yash.focusfusion.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.Flow
 
 class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
@@ -29,6 +30,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
 
     override val focusTime: Flow<Int>
         get() = datastoreManager.focusTime
+
+    override val themeMode: Flow<ThemeMode>
+        get() = datastoreManager.themeFlow
 
     override suspend fun saveTimeLeft(time: Long) {
         datastoreManager.saveTimeLeft(time)
@@ -60,5 +64,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
 
     override suspend fun saveFocusTime(time: Int) {
         datastoreManager.saveFocusTime(time)
+    }
+
+    override suspend fun saveThemeMode(theme: ThemeMode) {
+        datastoreManager.saveThemeMode(theme)
     }
 }
