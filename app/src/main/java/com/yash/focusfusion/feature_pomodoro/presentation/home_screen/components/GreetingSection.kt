@@ -32,7 +32,7 @@ fun GreetingHead(
         Text(
             "${getCurrentGreeting()},",
             fontFamily = FontFamily(Font(R.font.jost_medium)),
-            color = Color(0xffFF8D61),
+            color = MaterialTheme.colorScheme.primary,
             fontSize = 28.sp,
             lineHeight = 28.sp
         )
@@ -40,7 +40,8 @@ fun GreetingHead(
             nameOfPerson,
             fontFamily = FontFamily(Font(R.font.jost_semi_bold)),
             fontSize = 28.sp,
-            lineHeight = 28.sp
+            lineHeight = 28.sp,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

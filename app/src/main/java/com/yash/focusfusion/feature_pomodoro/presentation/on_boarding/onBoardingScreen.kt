@@ -1,5 +1,9 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding
 
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.AnimatedPreloaderLottie
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import com.yash.focusfusion.ui.theme.fontFamily
 
 @Composable
@@ -88,7 +93,7 @@ fun onBoardingScreen(
         Text(
             text = "focus fusion",
             fontSize = 42.sp,
-            color = Color(0xffFF8D61),
+            color = MaterialTheme.colorScheme.primary,
             fontFamily = FontFamily(Font(R.font.fugaz_one_regular))
         )
 
@@ -112,7 +117,8 @@ fun onBoardingScreen(
                 text = "What should we call you?",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -140,7 +146,7 @@ fun onBoardingScreen(
                 } else null,
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xff8958E2),
+                    focusedBorderColor = MaterialTheme.colorScheme.secondary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                 )
             )
@@ -159,7 +165,8 @@ fun onBoardingScreen(
                     .height(56.dp),
                 enabled = !uiState.isLoading && uiState.userName.trim().isNotEmpty(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xffFF8D61)
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
                 ),
                 shape = RoundedCornerShape(32.dp)
             ) {
@@ -173,7 +180,8 @@ fun onBoardingScreen(
                     Text(
                         text = "Let's Go",
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
             }
@@ -185,115 +193,122 @@ fun onBoardingScreen(
 
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun OnBoardingScreenPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Box {
-            AnimatedPreloaderLottie(
-                modifier = Modifier
-                    .size(240.dp)
-                    .align(Alignment.Center)
-            )
-        }
-
-        Text(
-            text = "focus fusion",
-            fontSize = 42.sp,
-            color = Color(0xffFF8D61),
-            fontFamily = FontFamily(Font(R.font.fugaz_one_regular))
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Take control of your time with focused work intervals.",
-            fontSize = 16.sp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            textAlign = TextAlign.Center,
-            lineHeight = 24.sp
-        )
-
+    FocusFusionTheme {
         Column(
-            verticalArrangement = Arrangement.Bottom,
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(horizontal = 24.dp)
+               ,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(40.dp))
 
-            // Name Input Section
+            Box {
+                AnimatedPreloaderLottie(
+                    modifier = Modifier
+                        .size(240.dp)
+                        .align(Alignment.Center)
+                )
+            }
+
             Text(
-                text = "What should we call you?",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.fillMaxWidth()
+                text = "focus fusion",
+                fontSize = 42.sp,
+                color = MaterialTheme.colorScheme.primary,
+                fontFamily = FontFamily(Font(R.font.fugaz_one_regular))
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            OutlinedTextField(
-                value = "",
-                onValueChange = { },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                placeholder = { Text("Enter your name") },
-                singleLine = true,
-                isError = false,
-                supportingText = if (false) {
-                    {
-                        Text(
-                            text = "error" ?: "Name must be at least 2 characters long",
-                            color = MaterialTheme.colorScheme.error
-                        )
-                    }
-                } else null,
-                shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color(0xff8958E2),
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-                )
+            Text(
+                text = "Take control of your time with focused work intervals.",
+                fontSize = 16.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center,
+                lineHeight = 24.sp
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Get Started Button
-            Button(
-                onClick = {
-
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                enabled = true,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor =
-                        Color(0xff8958E2)
-                ),
-                shape = RoundedCornerShape(32.dp)
+            Column(
+                verticalArrangement = Arrangement.Bottom,
+                modifier = Modifier.fillMaxHeight()
             ) {
-                if (false) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
-                    Text(
-                        text = "Get Started",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(32.dp))
+                // Name Input Section
+                Text(
+                    text = "What should we call you?",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = "",
+                    onValueChange = { },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    placeholder = { Text("Enter your name") },
+                    singleLine = true,
+                    isError = false,
+                    supportingText = if (false) {
+                        {
+                            Text(
+                                text = "error" ?: "Name must be at least 2 characters long",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    } else null,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Get Started Button
+                Button(
+                    onClick = {
+
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    enabled = true,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    ),
+                    shape = RoundedCornerShape(32.dp)
+                ) {
+                    if (false) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = "Get Started",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
     }
-
 
 }

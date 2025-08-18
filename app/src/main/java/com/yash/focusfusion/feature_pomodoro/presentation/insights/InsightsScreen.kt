@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -343,7 +344,7 @@ fun InsightsScreen(
                     overallTotalDurationInMinutes = overallTotalDuration,
                     modifier = Modifier
                         .padding(16.dp),
-                    lineColor = Color(0xff9463ED),
+                    lineColor = MaterialTheme.colorScheme.secondary,
                     strokeWidth = 5f,
                     xOffset = 90f,
                     waveAmplitude = 1f,
@@ -403,7 +404,7 @@ fun InsightsScreen(
                         .padding(horizontal = 16.dp),
                     fontFamily = FontFamily(Font(R.font.jost_medium)),
                     fontSize = 30.sp,
-                    color = Color(0xff212121)
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
 

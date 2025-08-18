@@ -1,6 +1,9 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components
 
+import android.content.res.Configuration
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -48,6 +51,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.TimerSharedViewModel
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import java.util.concurrent.TimeUnit
 import kotlin.math.PI
 import kotlin.math.cos
@@ -93,6 +97,14 @@ fun TimerProgressBar(
     Log.d("TimerProgressBar", "animatedProgress: $animatedProgress")
     Log.d("TimerProgressBar", "timeLeft: $timeLeft")
 
+    val arcColor = MaterialTheme.colorScheme.secondary
+    val trackColor = MaterialTheme.colorScheme.surfaceVariant
+    val centerBackgroundColor = MaterialTheme.colorScheme.surface
+    val centerBorderColor = MaterialTheme.colorScheme.background
+    val primaryTextColor = MaterialTheme.colorScheme.onSurface
+    val secondaryTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+    val accentColor = MaterialTheme.colorScheme.primary
+
     if (showDialog) {
         TaskTagEditDialog(setShowDialog = {
             showDialog = it
@@ -130,7 +142,7 @@ fun TimerProgressBar(
                 1.0f to Color(0xFFFAF9FD)  // Light color
             )
             drawArc(
-                color = Color(0xFFBC9FF1),
+                color = arcColor,
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,
@@ -138,7 +150,7 @@ fun TimerProgressBar(
             )
 
             drawArc(
-                color = Color.LightGray,
+                color = trackColor,
                 startAngle = -90f,
                 sweepAngle = 360 * (1f - animatedProgress),
                 useCenter = false,
@@ -156,7 +168,7 @@ fun TimerProgressBar(
                 drawPoints(
                     points = listOf(Offset(x, y)),
                     pointMode = PointMode.Points,
-                    color = Color(0xFFBC9FF1),
+                    color = arcColor,
                     strokeWidth = (strokeWidth * 3f).toPx(),
                     cap = StrokeCap.Round
                 )
@@ -169,20 +181,18 @@ fun TimerProgressBar(
             modifier = Modifier
                 .shadow(
                     elevation = 20.dp,
-                    shape = CircleShape,
-                    spotColor = Color(0xFF5F14E7)
-                )
+                    shape = CircleShape)
                 .clip(CircleShape)
                 .size(205.dp)
-                .background(Color(0xFFF8F8F8))
-                .border(width = 3.dp, color = Color.White, shape = CircleShape)
+                .background(centerBackgroundColor)
+                .border(width = 3.dp, color = centerBorderColor, shape = CircleShape)
 
         ) {
 
             Text(
                 text = String.format("%02d:%02d", timeInMinutes, timeInMinutes / 60),
                 fontSize = 20.sp,
-                color = Color(0xFFB5B5B5),
+                color = secondaryTextColor,
                 fontFamily = FontFamily(Font(R.font.baloo_bhaijan_semi_bold))
             )
             val minutes = (timeLeft / 1000) / 60
@@ -195,7 +205,7 @@ fun TimerProgressBar(
                 ) else
                     String.format("%02d:%02d", timeInMinutes, timeInMinutes / 60),
                 fontSize = 48.sp,
-                color = Color(0xFF4D4D4D),
+                color = primaryTextColor,
                 fontFamily = FontFamily(Font(R.font.baloo_bold))
             )
             Row(
@@ -206,7 +216,7 @@ fun TimerProgressBar(
 
                 Text(
                     text = taskTag.name.toLowerCase().replaceFirstChar { it.uppercase() },
-                    color = Color(0xFFFF8D61),
+                    color = accentColor,
                     fontSize = if (taskTag.name.length > 6) 18.sp else 24.sp,
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.bodyLarge,
@@ -222,7 +232,7 @@ fun TimerProgressBar(
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_edit_24),
                         contentDescription = "Edit TaskTag",
-                        tint = Color(0xFFFF8D61)
+                        tint = accentColor
                     )
                 }
             }
@@ -231,13 +241,16 @@ fun TimerProgressBar(
 
 }
 
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xFFFFFFFF)
+@RequiresApi(Build.VERSION_CODES.R)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TimerCircularBarPreview() {
 
     val timerSharedViewModel = TimerSharedViewModel()
-    TimerProgressBar(
-        timerSharedViewModel = timerSharedViewModel
-    ) {}
-
+    FocusFusionTheme {
+        TimerProgressBar(
+            timerSharedViewModel = timerSharedViewModel
+        ) {}
+    }
 }

@@ -1,5 +1,8 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens
 
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -20,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,9 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.FeatureList
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.SessionsList
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -76,7 +82,7 @@ fun OnBoardingScreen3(
 
     Column(
         modifier = Modifier
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(20.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
@@ -91,7 +97,7 @@ fun OnBoardingScreen3(
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 40.sp,
-                            color = Color(0xff000000),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
@@ -103,7 +109,7 @@ fun OnBoardingScreen3(
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 40.sp,
-                            color = Color(0xff000000),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
@@ -115,7 +121,7 @@ fun OnBoardingScreen3(
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 40.sp,
-                            color = Color(0xff8958E2),
+                            color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
@@ -130,7 +136,7 @@ fun OnBoardingScreen3(
             Text(
                 text = "How many sessions will you complete each day?",
                 fontFamily = FontFamily(listOf(Font(R.font.roboto_regular))),
-                color = Color(0xff000000),
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
                 fontSize = 17.sp
             )
             Spacer(Modifier.height(10.dp))
@@ -179,149 +185,30 @@ fun OnBoardingScreen3(
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xffFF8D61)
+                containerColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             ),
             shape = RoundedCornerShape(32.dp)
         ) {
             Text(
                 text = "Continue",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun OnBoardingScreen3Prev() {
 
-    var selectedIndex by remember {
-        mutableStateOf(-1)
-    }
-
-    val itemVisibility = remember { mutableStateListOf<Boolean>() }
-    sessionListItem.forEach { itemVisibility.add(false) }
-
-    val hapticFeedback = LocalHapticFeedback.current
-
-
-    LaunchedEffect(key1 = Unit) {
-        // Trigger the animation for each item with a small delay
-        sessionListItem.forEachIndexed { index, _ ->
-            delay(500L) // Adjust this delay for a slower or faster cascade
-            hapticFeedback.performHapticFeedback(
-                HapticFeedbackType.TextHandleMove
-            )
-            itemVisibility[index] = true
-        }
-    }
-
-    Column(
-        modifier = Modifier
-            .background(Color.White)
-            .padding(20.dp)
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily =
-                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
-                            fontSize = 40.sp,
-                            color = Color(0xff000000),
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("Set Your\n")
-                    }
-
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily =
-                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
-                            fontSize = 40.sp,
-                            color = Color(0xff000000),
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("Focus")
-                    }
-
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily =
-                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
-                            fontSize = 40.sp,
-                            color = Color(0xff8958E2),
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append(" Goal")
-                    }
-                }
-
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            Text(
-                text = "How many sessions will you complete each day?",
-                fontFamily = FontFamily(listOf(Font(R.font.roboto_regular))),
-                color = Color(0xff000000),
-                fontSize = 17.sp
-            )
-            Spacer(Modifier.height(10.dp))
-
-
-            LazyColumn(
-                modifier = Modifier
-                    .padding(top = 10.dp)
-                    .heightIn(max = 1000.dp)
-
-            ) {
-                itemsIndexed(sessionListItem) { index, item ->
-
-                    AnimatedVisibility(
-                        visible = itemVisibility[index],
-                        enter = slideInVertically(
-                            initialOffsetY = { -it / 2 }
-                        ) + fadeIn(
-                            animationSpec = tween(durationMillis = 500)
-                        )
-                    ) {
-                        SessionsList(
-                            item.numberOfSessions, item.motivationQuote,
-                            isSelected = (selectedIndex == index), // Pass true if indexes match
-                            onClick = { selectedIndex = index })
-                    }
-
-                }
-            }
-        }
-
-        Spacer(Modifier.height(20.dp))
-
-        Button(
-            onClick = {},
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xffFF8D61)
-            ),
-            shape = RoundedCornerShape(32.dp)
-        ) {
-            Text(
-                text = "Continue",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
+    val navController = rememberNavController()
+    FocusFusionTheme{
+        OnBoardingScreen3(navController)
     }
 }
 

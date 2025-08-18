@@ -1,5 +1,6 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.insights.components
 
+import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 
 @Composable
 fun TimePeriodTabs(currentSelected:Int,modifier: Modifier = Modifier, selectedPeriod: (Int) -> Unit) {
@@ -43,7 +46,7 @@ fun TimePeriodTabs(currentSelected:Int,modifier: Modifier = Modifier, selectedPe
             .padding(10.dp)
             .padding(horizontal = 40.dp)
             .shadow(2.dp, RoundedCornerShape(20.dp))
-            .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp)),
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp)),
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         TimePeriodTabItem(
@@ -75,10 +78,16 @@ fun TimePeriodTabs(currentSelected:Int,modifier: Modifier = Modifier, selectedPe
 
 @Composable
 fun TimePeriodTabItem(isSelected: Boolean, text: String, onClick: () -> Unit, modifier: Modifier) {
+
+    val backgroundColor =
+        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+    val textColor =
+        if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+
     Column(
         modifier = modifier
             .shadow(if (isSelected) 1.dp else 0.dp, RoundedCornerShape(20.dp))
-            .background(if (isSelected) Color(0xFFFF8D61) else Color.Transparent, RoundedCornerShape(20.dp))
+            .background(backgroundColor, RoundedCornerShape(20.dp))
             .clickable { onClick() }
             .padding(7.dp)
     ) {
@@ -86,23 +95,21 @@ fun TimePeriodTabItem(isSelected: Boolean, text: String, onClick: () -> Unit, mo
             text = text,
             fontSize = 12.sp,
             fontFamily = FontFamily(Font(R.font.jost_medium)),
-            color = if (isSelected) Color.White else Color(0xff9E9E9E),
+            color = textColor,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TimePeriodTabsPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xffFFFDFC))
-            .padding(10.dp)
-    ) {
-        TimePeriodTabs(0) { }
+    FocusFusionTheme {
+
+            TimePeriodTabs(0) { }
+
     }
 }

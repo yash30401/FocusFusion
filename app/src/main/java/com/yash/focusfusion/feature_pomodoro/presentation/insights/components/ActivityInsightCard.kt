@@ -1,7 +1,10 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.insights.components
 
+import android.content.res.Configuration
 import android.graphics.drawable.Icon
+import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,8 +15,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -41,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import java.util.Locale
 
 @Composable
@@ -62,7 +69,7 @@ fun ActivityInsightCard(
             .padding(horizontal = 15.dp, vertical = 10.dp)
             .fillMaxWidth()
             .shadow(2.dp, shape = RoundedCornerShape(20.dp))
-            .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp))
             .padding(15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -75,7 +82,7 @@ fun ActivityInsightCard(
             Box(
                 modifier = Modifier
                     .background(
-                        Color(0xffF0F0F0),
+                        MaterialTheme.colorScheme.surfaceVariant,
                         RoundedCornerShape(100.dp)
                     )
                     .padding(5.dp)
@@ -101,12 +108,18 @@ fun ActivityInsightCard(
                     .weight(1f),
                 fontSize = 17.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                color = Color(0xff212121),
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
             )
         }
 
-        VerticalDivider(modifier = Modifier.height(40.dp), thickness = 1.3.dp)
+        Divider(
+            modifier = Modifier
+                .height(40.dp)
+                .width(1.dp),
+            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+        )
+
         Row(
             modifier = Modifier.weight(1f),
             horizontalArrangement = Arrangement.Center,
@@ -116,7 +129,7 @@ fun ActivityInsightCard(
                     style = SpanStyle(
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                         fontSize = 20.sp,
-                        color = Color(0xff212121)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
                     append(hours.toString())
@@ -124,7 +137,7 @@ fun ActivityInsightCard(
                 withStyle(
                     style = SpanStyle(
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                        fontSize = 20.sp, color = Color(0xffFF8D61)
+                        fontSize = 20.sp, color = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     append(" Hrs")
@@ -134,7 +147,7 @@ fun ActivityInsightCard(
                     style = SpanStyle(
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                         fontSize = 20.sp,
-                        color = Color(0xff212121)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 ) {
                     append(" " + minutes.toString())
@@ -142,7 +155,7 @@ fun ActivityInsightCard(
                 withStyle(
                     style = SpanStyle(
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
-                        fontSize = 20.sp, color = Color(0xffFF8D61)
+                        fontSize = 20.sp, color = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     append(" min")
@@ -154,25 +167,29 @@ fun ActivityInsightCard(
 
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.R)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ActivityInsightCardPreview() {
-    Column {
-        ActivityInsightCard(
-            R.drawable.books,
-            TaskTag.STUDY,
-            130
-        )
-        ActivityInsightCard(
-            R.drawable.books,
-            TaskTag.EXERCISE,
-            130
-        )
-        ActivityInsightCard(
-            R.drawable.books,
-            TaskTag.ENTERTAINMENT,
-            130
-        )
+    FocusFusionTheme {
+        Column {
+            ActivityInsightCard(
+                R.drawable.books,
+                TaskTag.STUDY,
+                130
+            )
+            ActivityInsightCard(
+                R.drawable.books,
+                TaskTag.EXERCISE,
+                130
+            )
+            ActivityInsightCard(
+                R.drawable.books,
+                TaskTag.ENTERTAINMENT,
+                130
+            )
+        }
     }
 
 }

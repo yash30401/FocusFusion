@@ -1,7 +1,10 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 
+import android.content.res.Configuration
+import android.os.Build
 import android.util.Log
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import java.util.concurrent.TimeUnit
 
 @Composable
@@ -57,7 +62,7 @@ fun TimeDistributionCard(
         modifier = modifier
             .padding(horizontal = 10.dp, vertical = 10.dp)
             .shadow(2.dp, shape = RoundedCornerShape(20.dp))
-            .background(Color(0xffF8F8F8), shape = RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
             .padding(10.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -65,7 +70,7 @@ fun TimeDistributionCard(
             Box(
                 modifier = Modifier
                     .background(
-                        Color(0xffF0F0F0),
+                        MaterialTheme.colorScheme.surfaceVariant,
                         RoundedCornerShape(100.dp)
                     )
                     .padding(5.dp),
@@ -82,7 +87,8 @@ fun TimeDistributionCard(
                     .padding(horizontal = 10.dp),
                 text = "$task",
                 fontSize = 18.sp,
-                fontFamily = FontFamily(Font(R.font.jost_medium))
+                fontFamily = FontFamily(Font(R.font.jost_medium)),
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -92,8 +98,8 @@ fun TimeDistributionCard(
                 .width(150.dp)
                 .padding(vertical = 10.dp),
             progress = { progress },
-            color = Color(0xff9463ED),
-            trackColor = Color(0xffF0F0F0),
+            color = MaterialTheme.colorScheme.secondary,
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
             strokeCap = StrokeCap.Round
         )
 
@@ -107,24 +113,25 @@ fun TimeDistributionCard(
                 .wrapContentWidth(Alignment.CenterHorizontally), // Ensures it doesn’t stretch
             textAlign = TextAlign.Center,
             fontSize = 16.sp,
-            fontFamily = FontFamily(Font(R.font.jost_medium))
+            fontFamily = FontFamily(Font(R.font.jost_medium)),
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 
 }
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    backgroundColor = 0xffFFFDFC
-)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TimeDistributionCardPreview() {
-    TimeDistributionCard(
-        R.drawable.books,
-        TaskTag.STUDY,
-        8,
-        92,
-        modifier = Modifier.padding(10.dp)
-    )
+    FocusFusionTheme {
+        TimeDistributionCard(
+            R.drawable.books,
+            TaskTag.STUDY,
+            8,
+            92,
+            modifier = Modifier.padding(10.dp)
+        )
+    }
 }

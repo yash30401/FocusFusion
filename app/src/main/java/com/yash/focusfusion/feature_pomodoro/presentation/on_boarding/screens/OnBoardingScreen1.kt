@@ -79,7 +79,7 @@ fun OnBoardingScreen1(
 
     Column(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.background)
             .padding(20.dp)
             .fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
@@ -138,16 +138,16 @@ fun OnBoardingScreen1(
             Text(
                 text = "Get Started",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.Q)
-@Preview(showBackground = true,
-//    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    showSystemUi = true)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun OnBoardingScreen1Prev() {
 

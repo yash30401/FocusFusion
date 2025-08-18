@@ -1,6 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.graphics.Paint
 import android.graphics.drawable.Icon
 import android.os.Build
@@ -41,6 +42,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -61,6 +63,7 @@ import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -82,6 +85,7 @@ import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.currentRoute
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.AnimatedPreloaderLottie
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -102,7 +106,7 @@ fun HomeScreenWaveLineChart(
     timeRange: TimeRange,
     currentDayTotalHours: Int,
     modifier: Modifier = Modifier,
-    lineColor: Color = Color(0xFF9463ED),
+    lineColor: Color,
     strokeWidth: Float = 5f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f, // Amplify the wave effect
@@ -225,7 +229,7 @@ fun HomeScreenWaveLineChart(
         modifier = modifier
             .fillMaxWidth()
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
-            .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp))
             .padding(5.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -244,9 +248,8 @@ fun HomeScreenWaveLineChart(
                     modifier = Modifier
                         .padding(12.dp)
                         .background(
-                            color = Color(
-                                0xffF0F0F0
-                            ), RoundedCornerShape(12.dp)
+                            MaterialTheme.colorScheme.surfaceVariant,
+                            RoundedCornerShape(12.dp)
                         )
                         .padding(vertical = 6.dp)
                         .weight(1f)
@@ -256,14 +259,15 @@ fun HomeScreenWaveLineChart(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontFamily = FontFamily(Font(R.font.jost_medium)),
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(Font(R.font.jost_medium)),
-                                    color = Color(0xff9463ED),
+                                    color =  MaterialTheme.colorScheme.secondary,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -273,7 +277,7 @@ fun HomeScreenWaveLineChart(
                             withStyle(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(Font(R.font.jost_medium)),
-                                    color = Color(0xff979797)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                 )
                             ) {
                                 append(" Days")
@@ -289,11 +293,7 @@ fun HomeScreenWaveLineChart(
                 Column(
                     modifier = Modifier
                         .padding(12.dp)
-                        .background(
-                            color = Color(
-                                0xffF0F0F0
-                            ), RoundedCornerShape(12.dp)
-                        )
+                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(12.dp))
                         .padding(vertical = 6.dp)
                         .weight(1f)
                 ) {
@@ -302,14 +302,15 @@ fun HomeScreenWaveLineChart(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         fontFamily = FontFamily(Font(R.font.jost_medium)),
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(Font(R.font.jost_medium)),
-                                    color = Color(0xff9463ED),
+                                    color = MaterialTheme.colorScheme.secondary,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -319,7 +320,7 @@ fun HomeScreenWaveLineChart(
                             withStyle(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(Font(R.font.jost_medium)),
-                                    color = Color(0xff979797)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                                 )
                             ) {
                                 append(" Hours")
@@ -348,13 +349,15 @@ fun HomeScreenWaveLineChart(
 
                         Text(
                             "No Chart Data For This ${timeRange.name}",
-                            color = Color(0xff9E9E9E),
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                             fontSize = 17.sp,
                         )
                     }
                 }
             } else {
+
+                val axisColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 // Canvas for the chart
                 Canvas(
                     modifier = Modifier
@@ -399,7 +402,7 @@ fun HomeScreenWaveLineChart(
                         if (maxValue - minValue == 0f) 0f else size.height / (maxValue - minValue)
 
                     val textPaint = Paint().apply {
-                        color = android.graphics.Color.GRAY
+                        color = axisColor.toArgb()
                         textSize = 28f
                         textAlign = Paint.Align.RIGHT
                     }
@@ -426,7 +429,7 @@ fun HomeScreenWaveLineChart(
                             adjustedX,
                             size.height + 40f,  // Adjust padding below the chart
                             Paint().apply {
-                                color = android.graphics.Color.GRAY
+                                color = axisColor.toArgb()
                                 textSize = 28f
                                 textAlign = Paint.Align.CENTER
                             }
@@ -501,7 +504,7 @@ fun HomeScreenWaveLineChart(
 
                     // Draw Y-axis line
                     drawLine(
-                        color = Color.Gray,
+                        color = axisColor,
                         start = Offset(leftPadding, 0f),
                         end = Offset(leftPadding, size.height),
                         strokeWidth = 3f
@@ -509,7 +512,7 @@ fun HomeScreenWaveLineChart(
 
                     // Draw X-axis line
                     drawLine(
-                        color = Color.Gray,
+                        color = axisColor,
                         start = Offset(leftPadding, size.height),
                         end = Offset(
                             lastX,
@@ -528,10 +531,9 @@ fun HomeScreenWaveLineChart(
             ) {
                 Button(
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xffFF8D61),
-                        contentColor = Color.White,
-
-                        ), onClick = {
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ), onClick = {
                         if (currentRoute != "Insights") {
                             navController.navigate("Insights") {
                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -554,8 +556,9 @@ fun HomeScreenWaveLineChart(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun HomeScreenWaveLineChartPreview() {
     val randomNumbers = (1..12).map {
@@ -564,19 +567,22 @@ fun HomeScreenWaveLineChartPreview() {
     val minutesWorked = randomNumbers
 
     val navController = rememberNavController()
-    HomeScreenWaveLineChart(
-        2,
-        navController,
-        minutesData = minutesWorked,
-        timeRange = TimeRange.Year,
-        modifier = Modifier
-            .padding(16.dp),
-        currentDayTotalHours = 2,
-        lineColor = Color(0xff9463ED),
-        strokeWidth = 5f,
-        xOffset = 90f,
-        waveAmplitude = 1f,
-    )
+
+    FocusFusionTheme {
+        HomeScreenWaveLineChart(
+            2,
+            navController,
+            minutesData = minutesWorked,
+            timeRange = TimeRange.Year,
+            modifier = Modifier
+                .padding(16.dp),
+            currentDayTotalHours = 2,
+            lineColor = Color(0xff9463ED),
+            strokeWidth = 5f,
+            xOffset = 90f,
+            waveAmplitude = 1f,
+        )
+    }
 }
 
 enum class TimeRange {

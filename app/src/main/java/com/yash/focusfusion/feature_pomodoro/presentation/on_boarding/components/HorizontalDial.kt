@@ -1,6 +1,9 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
@@ -65,16 +70,15 @@ fun HorizontalDial(
 ) {
     val itemWidth = 120.dp
     val selectedTextStyle = TextStyle(
-        color = Color.Black,
+        color = MaterialTheme.colorScheme.onBackground,
         fontSize = 42.sp,
         fontFamily = FontFamily(Font(R.font.fugaz_one_regular))
     )
     val fadedTextStyle = TextStyle(
-        color = Color.Gray,
+        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
         fontSize = 38.sp,
         fontWeight = FontWeight.Normal,
     )
-    val hapticFeedback = LocalHapticFeedback.current
 
     // --- State for the LazyRow and snapping behavior ---
     val listState = rememberLazyListState(
@@ -133,7 +137,7 @@ fun HorizontalDial(
                             text = steps[index].toString(),
                             modifier = Modifier.alpha(alpha),
                             style = style,
-                            textAlign = TextAlign.Center
+                            textAlign = TextAlign.Center,
                         )
 
                         if (isSelected) {
@@ -142,7 +146,7 @@ fun HorizontalDial(
                                     Modifier
                                         .width(30.dp)
                                         .height(5.dp)
-                                        .background(Color(0xffFF8D61))
+                                        .background(MaterialTheme.colorScheme.primary)
                             ) {
 
                             }
@@ -154,13 +158,12 @@ fun HorizontalDial(
     }
 }
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
-@Preview(
-    showBackground = true, showSystemUi = true,
-    backgroundColor = 0xffFFFFFF
-)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun HorizontalDialPrev() {
-        
-    HorizontalDial {  }
+    FocusFusionTheme {
+        HorizontalDial { }
+    }
 }

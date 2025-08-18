@@ -1,5 +1,8 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components
 
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -33,6 +36,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import com.yash.focusfusion.ui.theme.fontFamily
 
 @Composable
@@ -46,7 +50,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(16.dp),
-            color = Color(0xFFFFFDFC),
+            color = MaterialTheme.colorScheme.background,
             modifier = modifier
         ) {
             Box(
@@ -63,13 +67,14 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                         Text(
                             text = "Task Tag",
                             fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                         IconButton(onClick = { setShowDialog(false) }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.baseline_close_24),
                                 contentDescription = "Close Dialog",
-                                tint = Color.Gray
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
 
@@ -81,7 +86,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -104,7 +109,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -128,7 +133,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -153,7 +158,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -178,7 +183,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -203,7 +208,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -228,7 +233,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -253,7 +258,7 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
                             Modifier
                                 .border(
                                     2.dp,
-                                    color = Color(0xFFFF8D61), shape = RoundedCornerShape(
+                                    color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(
                                         8.dp
                                     )
                                 )
@@ -276,10 +281,14 @@ fun TaskTagEditDialog(modifier: Modifier = Modifier, setShowDialog: (Boolean) ->
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.R)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TaskTagEditDialogPreview() {
-    TaskTagEditDialog(setShowDialog = {}) {
+    FocusFusionTheme {
+        TaskTagEditDialog(setShowDialog = {}) {
 
+        }
     }
 }

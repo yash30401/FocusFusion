@@ -1,6 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.home_screen
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -26,6 +27,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,6 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -64,6 +68,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsScreen
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.CustomBottomNav
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import java.text.SimpleDateFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -152,7 +157,11 @@ fun HomeScreen(
     minutesFocused = getMappedDataForChart(weeklySessionState)
 
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())  // Add scroll modifier
@@ -164,7 +173,7 @@ fun HomeScreen(
                 minutesFocused,
                 TimeRange.Week,
                 modifier = Modifier.padding(16.dp),
-                lineColor = Color(0xff9463ED),
+                lineColor = MaterialTheme.colorScheme.secondary,
                 currentDayTotalHours = TimeUnit.SECONDS.toHours(currentDayTotalHours.toLong())
                     .toInt(),
                 strokeWidth = 5f,
@@ -176,28 +185,29 @@ fun HomeScreen(
                     text = "Weekly Time Distribution",
                     modifier = Modifier.padding(start = 16.dp, top = 20.dp),
                     fontSize = 22.sp,
-                    fontFamily = FontFamily(Font(R.font.jost_medium))
+                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             } else {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                    ,
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Spacer(Modifier.height(40.dp))
-                    Image(
-                        painter = painterResource(R.drawable.no_data_home_screen),
-                        contentDescription = "No Data To Show",
-                        Modifier.size(52.dp)
+                    if(!LocalContext.current.theme.resources.configuration.isNightModeActive) {
+                        Image(
+                            painter = painterResource(R.drawable.no_data_home_screen),
+                            contentDescription = "No Data To Show",
                         )
+                    }
 
                     Text(
                         text = "No Data",
                         modifier = Modifier.padding(top = 15.dp),
                         fontSize = 14.sp,
-                        color = Color(0xff9E9E9E),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                         fontFamily = FontFamily(Font(R.font.jost_medium))
                     )
                 }
@@ -310,121 +320,129 @@ fun initHomeViewModel(
     homeScreenViewModel.onEvent(HomeEvent.todaysHours(todaysDateInMillis ?: 0L))
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
+@RequiresApi(Build.VERSION_CODES.R)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun HomeScreenPreview() {
     val navController = rememberNavController()
 
     val weeklySessionState = listOf<Session>(Session(1749576488000, 23, TaskTag.STUDY))
     val lastWeekSessionState = listOf<Session>(Session(1749148088000, 2, TaskTag.STUDY))
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
+    FocusFusionTheme {
+        Box(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())  // Add scroll modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
         ) {
-            GreetingHead("Yash", modifier = Modifier)
-            HomeScreenWaveLineChart(
-                2,
-                navController,
-                listOf(1f, 5f, 2f),
-                TimeRange.Week,
-                modifier = Modifier.padding(16.dp),
-                lineColor = Color(0xff9463ED),
-                currentDayTotalHours = TimeUnit.SECONDS.toHours(8.toLong())
-                    .toInt(),
-                strokeWidth = 5f,
-                xOffset = 90f,
-                waveAmplitude = 1f,
-            )
-            if (!weeklySessionState.isNotEmpty()) {
-                Text(
-                    text = "Weekly Time Distribution",
-                    modifier = Modifier.padding(start = 16.dp, top = 20.dp),
-                    fontSize = 22.sp,
-                    fontFamily = FontFamily(Font(R.font.jost_medium))
-                )
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                    ,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Spacer(Modifier.height(100.dp))
-                    Image(
-                        painter = painterResource(R.drawable.no_data_home_screen),
-                        contentDescription = "No Data To Show",
-
-                        )
-
-                    Text(
-                        text = "No Data",
-                        modifier = Modifier.padding(top = 20.dp),
-                        fontSize = 22.sp,
-                        color = Color(0xff898989),
-                        fontFamily = FontFamily(Font(R.font.jost_medium))
-                    )
-                }
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .heightIn(max = 2000.dp)
+                    .verticalScroll(rememberScrollState())  // Add scroll modifier
             ) {
-                val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
-                    it.taskTag
-                }.mapValues {
-                    it.value.sumOf { it.duration }
-                }
-
-                val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
-                    it.taskTag
-                }.mapValues {
-                    it.value.sumOf { it.duration }
-                }
-
-                val listOfTotalDurationInWeekByTask =
-                    weeklyTimeDistributionByTag.map { it }.toList()
-                val listOfTotalDurationInLastWeekByTask =
-                    lastWeekTimeDistributionByTag.map { it }.toList()
-
-                itemsIndexed(
-                    items = listOfTotalDurationInWeekByTask,
-                    key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
-                ) { index, (taskTag, duration) ->
-                    var isVisible by remember { mutableStateOf(false) }
-//
-//
-                    val lastWeekDuration =
-                        listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
-
-                    Log.d("LASTWEEKDURATION", lastWeekDuration.toString())
-
-                    // Animated visibility for sliding in items
-                    LaunchedEffect(Unit) {
-                        isVisible =
-                            true // Trigger the animation once when the item enters composition
-                    }
-
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = isVisible, enter = slideInHorizontally(
-                            initialOffsetX = { fullWidth -> -fullWidth },
-                            animationSpec = tween(durationMillis = 1000)
-                        ) + fadeIn(animationSpec = tween(durationMillis = 1000))
+                GreetingHead("Yash", modifier = Modifier)
+                HomeScreenWaveLineChart(
+                    2,
+                    navController,
+                    listOf(1f, 5f, 2f),
+                    TimeRange.Week,
+                    modifier = Modifier.padding(16.dp),
+                    lineColor = Color(0xff9463ED),
+                    currentDayTotalHours = TimeUnit.SECONDS.toHours(8.toLong())
+                        .toInt(),
+                    strokeWidth = 5f,
+                    xOffset = 90f,
+                    waveAmplitude = 1f,
+                )
+                if (!weeklySessionState.isNotEmpty()) {
+                    Text(
+                        text = "Weekly Time Distribution",
+                        modifier = Modifier.padding(start = 16.dp, top = 20.dp),
+                        fontSize = 22.sp,
+                        fontFamily = FontFamily(Font(R.font.jost_medium)),
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        TimeDistributionCard(
-                            getTaskTagIconRes(taskTag),
-                            taskTag,
-                            TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
-                            TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
+                        Spacer(Modifier.height(100.dp))
+                        if(!LocalContext.current.theme.resources.configuration.isNightModeActive) {
+                            Image(
+                                painter = painterResource(R.drawable.no_data_home_screen),
+                                contentDescription = "No Data To Show",
+                            )
+                        }
+
+                        Text(
+                            text = "No Data",
+                            modifier = Modifier.padding(top = 20.dp),
+                            fontSize = 22.sp,
+                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                            fontFamily = FontFamily(Font(R.font.jost_medium))
                         )
                     }
                 }
-            }
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .heightIn(max = 2000.dp)
+                ) {
+                    val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
+                        it.taskTag
+                    }.mapValues {
+                        it.value.sumOf { it.duration }
+                    }
 
+                    val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
+                        it.taskTag
+                    }.mapValues {
+                        it.value.sumOf { it.duration }
+                    }
+
+                    val listOfTotalDurationInWeekByTask =
+                        weeklyTimeDistributionByTag.map { it }.toList()
+                    val listOfTotalDurationInLastWeekByTask =
+                        lastWeekTimeDistributionByTag.map { it }.toList()
+
+                    itemsIndexed(
+                        items = listOfTotalDurationInWeekByTask,
+                        key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
+                    ) { index, (taskTag, duration) ->
+                        var isVisible by remember { mutableStateOf(false) }
+//
+//
+                        val lastWeekDuration =
+                            listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
+
+                        Log.d("LASTWEEKDURATION", lastWeekDuration.toString())
+
+                        // Animated visibility for sliding in items
+                        LaunchedEffect(Unit) {
+                            isVisible =
+                                true // Trigger the animation once when the item enters composition
+                        }
+
+                        androidx.compose.animation.AnimatedVisibility(
+                            visible = isVisible, enter = slideInHorizontally(
+                                initialOffsetX = { fullWidth -> -fullWidth },
+                                animationSpec = tween(durationMillis = 1000)
+                            ) + fadeIn(animationSpec = tween(durationMillis = 1000))
+                        ) {
+                            TimeDistributionCard(
+                                getTaskTagIconRes(taskTag),
+                                taskTag,
+                                TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
+                                TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
+                            )
+                        }
+                    }
+                }
+
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.graphics.Paint
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -53,6 +56,7 @@ import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimeRange
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
@@ -68,13 +72,20 @@ fun WaveLineChartForOnBoarding(
     timeRange: TimeRange,
     overallTotalDurationInMinutes: Int,
     modifier: Modifier = Modifier,
-    lineColor: Color = Color(0xFF9463ED),
+    lineColor: Color = Color.Unspecified,
     strokeWidth: Float = 5f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f, // Amplify the wave effect
     onPreviousClick: (String?, String?, String?) -> Unit,
     onNextClick: (String?, String?, String?) -> Unit,
 ) {
+
+    val finalLineColor = if (lineColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else lineColor
+    val axisColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+    val primaryTextColor = MaterialTheme.colorScheme.primary
+    val secondaryTextColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+    val noDataTextColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+
     val minValue = 0f   // Y-axis min (0 minutes)
     val maxValue =
         (minutesData.maxOrNull() ?: minValue).coerceAtLeast(minValue)  // Y-axis max based on data
@@ -233,7 +244,7 @@ fun WaveLineChartForOnBoarding(
                             }
                         },
                         fontSize = 15.sp,
-                        color = Color(0xff787878),
+                        color = secondaryTextColor,
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                     )
                     Text(
@@ -242,7 +253,7 @@ fun WaveLineChartForOnBoarding(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xffFF8D61),
+                                    color = primaryTextColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -254,7 +265,7 @@ fun WaveLineChartForOnBoarding(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xff9E9E9E),
+                                    color = secondaryTextColor,
                                     fontWeight = FontWeight.Medium
                                 )
                             ) {
@@ -265,7 +276,7 @@ fun WaveLineChartForOnBoarding(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xffFF8D61),
+                                    color = primaryTextColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -275,7 +286,7 @@ fun WaveLineChartForOnBoarding(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xff9E9E9E),
+                                    color = secondaryTextColor,
                                     fontWeight = FontWeight.Medium
                                 )
                             ) {
@@ -296,7 +307,7 @@ fun WaveLineChartForOnBoarding(
                 ) {
                     Text(
                         "No Chart Data For This ${timeRange.name}",
-                        color = Color(0xff9E9E9E),
+                        color = noDataTextColor,
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                         fontSize = 17.sp
                     )
@@ -346,7 +357,7 @@ fun WaveLineChartForOnBoarding(
                     if (maxValue - minValue == 0f) 0f else size.height / (maxValue - minValue)
 
                 val textPaint = Paint().apply {
-                    color = android.graphics.Color.GRAY
+                    color = axisColor.toArgb()
                     textSize = 28f
                     textAlign = Paint.Align.RIGHT
                 }
@@ -373,7 +384,7 @@ fun WaveLineChartForOnBoarding(
                         adjustedX,
                         size.height + 40f,  // Adjust padding below the chart
                         Paint().apply {
-                            color = android.graphics.Color.GRAY
+                            color = axisColor.toArgb()
                             textSize = 28f
                             textAlign = Paint.Align.CENTER
                         }
@@ -417,7 +428,7 @@ fun WaveLineChartForOnBoarding(
                 drawPath(
                     path = fillPath,
                     brush = Brush.verticalGradient(
-                        colors = listOf(lineColor.copy(alpha = 0.5f), Color.Transparent),
+                        colors = listOf(finalLineColor.copy(alpha = 0.5f), Color.Transparent),
                         startY = 0f,
                         endY = size.height
                     ),
@@ -441,13 +452,13 @@ fun WaveLineChartForOnBoarding(
                 // Draw the wave line
                 drawPath(
                     path = animatedSegment,
-                    color = lineColor,
+                    color = finalLineColor,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )
 
                 // Draw Y-axis line
                 drawLine(
-                    color = Color.Gray,
+                    color = axisColor,
                     start = Offset(leftPadding, 0f),
                     end = Offset(leftPadding, size.height),
                     strokeWidth = 3f
@@ -455,7 +466,7 @@ fun WaveLineChartForOnBoarding(
 
                 // Draw X-axis line
                 drawLine(
-                    color = Color.Gray,
+                    color = axisColor,
                     start = Offset(leftPadding, size.height),
                     end = Offset(lastX, size.height),  // End at the last data point's X position
                     strokeWidth = 3f
@@ -465,8 +476,9 @@ fun WaveLineChartForOnBoarding(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true, showSystemUi = true, backgroundColor = 0xffFFFDFC)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 fun PreviewWaveLineChartWithAxes() {
     val randomNumbers = (1..12).map {
@@ -475,20 +487,22 @@ fun PreviewWaveLineChartWithAxes() {
     val minutesWorked = randomNumbers
 
 
+    FocusFusionTheme {
 
-    WaveLineChartForOnBoarding (
-        minutesData = minutesWorked,
-        timeRange = TimeRange.Year,
-        overallTotalDurationInMinutes = 1321,
-        modifier = Modifier
-            .padding(16.dp),
-        lineColor = Color(0xff9463ED),
-        strokeWidth = 5f,
-        xOffset = 90f,
-        waveAmplitude = 1f,
-        onPreviousClick = { dayOrRange, month, year ->
+        WaveLineChartForOnBoarding(
+            minutesData = minutesWorked,
+            timeRange = TimeRange.Year,
+            overallTotalDurationInMinutes = 1321,
+            modifier = Modifier
+                .padding(16.dp),
+            lineColor = Color(0xff9463ED),
+            strokeWidth = 5f,
+            xOffset = 90f,
+            waveAmplitude = 1f,
+            onPreviousClick = { dayOrRange, month, year ->
 
-        },
-        onNextClick = { dayOrRange, month, year -> }
-    )
+            },
+            onNextClick = { dayOrRange, month, year -> }
+        )
+    }
 }

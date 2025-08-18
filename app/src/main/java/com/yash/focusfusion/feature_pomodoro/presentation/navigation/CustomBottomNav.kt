@@ -1,5 +1,8 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.navigation
 
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -61,6 +64,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.navigation.model.BottomNavItem
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 
 @Composable
 fun CustomBottomNav(
@@ -103,29 +107,31 @@ fun CustomBottomNav(
                 .shadow(3.dp)
                 .height(90.dp)
                 .align(Alignment.BottomCenter)
-                .background(Color(0xffF8F8F8))
+                .background(MaterialTheme.colorScheme.surface)
                 .windowInsetsPadding(WindowInsets.navigationBars),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             items.forEach { item ->
                 val selected = currentRoute == item.route
 
+                val iconTint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 Column(
 
                     modifier = Modifier
                         .weight(1f)
-                        .clickable {
-                            if (currentRoute != item.route) {
-                                navController.navigate(item.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null, // Disable ripple for a cleaner look
+                            onClick = {
+                                if (currentRoute != item.route) {
+                                    navController.navigate(item.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-
-                                    restoreState = true
                                 }
                             }
-                        }
+                        )
                         .padding(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -165,8 +171,8 @@ fun CustomBottomNav(
                     }
                 },
                 interactionSource = interactionSource, // Attach the interaction source
-                containerColor = Color(0xFFFF8D61),
-                contentColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .scale(fabScale) // Apply the click animation scale
                     .size(56.dp)
@@ -195,17 +201,21 @@ fun currentRoute(navController: NavController): String? {
     return navBackStackEntry?.destination?.route
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.R)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun CustomBottomNavPreview() {
     val navController = rememberNavController()
 
-    CustomBottomNav(
-        navController,
-        items = listOf(
-            BottomNavItem.Home,
-            BottomNavItem.Profile
+    FocusFusionTheme {
+        CustomBottomNav(
+            navController,
+            items = listOf(
+                BottomNavItem.Home,
+                BottomNavItem.Profile
+            )
         )
-    )
+    }
 
 }

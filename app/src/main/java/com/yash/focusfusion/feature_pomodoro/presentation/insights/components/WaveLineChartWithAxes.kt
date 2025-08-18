@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,6 +55,7 @@ import androidx.compose.ui.graphics.PathMeasure
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.Font
@@ -85,13 +87,21 @@ fun WaveLineChartWithAxes(
     timeRange: TimeRange,
     overallTotalDurationInMinutes: Int,
     modifier: Modifier = Modifier,
-    lineColor: Color = Color(0xFF9463ED),
+    lineColor: Color,
     strokeWidth: Float = 5f,
     xOffset: Float = 50f,  // Shift the X-axis and wave to the right
     waveAmplitude: Float = 2f, // Amplify the wave effect
     onPreviousClick: (String?, String?, String?) -> Unit,
     onNextClick: (String?, String?, String?) -> Unit,
 ) {
+
+    val finalLineColor = if (lineColor == Color.Unspecified) MaterialTheme.colorScheme.secondary else lineColor
+    val cardBackgroundColor = MaterialTheme.colorScheme.surface
+    val axisColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+    val primaryTextColor = MaterialTheme.colorScheme.primary
+    val secondaryTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+    val iconTintColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+
     val minValue = 0f   // Y-axis min (0 minutes)
     val maxValue =
         (minutesData.maxOrNull() ?: minValue).coerceAtLeast(minValue)  // Y-axis max based on data
@@ -216,7 +226,7 @@ fun WaveLineChartWithAxes(
             .fillMaxWidth()
             .height(280.dp)
             .shadow(5.dp, shape = RoundedCornerShape(20.dp))
-            .background(Color(0xffF8F8F8), RoundedCornerShape(20.dp))
+            .background(cardBackgroundColor, RoundedCornerShape(20.dp))
             .padding(5.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -297,7 +307,7 @@ fun WaveLineChartWithAxes(
                     Icon(
                         imageVector = Icons.Default.ArrowBackIosNew,
                         contentDescription = "Previous",
-                        tint = Color(0xff787878)
+                        tint = iconTintColor
                     )
                 }
                 Column(
@@ -322,7 +332,7 @@ fun WaveLineChartWithAxes(
                             }
                         },
                         fontSize = 15.sp,
-                        color = Color(0xff787878),
+                        color = secondaryTextColor,
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                     )
                     Text(
@@ -331,7 +341,7 @@ fun WaveLineChartWithAxes(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xffFF8D61),
+                                    color = primaryTextColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -343,7 +353,7 @@ fun WaveLineChartWithAxes(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xff9E9E9E),
+                                    color = secondaryTextColor,
                                     fontWeight = FontWeight.Medium
                                 )
                             ) {
@@ -354,7 +364,7 @@ fun WaveLineChartWithAxes(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xffFF8D61),
+                                    color = primaryTextColor,
                                     fontWeight = FontWeight.Bold
                                 )
                             ) {
@@ -364,7 +374,7 @@ fun WaveLineChartWithAxes(
                                 style = SpanStyle(
                                     fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                                     fontSize = 10.sp,
-                                    color = Color(0xff9E9E9E),
+                                    color = secondaryTextColor,
                                     fontWeight = FontWeight.Medium
                                 )
                             ) {
@@ -449,7 +459,7 @@ fun WaveLineChartWithAxes(
                     Icon(
                         imageVector = Icons.Default.ArrowForwardIos,
                         contentDescription = "Next",
-                        tint = Color(0xff787878)
+                        tint = iconTintColor
                     )
                 }
             }
@@ -461,7 +471,7 @@ fun WaveLineChartWithAxes(
                 ) {
                     Text(
                         "No Chart Data For This ${timeRange.name}",
-                        color = Color(0xff9E9E9E),
+                        color = secondaryTextColor,
                         fontFamily = FontFamily(listOf(Font(R.font.jost_medium))),
                         fontSize = 17.sp
                     )
@@ -511,7 +521,7 @@ fun WaveLineChartWithAxes(
                     if (maxValue - minValue == 0f) 0f else size.height / (maxValue - minValue)
 
                 val textPaint = Paint().apply {
-                    color = android.graphics.Color.GRAY
+                    color = axisColor.toArgb()
                     textSize = 28f
                     textAlign = Paint.Align.RIGHT
                 }
@@ -538,7 +548,7 @@ fun WaveLineChartWithAxes(
                         adjustedX,
                         size.height + 40f,  // Adjust padding below the chart
                         Paint().apply {
-                            color = android.graphics.Color.GRAY
+                            color = axisColor.toArgb()
                             textSize = 28f
                             textAlign = Paint.Align.CENTER
                         }
@@ -606,13 +616,13 @@ fun WaveLineChartWithAxes(
                 // Draw the wave line
                 drawPath(
                     path = animatedSegment,
-                    color = lineColor,
+                    color = finalLineColor,
                     style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
                 )
 
                 // Draw Y-axis line
                 drawLine(
-                    color = Color.Gray,
+                    color = axisColor,
                     start = Offset(leftPadding, 0f),
                     end = Offset(leftPadding, size.height),
                     strokeWidth = 3f
@@ -620,7 +630,7 @@ fun WaveLineChartWithAxes(
 
                 // Draw X-axis line
                 drawLine(
-                    color = Color.Gray,
+                    color = axisColor,
                     start = Offset(leftPadding, size.height),
                     end = Offset(lastX, size.height),  // End at the last data point's X position
                     strokeWidth = 3f

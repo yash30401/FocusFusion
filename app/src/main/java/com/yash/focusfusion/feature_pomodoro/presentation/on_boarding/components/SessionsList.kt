@@ -1,5 +1,8 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components
 
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yash.focusfusion.R
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 
 @Composable
 fun SessionsList(
@@ -32,9 +37,15 @@ fun SessionsList(
     modifier: Modifier = Modifier,
 ) {
 
-    val backgroundColor = if (isSelected) Color(0xffFF8D61) else Color(0xffF9F9F9)
-    val sessionTextColor = if (isSelected) Color(0xffFFFFFF) else Color(0xff000000)
-    val motivationTextcolor = if (isSelected) Color(0xffFFE8DA) else Color(0xff747474)
+    // CHANGE 1: Define colors based on the theme and selection state
+    val backgroundColor =
+        if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+    val sessionTextColor =
+        if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    val motivationTextColor =
+        if (isSelected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(
+            alpha = 0.7f
+        )
 
     Row(
         modifier = modifier
@@ -60,23 +71,24 @@ fun SessionsList(
         Text(
             text = "$motivationQuote", fontSize = 16.sp,
             fontFamily = FontFamily(Font(R.font.roboto_regular)),
-            color = motivationTextcolor
+            color = motivationTextColor
         )
 
     }
 }
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true, backgroundColor = 0xffFFFFFF
-)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun SessionsListPrev() {
-    SessionsList(
-        "1 Session",
-        "Quick Win",
-        isSelected = false,
-        {},
-        modifier = Modifier.padding(vertical = 60.dp)
-    )
+    FocusFusionTheme {
+        SessionsList(
+            "1 Session",
+            "Quick Win",
+            isSelected = false,
+            {},
+            modifier = Modifier.padding(vertical = 60.dp)
+        )
+    }
 }

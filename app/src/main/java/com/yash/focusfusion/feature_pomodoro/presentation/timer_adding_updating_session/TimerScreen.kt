@@ -2,6 +2,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -70,6 +71,7 @@ import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.model.TaskTag
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.presentation.timer_adding_updating_session.components.TimerProgressBar
+import com.yash.focusfusion.ui.theme.SuccessGreen
 import com.yash.focusfusion.ui.theme.fontFamily
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -128,14 +130,16 @@ fun TimerScreen(
 
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        
     ) {
         Text(
             text = if ((TimeUnit.MILLISECONDS.toSeconds(timeLeft) * 100) / 60 > 25)
                 "You Can do it!" else "Just few minutes left",
-            color = Color(0xFF212121),
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 35.sp,
             modifier = Modifier
                 .fillMaxWidth()
@@ -159,7 +163,7 @@ fun TimerScreen(
             val extraSeconds = extraTime % 60
             Text(
                 text = "+" + String.format("%02d:%02d", extraMinutes, extraSeconds),
-                color = Color(0xFFFF8D61),
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 34.sp,
                 fontFamily = FontFamily(listOf(Font(R.font.baloo_bold))),
                 modifier = Modifier
@@ -182,7 +186,7 @@ fun TimerScreen(
                         ambientColor = Color.Black
                     )
                     .clip(CircleShape)
-                    .background(Color(0xFFFF8D61))
+                    .background(MaterialTheme.colorScheme.primary)
                     .clickable {
                         timerSharedViewModel.updateIsRunning(true)
 
@@ -201,7 +205,7 @@ fun TimerScreen(
                     imageVector = Icons.Default.PlayArrow,
                     contentDescription = "Play",
                     modifier = Modifier.size(40.dp),
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         } else {
@@ -276,12 +280,12 @@ fun TimerScreen(
                 modifier = Modifier
                     .width(150.dp)
                     .padding(top = 40.dp),
-                colors = ButtonDefaults.buttonColors(Color.White),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surface),
                 border = BorderStroke(
                     1.2.dp,
                     color = if (TimeUnit.MILLISECONDS.toSeconds(timeLeft) > 0)
-                        Color(0xFFF45B5B) else
-                        Color(0xFF87DD3C)
+                        MaterialTheme.colorScheme.error else
+                        SuccessGreen
                 ),
                 shape = RoundedCornerShape(10.dp),
                 elevation = ButtonDefaults.buttonElevation(5.dp)
@@ -294,14 +298,14 @@ fun TimerScreen(
                         } else {
                             "Give Up!"
                         },
-                        color = Color(0xFFF45B5B),
+                        color = MaterialTheme.colorScheme.error,
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 } else {
                     Text(
                         text = "Done!",
-                        color = Color(0xFF87DD3C),
+                        color = SuccessGreen,
                         fontSize = 20.sp,
                         style = MaterialTheme.typography.bodyLarge
                     )
@@ -317,8 +321,9 @@ fun TimerScreen(
 
 }
 
-@RequiresApi(Build.VERSION_CODES.Q)
-@Preview(showBackground = true, showSystemUi = true)
+@RequiresApi(Build.VERSION_CODES.R)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TimerScreenPreview() {
     val context = LocalContext.current

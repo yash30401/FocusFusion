@@ -1,5 +1,8 @@
 package com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.screens
 
+import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -20,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.rememberNavController
 import com.yash.focusfusion.R
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabItem
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.TimePeriodTabs
@@ -50,6 +55,7 @@ import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.Ti
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.components.WaveLineChartWithAxes
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.SessionsList
 import com.yash.focusfusion.feature_pomodoro.presentation.on_boarding.components.WaveLineChartForOnBoarding
+import com.yash.focusfusion.ui.theme.FocusFusionTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -63,7 +69,7 @@ fun OnBoardingScreen4(
 
     Column(
         modifier = Modifier
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(20.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState()),
@@ -78,7 +84,7 @@ fun OnBoardingScreen4(
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 40.sp,
-                            color = Color(0xff000000),
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
@@ -90,7 +96,7 @@ fun OnBoardingScreen4(
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 40.sp,
-                            color = Color(0xff8958E2),
+                            color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
@@ -111,7 +117,7 @@ fun OnBoardingScreen4(
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_extra_bold))),
                             fontSize = 20.sp,
-                            color = Color(0xff8958E2),
+                            color = MaterialTheme.colorScheme.secondary,
                             fontWeight = FontWeight.Bold
                         )
                     ) {
@@ -123,7 +129,7 @@ fun OnBoardingScreen4(
                             fontFamily =
                                 FontFamily(listOf(Font(R.font.roboto_regular))),
                             fontSize = 18.sp,
-                            color = Color(0xff000000),
+                            color = MaterialTheme.colorScheme.onBackground,
                         )
                     ) {
                         append(" This Week")
@@ -136,7 +142,7 @@ fun OnBoardingScreen4(
                 minutesData = minutesWorked,
                 timeRange = TimeRange.Week,
                 overallTotalDurationInMinutes = 620,
-                lineColor = Color(0xff9463ED),
+                lineColor = MaterialTheme.colorScheme.secondary,
                 strokeWidth = 5f,
                 xOffset = 90f,
                 waveAmplitude = 1f,
@@ -164,133 +170,28 @@ fun OnBoardingScreen4(
                 .fillMaxWidth()
                 .height(56.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xffFF8D61)
+                containerColor = MaterialTheme.colorScheme.primary
             ),
             shape = RoundedCornerShape(32.dp)
         ) {
             Text(
                 text = "Continue",
                 fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }
 }
 
-@Preview(
-    showBackground = true, showSystemUi = true, backgroundColor =
-        0xffFFFFFF
-)
+@RequiresApi(Build.VERSION_CODES.Q)
+@Preview(showBackground = true, name = "Light Mode")
+@Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun OnBoardingScreen4Prev() {
 
-    val minutesWorked = listOf(30f, 80f, 50f, 120f, 100f, 40f, 200f)
-
-
-    Column(
-        modifier = Modifier
-            .background(Color.White)
-            .padding(20.dp)
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily =
-                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
-                            fontSize = 40.sp,
-                            color = Color(0xff000000),
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("Track Your\n")
-                    }
-
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily =
-                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
-                            fontSize = 40.sp,
-                            color = Color(0xff8958E2),
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("Progress")
-                    }
-                }
-
-            )
-
-            Spacer(Modifier.height(90.dp))
-
-
-
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily =
-                                FontFamily(listOf(Font(R.font.roboto_extra_bold))),
-                            fontSize = 20.sp,
-                            color = Color(0xff8958E2),
-                            fontWeight = FontWeight.Bold
-                        )
-                    ) {
-                        append("10 Hours")
-                    }
-
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily =
-                                FontFamily(listOf(Font(R.font.roboto_regular))),
-                            fontSize = 18.sp,
-                            color = Color(0xff000000),
-                        )
-                    ) {
-                        append(" This Week")
-                    }
-                }
-            )
-            TimePeriodTabs(1) { }
-
-            WaveLineChartForOnBoarding(
-                minutesData = minutesWorked,
-                timeRange = TimeRange.Week,
-                overallTotalDurationInMinutes = 620,
-                lineColor = Color(0xff9463ED),
-                strokeWidth = 5f,
-                xOffset = 90f,
-                waveAmplitude = 1f,
-                onPreviousClick = { dayOrRange, month, year ->
-
-                },
-                onNextClick = { dayOrRange, month, year -> }
-            )
-
-        }
-
-        Spacer(Modifier.height(20.dp))
-
-        Button(
-            onClick = {
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xffFF8D61)
-            ),
-            shape = RoundedCornerShape(32.dp)
-        ) {
-            Text(
-                text = "Continue",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
+    val navController = rememberNavController()
+    FocusFusionTheme{
+        OnBoardingScreen4(navController)
     }
 }
