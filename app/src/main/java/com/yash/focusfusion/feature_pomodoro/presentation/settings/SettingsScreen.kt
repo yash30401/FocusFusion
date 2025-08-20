@@ -227,7 +227,7 @@ fun SettingsScreen(
                 )
 
                 var expanded by remember { mutableStateOf(false) }
-                val items = (5..50 step 5).toList()
+                val items = (1..50).toList()
                 Log.d("FOCUSTIMEINTERVAL", "Ui State:- ${uiState.timeInterval}")
                 val poistionOfSelectedItem =
                     items.indexOf(uiState.timeInterval)

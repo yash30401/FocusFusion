@@ -10,6 +10,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
@@ -29,6 +30,7 @@ class TimerService : Service() {
 
     private var countDownTimer: CountDownTimer? = null
     private var cancelTimeCountDownTimer: CountDownTimer? = null
+    private var mediaPlayer: MediaPlayer? = null
 
     private var timeLeft: Long = 0
     private var extraTime: Int = 0
@@ -75,7 +77,7 @@ class TimerService : Service() {
             .setContentText("Time remaining: $timeLeft")
             .setSmallIcon(R.drawable.baseline_timer_24)
             .setOngoing(true)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
             .build()
 
         startForeground(1, notification)
@@ -147,6 +149,7 @@ class TimerService : Service() {
             .build()
 
         notificationManager.notify(2, notification)
+        playAlarm()
     }
 
     private fun startExtraTimerInTheBackground() {
@@ -242,6 +245,15 @@ class TimerService : Service() {
         }
     }
 
+    private fun playAlarm(){
+        mediaPlayer = MediaPlayer.create(this,R.raw.session_end_sound)
+        mediaPlayer?.setOnCompletionListener {
+            it.release()
+            mediaPlayer = null
+        }
+        mediaPlayer?.start()
+    }
+
     override fun onDestroy() {
         stopTimer()
         scope.launch {
@@ -250,12 +262,14 @@ class TimerService : Service() {
             dataStoreManager.saveExtraTime(extraTime)
             dataStoreManager.saveTaskTag(taskTag)
         }
+        mediaPlayer?.release()
         super.onDestroy()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         stopSelf()
+        mediaPlayer?.release()
     }
 
     companion object {
