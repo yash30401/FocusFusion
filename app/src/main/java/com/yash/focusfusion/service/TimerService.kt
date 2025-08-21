@@ -44,9 +44,16 @@ class TimerService : Service() {
 
     val broadcastIntent = Intent("TIMER_UPDATE")
 
+    private var isSoundEnabled: Boolean? = null
+
     override fun onCreate() {
         super.onCreate()
         dataStoreManager = DatastoreManager(this)
+        scope.launch {
+            dataStoreManager.isSessionEndSoundEnabled.collect {
+                isSoundEnabled = it
+            }
+        }
         createNotificationChannels()
     }
 
@@ -149,7 +156,11 @@ class TimerService : Service() {
             .build()
 
         notificationManager.notify(2, notification)
-        playAlarm()
+
+        if(isSoundEnabled == true){
+            playAlarm()
+        }
+
     }
 
     private fun startExtraTimerInTheBackground() {
@@ -245,8 +256,8 @@ class TimerService : Service() {
         }
     }
 
-    private fun playAlarm(){
-        mediaPlayer = MediaPlayer.create(this,R.raw.session_end_sound)
+    private fun playAlarm() {
+        mediaPlayer = MediaPlayer.create(this, R.raw.session_end_sound)
         mediaPlayer?.setOnCompletionListener {
             it.release()
             mediaPlayer = null
