@@ -34,6 +34,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
     override val themeMode: Flow<ThemeMode>
         get() = datastoreManager.themeFlow
 
+    override val isSessionEndSoundEnabled: Flow<Boolean>
+        get() = datastoreManager.isSessionEndSoundEnabled
+
     override suspend fun saveTimeLeft(time: Long) {
         datastoreManager.saveTimeLeft(time)
     }
@@ -68,5 +71,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
 
     override suspend fun saveThemeMode(theme: ThemeMode) {
         datastoreManager.saveThemeMode(theme)
+    }
+
+    override suspend fun saveIsSessionEndSoundEnabled(value: Boolean) {
+        datastoreManager.saveIsSessionEndSoundEnabled(value)
     }
 }

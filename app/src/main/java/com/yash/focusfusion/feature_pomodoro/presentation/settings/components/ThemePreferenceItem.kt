@@ -42,11 +42,13 @@ import com.yash.focusfusion.ui.theme.ThemeMode
 fun ThemePreferenceItem(
     selectedTheme: ThemeMode,
     onThemeSelected: (ThemeMode) -> Unit,
+    isSessionEndSoundEnabled: Boolean,
+    onIsSessionSoundEnabled: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     val themeName = selectedTheme.name.lowercase().replaceFirstChar { it.uppercase() }
 
-    var isSoundEnabled by remember { mutableStateOf(true) }
+    var isSoundEnabled by remember { mutableStateOf(isSessionEndSoundEnabled) }
 
     Column(
         modifier = Modifier
@@ -105,7 +107,9 @@ fun ThemePreferenceItem(
         }
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -118,6 +122,7 @@ fun ThemePreferenceItem(
 
             Switch(checked = isSoundEnabled, onCheckedChange = {
                 isSoundEnabled = !isSoundEnabled
+                onIsSessionSoundEnabled(isSoundEnabled)
             })
 
         }
@@ -131,7 +136,7 @@ fun ThemePreferenceItem(
 private fun ThemeSoundPrefItemPreview() {
 
     FocusFusionTheme {
-        ThemePreferenceItem(ThemeMode.SYSTEM) {
+        ThemePreferenceItem(ThemeMode.SYSTEM,{},true) {
 
         }
     }

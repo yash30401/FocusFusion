@@ -114,6 +114,8 @@ fun SettingsScreen(
     
     val theme by settingsViewModel.themeState.collectAsStateWithLifecycle()
 
+    Log.d("ISENABLEDSOUND", uiState.isSessionEndSoundEnabled.toString())
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -190,6 +192,10 @@ fun SettingsScreen(
             selectedTheme = theme,
             onThemeSelected = { newTheme ->
                 settingsViewModel.onEvent(SettingsUiEvent.OnThemeChanged(newTheme))
+            },
+            isSessionEndSoundEnabled = uiState.isSessionEndSoundEnabled,
+            onIsSessionSoundEnabled = {newVal->
+                settingsViewModel.onEvent(SettingsUiEvent.OnIsSessionEndSoundEnabled(newVal))
             }
         )
 
@@ -543,7 +549,9 @@ private fun SettingsScreenPreview() {
                 selectedTheme = ThemeMode.SYSTEM,
                 onThemeSelected = { newTheme ->
 
-                }
+                },
+                true,
+                onIsSessionSoundEnabled = {}
             )
 
 

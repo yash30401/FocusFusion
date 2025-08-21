@@ -14,6 +14,7 @@ interface DatastoreRepository {
     val streak: Flow<Int>
     val focusTime: Flow<Int>
     val themeMode: Flow<ThemeMode>
+    val isSessionEndSoundEnabled: Flow<Boolean>
 
     suspend fun saveTimeLeft(time: Long)
     suspend fun saveExtraTime(extraTime: Int)
@@ -24,4 +25,5 @@ interface DatastoreRepository {
     suspend fun saveStreakCount(count: Int)
     suspend fun saveFocusTime(time: Int)
     suspend fun saveThemeMode(theme: ThemeMode)
+    suspend fun saveIsSessionEndSoundEnabled(value: Boolean)
 }

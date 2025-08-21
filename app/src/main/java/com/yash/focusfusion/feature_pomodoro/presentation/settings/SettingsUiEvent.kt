@@ -10,6 +10,6 @@ sealed class SettingsUiEvent {
     object ShowPrivacyPolicyDialog : SettingsUiEvent()
     object HidePrivacyPolicyDialog : SettingsUiEvent()
 
-
     data class OnThemeChanged(val theme: ThemeMode) : SettingsUiEvent()
+    data class OnIsSessionEndSoundEnabled(val value: Boolean) : SettingsUiEvent()
 }

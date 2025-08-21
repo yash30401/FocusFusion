@@ -17,5 +17,7 @@ data class DatastoreUseCases(
     val saveFocusTimeUseCase: SaveFocusTimeUseCase,
     val getFocusTimeUseCase: GetFocusTimeUseCase,
     val saveThemeModeUseCase: SaveThemeModeUseCase,
-    val getThemeModeUseCase: GetThemeModeUseCase
+    val getThemeModeUseCase: GetThemeModeUseCase,
+    val getIsSessionEndSoundEnabledUseCase: GetIsSessionEndSoundEnabledUseCase,
+    val saveIsSessionEndSoundEnabledUseCase: SaveIsSessionEndSoundEnabledUseCase
 )

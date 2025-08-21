@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,6 +44,7 @@ class SettingsViewModel @Inject constructor(
     private var saveNameJob: Job? = null
     private var saveTimeJob: Job? = null
     private var saveThemeJob: Job? = null
+    private var saveIsSessionEndSoundEnabledJob: Job? = null
 
     init {
         loadInitialData()
@@ -104,6 +106,17 @@ class SettingsViewModel @Inject constructor(
             is SettingsUiEvent.OnThemeChanged -> {
                 saveThemeJob?.cancel()
                 saveThemeJob = handleThemeChange(event.theme)
+            }
+
+            is SettingsUiEvent.OnIsSessionEndSoundEnabled -> {
+                saveIsSessionEndSoundEnabledJob?.cancel()
+                saveIsSessionEndSoundEnabledJob = viewModelScope.launch {
+                    _uiState.update {
+                        it.copy(
+                            isSessionEndSoundEnabled = event.value
+                        )
+                    }
+                }
             }
         }
     }

@@ -34,6 +34,7 @@ class DatastoreManager(private val context: Context) {
         val FOCUS_TIME_KEY = intPreferencesKey("FOCUS_TIME_KEY")
         val TIMER_START_TIME = longPreferencesKey("TIMER_START_TIME")
         val THEME_ORDINAL = intPreferencesKey("theme_ordinal")
+        val IS_SESSION_END_SOUND_ENABLED = booleanPreferencesKey("IS_SESSION_END_SOUND_ENABLED")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -81,6 +82,10 @@ class DatastoreManager(private val context: Context) {
     val themeFlow = context.dataStore.data.map { preferences ->
         val ordinal = preferences[THEME_ORDINAL] ?: ThemeMode.SYSTEM.ordinal
         ThemeMode.values()[ordinal]
+    }
+
+    val isSessionEndSoundEnabled = context.dataStore.data.map { preferences ->
+        preferences[IS_SESSION_END_SOUND_ENABLED] ?: true
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -186,6 +191,12 @@ class DatastoreManager(private val context: Context) {
     suspend fun saveThemeMode(theme: ThemeMode) {
         context.dataStore.edit { preferences ->
             preferences[THEME_ORDINAL] = theme.ordinal
+        }
+    }
+
+    suspend fun saveIsSessionEndSoundEnabled(value: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[IS_SESSION_END_SOUND_ENABLED] = value
         }
     }
 }
