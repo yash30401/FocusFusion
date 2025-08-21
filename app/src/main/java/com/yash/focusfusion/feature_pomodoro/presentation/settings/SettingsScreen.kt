@@ -180,7 +180,7 @@ fun SettingsScreen(
 
         Spacer(Modifier.height(20.dp))
         Text(
-            text = "Appearance",
+            text = "Appearance & Sound",
             fontFamily = FontFamily(Font(R.font.jost_medium)),
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.onBackground
@@ -193,7 +193,7 @@ fun SettingsScreen(
             }
         )
 
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(20.dp))
 
         Text(
             text = "Timer Settings",
@@ -227,7 +227,7 @@ fun SettingsScreen(
                 )
 
                 var expanded by remember { mutableStateOf(false) }
-                val items = (1..50).toList()
+                val items = (5..50 step 5).toList()
                 Log.d("FOCUSTIMEINTERVAL", "Ui State:- ${uiState.timeInterval}")
                 val poistionOfSelectedItem =
                     items.indexOf(uiState.timeInterval)
@@ -312,7 +312,7 @@ fun SettingsScreen(
         ) {
             Text(
                 text = "Privacy Policy",
-                fontSize = 20.sp,
+                fontSize = 16.sp,
                 fontFamily = FontFamily(Font(R.font.jost_medium)),
                 modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
                 color = textColor
@@ -355,7 +355,7 @@ fun SettingsScreen(
             ) {
                 Text(
                     text = "Rate Us",
-                    fontSize = 22.sp,
+                    fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.jost_medium)),
                     color = textColor
                     )
@@ -533,7 +533,7 @@ private fun SettingsScreenPreview() {
 
             Spacer(Modifier.height(20.dp))
             Text(
-                text = "Appearance",
+                text = "Appearance & Sound",
                 fontFamily = FontFamily(Font(R.font.jost_medium)),
                 fontSize = 20.sp,
                 color = MaterialTheme.colorScheme.onBackground
@@ -546,7 +546,8 @@ private fun SettingsScreenPreview() {
                 }
             )
 
-            Spacer(Modifier.height(40.dp))
+
+            Spacer(Modifier.height(20.dp))
 
             Text(
                 text = "Timer Settings",
@@ -575,7 +576,7 @@ private fun SettingsScreenPreview() {
                     Text(
                         text = "Timer Interval",
                         modifier = Modifier.weight(1f),
-                        fontSize = 22.sp,
+                        fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.jost_medium)),
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -651,7 +652,7 @@ private fun SettingsScreenPreview() {
             ) {
                 Text(
                     text = "Privacy Policy",
-                    fontSize = 22.sp,
+                    fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.jost_medium)),
                     modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
                     color = MaterialTheme.colorScheme.onSurface
@@ -679,7 +680,7 @@ private fun SettingsScreenPreview() {
                 ) {
                     Text(
                         text = "Rate Us",
-                        fontSize = 22.sp,
+                        fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.jost_medium)),
                         color = MaterialTheme.colorScheme.onSurface
                         )
