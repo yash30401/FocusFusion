@@ -9,5 +9,4 @@ data class SettingsUiState(
     val isNameDialogvisible: Boolean = false,
     val nameInput: String = "",
     val isPrivacyPolicyDialogVisible: Boolean = false,
-    val isSessionEndSoundEnabled:Boolean = true,
 )

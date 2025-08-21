@@ -48,7 +48,6 @@ fun ThemePreferenceItem(
     var expanded by remember { mutableStateOf(false) }
     val themeName = selectedTheme.name.lowercase().replaceFirstChar { it.uppercase() }
 
-    var isSoundEnabled by remember { mutableStateOf(isSessionEndSoundEnabled) }
 
     Column(
         modifier = Modifier
@@ -120,9 +119,9 @@ fun ThemePreferenceItem(
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            Switch(checked = isSoundEnabled, onCheckedChange = {
-                isSoundEnabled = !isSoundEnabled
-                onIsSessionSoundEnabled(isSoundEnabled)
+            Switch(checked = isSessionEndSoundEnabled, onCheckedChange = {
+
+                onIsSessionSoundEnabled(it)
             })
 
         }
@@ -136,7 +135,7 @@ fun ThemePreferenceItem(
 private fun ThemeSoundPrefItemPreview() {
 
     FocusFusionTheme {
-        ThemePreferenceItem(ThemeMode.SYSTEM,{},true) {
+        ThemePreferenceItem(ThemeMode.SYSTEM, {}, true) {
 
         }
     }

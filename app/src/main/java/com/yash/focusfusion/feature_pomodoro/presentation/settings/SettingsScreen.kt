@@ -114,7 +114,9 @@ fun SettingsScreen(
     
     val theme by settingsViewModel.themeState.collectAsStateWithLifecycle()
 
-    Log.d("ISENABLEDSOUND", uiState.isSessionEndSoundEnabled.toString())
+    val isSoundEnabled by settingsViewModel.soundEnabledState.collectAsStateWithLifecycle()
+
+    Log.d("ISENABLEDSOUND", isSoundEnabled.toString())
 
     Column(
         modifier = Modifier
@@ -193,7 +195,7 @@ fun SettingsScreen(
             onThemeSelected = { newTheme ->
                 settingsViewModel.onEvent(SettingsUiEvent.OnThemeChanged(newTheme))
             },
-            isSessionEndSoundEnabled = uiState.isSessionEndSoundEnabled,
+            isSessionEndSoundEnabled = isSoundEnabled,
             onIsSessionSoundEnabled = {newVal->
                 settingsViewModel.onEvent(SettingsUiEvent.OnIsSessionEndSoundEnabled(newVal))
             }
