@@ -116,7 +116,9 @@ fun ThemePreferenceItem(
                 text = "Play Sound When Session Ends",
                 fontSize = 16.sp,
                 fontFamily = FontFamily(Font(R.font.jost_medium)),
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.weight(1f),
+                maxLines = 2
             )
 
             Switch(checked = isSessionEndSoundEnabled, onCheckedChange = {
