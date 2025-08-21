@@ -3,6 +3,7 @@ package com.yash.focusfusion.feature_pomodoro.presentation.home_screen
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
@@ -54,6 +55,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.util.getListOfWeeksNameWithDuration
 import com.yash.focusfusion.core.util.getTaskTagIconRes
@@ -158,6 +161,17 @@ fun HomeScreen(
 
     minutesFocused = getMappedDataForChart(weeklySessionState)
 
+    val firebaseAnalytics = Firebase.analytics
+    val bundle = Bundle()
+
+    bundle.putInt("streak", streak)
+    bundle.putInt(
+        "totalHoursToday", TimeUnit.SECONDS.toHours(currentDayTotalHours.toLong())
+            .toInt()
+    )
+
+    firebaseAnalytics.logEvent("home_sceen_event", bundle)
+
 
     Box(
         modifier = Modifier
@@ -198,7 +212,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Spacer(Modifier.height(40.dp))
-                    if(!LocalContext.current.theme.resources.configuration.isNightModeActive && mode!= ThemeMode.DARK) {
+                    if (!LocalContext.current.theme.resources.configuration.isNightModeActive && mode != ThemeMode.DARK) {
                         Image(
                             painter = painterResource(R.drawable.no_data_home_screen),
                             contentDescription = "No Data To Show",
@@ -371,7 +385,7 @@ private fun HomeScreenPreview() {
                         verticalArrangement = Arrangement.Center
                     ) {
                         Spacer(Modifier.height(100.dp))
-                        if(!LocalContext.current.theme.resources.configuration.isNightModeActive) {
+                        if (!LocalContext.current.theme.resources.configuration.isNightModeActive) {
                             Image(
                                 painter = painterResource(R.drawable.no_data_home_screen),
                                 contentDescription = "No Data To Show",

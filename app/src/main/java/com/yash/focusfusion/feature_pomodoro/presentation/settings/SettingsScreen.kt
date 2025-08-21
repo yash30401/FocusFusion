@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -84,6 +85,8 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.google.firebase.Firebase
+import com.google.firebase.analytics.analytics
 import com.yash.focusfusion.R
 import com.yash.focusfusion.core.annotations.DevicePreviews
 import com.yash.focusfusion.core.util.loadHtmlFromRaw
@@ -109,17 +112,19 @@ fun SettingsScreen(
     }
     val packageName = context.packageName
 
-
     val cardBackgroundColor = MaterialTheme.colorScheme.surface
     val textColor = MaterialTheme.colorScheme.onSurface
     val headerColor = MaterialTheme.colorScheme.onBackground
     val iconColor = MaterialTheme.colorScheme.onSurface
-    
+
     val theme by settingsViewModel.themeState.collectAsStateWithLifecycle()
 
     val isSoundEnabled by settingsViewModel.soundEnabledState.collectAsStateWithLifecycle()
 
     Log.d("ISENABLEDSOUND", isSoundEnabled.toString())
+
+    val firebaseAnalytics = Firebase.analytics
+    val bundle = Bundle()
 
     Column(
         modifier = Modifier
@@ -198,10 +203,16 @@ fun SettingsScreen(
             selectedTheme = theme,
             onThemeSelected = { newTheme ->
                 settingsViewModel.onEvent(SettingsUiEvent.OnThemeChanged(newTheme))
+
+                bundle.putString("selected_theme", newTheme.toString())
+                firebaseAnalytics.logEvent("SETTINGSEVENT", bundle)
             },
             isSessionEndSoundEnabled = isSoundEnabled,
-            onIsSessionSoundEnabled = {newVal->
+            onIsSessionSoundEnabled = { newVal ->
                 settingsViewModel.onEvent(SettingsUiEvent.OnIsSessionEndSoundEnabled(newVal))
+
+                bundle.putBoolean("isSessionEndSoundEnabled", newVal)
+                firebaseAnalytics.logEvent("SETTINGSEVENT", bundle)
             }
         )
 
@@ -287,6 +298,8 @@ fun SettingsScreen(
                                                 label
                                             )
                                         )
+                                        bundle.putInt("selected_time_interval", label)
+                                        firebaseAnalytics.logEvent("SETTINGSEVENT", bundle)
                                     }
                                 )
                             }
@@ -371,7 +384,7 @@ fun SettingsScreen(
                     fontSize = 16.sp,
                     fontFamily = FontFamily(Font(R.font.jost_medium)),
                     color = textColor
-                    )
+                )
 
                 Row {
                     (1..5).forEach {
@@ -510,8 +523,10 @@ private fun SettingsScreenPreview() {
                         .fillMaxWidth()
                         .height(100.dp)
                         .shadow(1.dp, RoundedCornerShape(20.dp))
-                        .background(MaterialTheme.colorScheme.surface,
-                            shape = RoundedCornerShape(20.dp))
+                        .background(
+                            MaterialTheme.colorScheme.surface,
+                            shape = RoundedCornerShape(20.dp)
+                        )
 
                 ) {
 
@@ -577,8 +592,10 @@ private fun SettingsScreenPreview() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(1.dp, RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(20.dp))
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(20.dp)
+                    )
 
             ) {
 
@@ -659,7 +676,10 @@ private fun SettingsScreenPreview() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(1.dp, RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(20.dp)
+                    )
                     .clickable {
 
                     }
@@ -681,7 +701,10 @@ private fun SettingsScreenPreview() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(1.dp, RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(20.dp))
+                    .background(
+                        MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(20.dp)
+                    )
                     .clickable {
                     }
                     .padding(horizontal = 20.dp, vertical = 10.dp),
@@ -698,7 +721,7 @@ private fun SettingsScreenPreview() {
                         fontSize = 16.sp,
                         fontFamily = FontFamily(Font(R.font.jost_medium)),
                         color = MaterialTheme.colorScheme.onSurface
-                        )
+                    )
 
                     Row {
                         (1..5).forEach {
