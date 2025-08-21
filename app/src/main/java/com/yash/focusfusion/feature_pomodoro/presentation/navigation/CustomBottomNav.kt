@@ -28,9 +28,11 @@ import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -99,17 +101,16 @@ fun CustomBottomNav(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(90.dp)
+            .height(46.dp)
             .background(MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .shadow(3.dp)
-                .height(90.dp)
+                .height(46.dp)
                 .align(Alignment.BottomCenter)
-                .background(MaterialTheme.colorScheme.surface)
-                .windowInsetsPadding(WindowInsets.navigationBars),
+                .background(MaterialTheme.colorScheme.surface),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             items.forEach { item ->
@@ -119,6 +120,7 @@ fun CustomBottomNav(
                 Column(
 
                     modifier = Modifier
+                        .fillMaxHeight()
                         .weight(1f)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
@@ -132,16 +134,17 @@ fun CustomBottomNav(
                                     }
                                 }
                             }
-                        )
-                        .padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        ),
+
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Image(
                         painter = if (selected) painterResource(item.selectedIcon) else painterResource(
                             item.unselectedIcon,
                         ),
                         contentDescription = "NavItems",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }
@@ -156,7 +159,7 @@ fun CustomBottomNav(
                 .align(Alignment.TopCenter)
                 // Apply the entry animation offset and the static "half outside" offset
                 .offset(y = fabOffsetY.value.dp)
-                .offset(y = (-26).dp)
+                .offset(y = (-28).dp)
         ) {
             FloatingActionButton(
                 onClick = {
@@ -176,7 +179,7 @@ fun CustomBottomNav(
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .scale(fabScale) // Apply the click animation scale
-                    .size(56.dp)
+                    .size(46.dp)
                     .shadow(
                         elevation = 5.dp,
                         shape = CircleShape,
