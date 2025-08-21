@@ -83,6 +83,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
+import androidx.compose.ui.platform.LocalConfiguration
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -173,6 +174,8 @@ fun HomeScreen(
     firebaseAnalytics.logEvent("home_sceen_event", bundle)
 
 
+    val configuration = LocalConfiguration.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -212,8 +215,11 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Spacer(Modifier.height(40.dp))
-                    if (!LocalContext.current.theme.resources.configuration.isNightModeActive && mode != ThemeMode.DARK) {
-                        Image(
+
+                    if ((configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) != Configuration.UI_MODE_NIGHT_YES
+                        && mode != ThemeMode.DARK
+                    ){
+                    Image(
                             painter = painterResource(R.drawable.no_data_home_screen),
                             contentDescription = "No Data To Show",
                         )
