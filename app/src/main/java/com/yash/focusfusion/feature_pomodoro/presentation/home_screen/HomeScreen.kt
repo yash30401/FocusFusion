@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -84,6 +85,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import androidx.compose.ui.platform.LocalConfiguration
+import com.yash.focusfusion.core.util.generateDayBoxes
+import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HeatMap
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -173,8 +176,9 @@ fun HomeScreen(
 
     firebaseAnalytics.logEvent("home_sceen_event", bundle)
 
-
     val configuration = LocalConfiguration.current
+
+    homeScreenViewModel.fetchAllSessionDates()
 
     Box(
         modifier = Modifier
@@ -218,8 +222,8 @@ fun HomeScreen(
 
                     if ((configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) != Configuration.UI_MODE_NIGHT_YES
                         && mode != ThemeMode.DARK
-                    ){
-                    Image(
+                    ) {
+                        Image(
                             painter = painterResource(R.drawable.no_data_home_screen),
                             contentDescription = "No Data To Show",
                         )
@@ -347,6 +351,21 @@ fun initHomeViewModel(
 @Preview(showBackground = true, name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun HomeScreenPreview() {
+
+    val sessionDates = setOf(
+        LocalDate.of(2024, 1, 2),
+        LocalDate.of(2025, 2, 23),
+        LocalDate.of(2025, 3, 19),
+        LocalDate.of(2025, 3, 22),
+        LocalDate.of(2025, 4, 22),
+        LocalDate.of(2025, 5, 1),
+        LocalDate.of(2025, 6, 20),
+        LocalDate.of(2025, 7, 28),
+        LocalDate.now()
+    )
+
+    val weeks = generateDayBoxes(sessionDates)
+    val scrollsState = rememberLazyListState()
     val navController = rememberNavController()
 
     val weeklySessionState = listOf<Session>(Session(1749576488000, 23, TaskTag.STUDY))
@@ -375,94 +394,16 @@ private fun HomeScreenPreview() {
                     xOffset = 90f,
                     waveAmplitude = 1f,
                 )
-                if (!weeklySessionState.isNotEmpty()) {
-                    Text(
-                        text = "Weekly Time Distribution",
-                        modifier = Modifier.padding(start = 16.dp, top = 20.dp),
-                        fontSize = 22.sp,
-                        fontFamily = FontFamily(Font(R.font.jost_medium)),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                } else {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Spacer(Modifier.height(100.dp))
-                        if (!LocalContext.current.theme.resources.configuration.isNightModeActive) {
-                            Image(
-                                painter = painterResource(R.drawable.no_data_home_screen),
-                                contentDescription = "No Data To Show",
-                            )
-                        }
 
-                        Text(
-                            text = "No Data",
-                            modifier = Modifier.padding(top = 20.dp),
-                            fontSize = 22.sp,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                            fontFamily = FontFamily(Font(R.font.jost_medium))
-                        )
-                    }
-                }
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .heightIn(max = 2000.dp)
-                ) {
-                    val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
-                        it.taskTag
-                    }.mapValues {
-                        it.value.sumOf { it.duration }
-                    }
+                Text(
+                    text = "Heatmap",
+                    modifier = Modifier.padding(start = 16.dp, top = 20.dp),
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily(Font(R.font.jost_medium)),
+                    color = MaterialTheme.colorScheme.onBackground
+                )
 
-                    val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
-                        it.taskTag
-                    }.mapValues {
-                        it.value.sumOf { it.duration }
-                    }
-
-                    val listOfTotalDurationInWeekByTask =
-                        weeklyTimeDistributionByTag.map { it }.toList()
-                    val listOfTotalDurationInLastWeekByTask =
-                        lastWeekTimeDistributionByTag.map { it }.toList()
-
-                    itemsIndexed(
-                        items = listOfTotalDurationInWeekByTask,
-                        key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
-                    ) { index, (taskTag, duration) ->
-                        var isVisible by remember { mutableStateOf(false) }
-//
-//
-                        val lastWeekDuration =
-                            listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
-
-                        Log.d("LASTWEEKDURATION", lastWeekDuration.toString())
-
-                        // Animated visibility for sliding in items
-                        LaunchedEffect(Unit) {
-                            isVisible =
-                                true // Trigger the animation once when the item enters composition
-                        }
-
-                        androidx.compose.animation.AnimatedVisibility(
-                            visible = isVisible, enter = slideInHorizontally(
-                                initialOffsetX = { fullWidth -> -fullWidth },
-                                animationSpec = tween(durationMillis = 1000)
-                            ) + fadeIn(animationSpec = tween(durationMillis = 1000))
-                        ) {
-                            TimeDistributionCard(
-                                getTaskTagIconRes(taskTag),
-                                taskTag,
-                                TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
-                                TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
-                            )
-                        }
-                    }
-                }
+                HeatMap(weeks, scrollsState)
 
             }
         }

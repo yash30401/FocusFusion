@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -87,6 +88,31 @@ class HomeScreenViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun fetchAllSessionDates(){
+        val dates = mutableSetOf<LocalDate>()
+
+        viewModelScope.launch {
+            try {
+                sessionUseCases.getAllSessionsUseCase()
+                    .collect { sessions ->
+                        sessions.forEach {
+                            dates.add(LocalDate.ofEpochDay(it.time))
+                        }
+                    }
+
+            } catch (e: Exception) {
+//                _weeklySessions.value = emptyList()
+//                Log.e(
+//                    "HomeScreenViewModel",
+//                    "Error fetching sessions for a week: $startTimestamp",
+//                    e
+//                )
+            }
+        }
+
+        Log.d("ALL DATES","${dates.toString()}")
     }
 
     private fun fetchSessionsForLastWeek(
