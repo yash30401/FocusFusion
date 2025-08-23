@@ -102,6 +102,7 @@ fun HomeScreen(
     val weeklySessionState by homeScreenViewModel.weeklySessions.collectAsState()
     val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
+    val sessionDatesHeatMapDay by homeScreenViewModel.heatMapDaysFlow.collectAsStateWithLifecycle()
 
     val streak by homeScreenViewModel.streak.collectAsStateWithLifecycle()
 
@@ -178,16 +179,22 @@ fun HomeScreen(
 
     val configuration = LocalConfiguration.current
 
-    homeScreenViewModel.fetchAllSessionDates()
+    val weeksForHeatMap by remember(sessionDatesHeatMapDay) {
+        mutableStateOf(generateDayBoxes(sessionDatesHeatMapDay))
+    }
+
+    val scrollState = rememberLazyListState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+
     ) {
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())  // Add scroll modifier
+                .verticalScroll(rememberScrollState())
+                .padding(bottom =30.dp)
         ) {
             GreetingHead(userName, modifier = Modifier)
             HomeScreenWaveLineChart(
@@ -203,101 +210,23 @@ fun HomeScreen(
                 xOffset = 90f,
                 waveAmplitude = 1f,
             )
-            if (!weeklySessionState.isNullOrEmpty()) {
-                Text(
-                    text = "Weekly Time Distribution",
-                    modifier = Modifier.padding(start = 16.dp, top = 20.dp),
-                    fontSize = 22.sp,
-                    fontFamily = FontFamily(Font(R.font.jost_medium)),
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Spacer(Modifier.height(40.dp))
 
-                    if ((configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) != Configuration.UI_MODE_NIGHT_YES
-                        && mode != ThemeMode.DARK
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.no_data_home_screen),
-                            contentDescription = "No Data To Show",
-                        )
-                    }
+            Text(
+                text = "Heatmap",
+                modifier = Modifier.padding(start = 16.dp, top = 20.dp),
+                fontSize = 22.sp,
+                fontFamily = FontFamily(Font(R.font.jost_medium)),
+                color = MaterialTheme.colorScheme.onBackground
+            )
 
-                    Text(
-                        text = "No Data",
-                        modifier = Modifier.padding(top = 15.dp),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                        fontFamily = FontFamily(Font(R.font.jost_medium))
-                    )
-                }
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .heightIn(max = 2000.dp)
-            ) {
-                val weeklyTimeDistributionByTag = weeklySessionState.groupBy {
-                    it.taskTag
-                }.mapValues {
-                    it.value.sumOf { it.duration }
-                }
-
-                val lastWeekTimeDistributionByTag = lastWeekSessionState.groupBy {
-                    it.taskTag
-                }.mapValues {
-                    it.value.sumOf { it.duration }
-                }
-
-                val listOfTotalDurationInWeekByTask =
-                    weeklyTimeDistributionByTag.map { it }.toList()
-                val listOfTotalDurationInLastWeekByTask =
-                    lastWeekTimeDistributionByTag.map { it }.toList()
-
-                itemsIndexed(
-                    items = listOfTotalDurationInWeekByTask,
-                    key = { index, (taskTag, duration) -> "$taskTag-$duration-${taskTag.hashCode()}" }
-                ) { index, (taskTag, duration) ->
-                    var isVisible by remember { mutableStateOf(false) }
-//
-//
-                    val lastWeekDuration =
-                        listOfTotalDurationInLastWeekByTask.getOrNull(index)?.value ?: 0
-
-                    Log.d("LASTWEEKDURATION", lastWeekDuration.toString())
-
-                    // Animated visibility for sliding in items
-                    LaunchedEffect(Unit) {
-                        isVisible =
-                            true // Trigger the animation once when the item enters composition
-                    }
-
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = isVisible, enter = slideInHorizontally(
-                            initialOffsetX = { fullWidth -> -fullWidth },
-                            animationSpec = tween(durationMillis = 1000)
-                        ) + fadeIn(animationSpec = tween(durationMillis = 1000))
-                    ) {
-                        TimeDistributionCard(
-                            getTaskTagIconRes(taskTag),
-                            taskTag,
-                            TimeUnit.SECONDS.toMinutes(duration.toLong()).toInt(),
-                            TimeUnit.SECONDS.toMinutes(lastWeekDuration.toLong()).toInt()
-                        )
-                    }
-                }
-            }
+            HeatMap(weeksForHeatMap, scrollState)
 
         }
     }
+
+
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun fetchLastWeekSessions(
@@ -312,6 +241,7 @@ fun fetchLastWeekSessions(
             lastWeekEndTimestamp
         )
     )
+
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -408,4 +338,5 @@ private fun HomeScreenPreview() {
             }
         }
     }
+
 }

@@ -39,10 +39,9 @@ fun HeatMap(
             .fillMaxWidth()
             .padding(16.dp)
             .clip(RoundedCornerShape(20.dp))
-            .border(2.dp, MaterialTheme.colorScheme.primary.copy(.5f),
+            .border(1.dp, MaterialTheme.colorScheme.primary,
                 RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 20.dp, vertical = 20.dp)
+            .padding(horizontal = 15.dp, vertical = 15.dp)
 
     ) {
         items(weeks.size) { weekIndex ->
@@ -54,7 +53,7 @@ fun HeatMap(
                 weeks[weekIndex].forEach { dayBox ->
                     Box(
                         modifier = Modifier
-                            .size(16.dp)
+                            .size(14.dp)
                             .clip(RoundedCornerShape(3.dp))
                             .background(
                                 if (dayBox.hasSession) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(

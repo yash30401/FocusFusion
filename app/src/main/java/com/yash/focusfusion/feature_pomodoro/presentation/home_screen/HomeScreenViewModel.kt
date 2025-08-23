@@ -22,7 +22,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -44,8 +46,12 @@ class HomeScreenViewModel @Inject constructor(
     private val _streak = MutableStateFlow<Int>(0)
     val streak: StateFlow<Int> = _streak.asStateFlow()
 
+    private val _heatMapDaysFlow = MutableStateFlow<Set<LocalDate>>(emptySet<LocalDate>())
+    val heatMapDaysFlow: StateFlow<Set<LocalDate>> = _heatMapDaysFlow
+
     init {
         getStreak()
+        fetchAllSessionForHeatMapDates()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -90,29 +96,34 @@ class HomeScreenViewModel @Inject constructor(
         }
     }
 
-    fun fetchAllSessionDates(){
+    private fun fetchAllSessionForHeatMapDates() {
         val dates = mutableSetOf<LocalDate>()
 
         viewModelScope.launch {
             try {
-                sessionUseCases.getAllSessionsUseCase()
+                sessionUseCases.getAllSessionsUseCase.invoke()
                     .collect { sessions ->
                         sessions.forEach {
-                            dates.add(LocalDate.ofEpochDay(it.time))
+                            val instant = Instant.ofEpochMilli(it.time)
+                            val zoneId = ZoneId.systemDefault()
+                            dates.add(instant.atZone(zoneId).toLocalDate())
+
+                            _heatMapDaysFlow.update {
+                                dates
+                            }
                         }
                     }
 
             } catch (e: Exception) {
-//                _weeklySessions.value = emptyList()
-//                Log.e(
-//                    "HomeScreenViewModel",
-//                    "Error fetching sessions for a week: $startTimestamp",
-//                    e
-//                )
+                Log.e(
+                    "HomeScreenViewModel",
+                    "Error fetching heatmap days",
+                    e
+                )
             }
         }
 
-        Log.d("ALL DATES","${dates.toString()}")
+
     }
 
     private fun fetchSessionsForLastWeek(
