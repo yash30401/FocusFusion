@@ -46,15 +46,15 @@ fun HeatMap(
     ) {
         items(weeks.size) { weekIndex ->
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(3.dp),
                 modifier = Modifier
-                    .padding(horizontal = 2.dp)
+                    .padding(horizontal = 1.dp)
             ) {
                 weeks[weekIndex].forEach { dayBox ->
                     Box(
                         modifier = Modifier
-                            .size(14.dp)
-                            .clip(RoundedCornerShape(3.dp))
+                            .size(10.dp)
+                            .clip(RoundedCornerShape(2.dp))
                             .background(
                                 if (dayBox.hasSession) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(
                                     alpha = .45f
