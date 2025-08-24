@@ -29,6 +29,7 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -40,6 +41,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -93,6 +95,8 @@ import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -110,7 +114,8 @@ fun HomeScreen(
     val weeklySessionState by homeScreenViewModel.weeklySessions.collectAsState()
     val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
-    val sessionDatesHeatMapDay by homeScreenViewModel.heatMapDaysFlow.collectAsStateWithLifecycle()
+
+    val weeksForHeatMap by homeScreenViewModel.heatMapWeeks.collectAsStateWithLifecycle()
     val savedHeatmapScroll by homeScreenViewModel.heatmapScroll.collectAsStateWithLifecycle()
 
     val streak by homeScreenViewModel.streak.collectAsStateWithLifecycle()
@@ -186,21 +191,21 @@ fun HomeScreen(
 
     firebaseAnalytics.logEvent("home_sceen_event", bundle)
 
-    val configuration = LocalConfiguration.current
-
-    val weeksForHeatMap by remember(sessionDatesHeatMapDay) {
-        mutableStateOf(generateDayBoxes(sessionDatesHeatMapDay))
-    }
-
     val heatMapScrollState = rememberLazyListState()
 
     LaunchedEffect(savedHeatmapScroll) {
-        heatMapScrollState.scrollToItem(savedHeatmapScroll)
+        if (weeksForHeatMap.isNotEmpty()) {
+            heatMapScrollState.scrollToItem(savedHeatmapScroll)
+        }
     }
 
-    LaunchedEffect(heatMapScrollState.firstVisibleItemIndex) {
-        delay(2000)
-        homeScreenViewModel.onEvent(HomeEvent.HeatmapScrollEvent(heatMapScrollState.firstVisibleItemIndex))
+    LaunchedEffect(heatMapScrollState) {
+        snapshotFlow { heatMapScrollState.firstVisibleItemIndex }
+            .debounce(300L) // Wait for scrolling to stop
+            .distinctUntilChanged() // Only emit if the value has changed
+            .collect { index ->
+                homeScreenViewModel.onEvent(HomeEvent.HeatmapScrollEvent(index))
+            }
     }
 
     Box(

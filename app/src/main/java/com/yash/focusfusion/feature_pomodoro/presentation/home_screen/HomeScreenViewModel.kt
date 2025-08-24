@@ -6,6 +6,8 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.yash.focusfusion.core.util.generateDayBoxes
+import com.yash.focusfusion.feature_pomodoro.domain.model.DayBox
 import com.yash.focusfusion.feature_pomodoro.domain.model.Session
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.DatastoreUseCases
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.SessionUseCases
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -51,6 +54,20 @@ class HomeScreenViewModel @Inject constructor(
 
     private val _heatMapDaysFlow = MutableStateFlow<Set<LocalDate>>(emptySet<LocalDate>())
     val heatMapDaysFlow: StateFlow<Set<LocalDate>> = _heatMapDaysFlow
+
+    val heatMapWeeks: StateFlow<List<List<DayBox>>> = heatMapDaysFlow.map { dates ->
+        withContext(Dispatchers.Default) { // Use Default dispatcher for CPU work
+            if (dates.isNotEmpty()) {
+                generateDayBoxes(dates)
+            } else {
+                emptyList()
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000), // Keep active for 5s after UI is gone
+        initialValue = emptyList() // Start with an empty list
+    )
 
     val heatmapScroll: StateFlow<Int> = datastoreUseCases.getHeatmapScrollUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
@@ -115,16 +132,16 @@ class HomeScreenViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 sessionUseCases.getAllSessionsUseCase.invoke()
-                    .collect { sessions ->
-                        sessions.forEach {
-                            val instant = Instant.ofEpochMilli(it.time)
-                            val zoneId = ZoneId.systemDefault()
-                            dates.add(instant.atZone(zoneId).toLocalDate())
-
-                            _heatMapDaysFlow.update {
-                                dates
-                            }
-                        }
+                    .map { sessions ->
+                        // Transform Sessions to a Set of LocalDates
+                        sessions.map {
+                            Instant.ofEpochMilli(it.time)
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDate()
+                        }.toSet()
+                    }
+                    .collect { dates ->
+                        _heatMapDaysFlow.update { dates }
                     }
 
             } catch (e: Exception) {
