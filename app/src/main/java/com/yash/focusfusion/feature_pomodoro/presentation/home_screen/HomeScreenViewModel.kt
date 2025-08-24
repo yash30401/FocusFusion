@@ -57,11 +57,7 @@ class HomeScreenViewModel @Inject constructor(
 
     val heatMapWeeks: StateFlow<List<List<DayBox>>> = heatMapDaysFlow.map { dates ->
         withContext(Dispatchers.Default) { // Use Default dispatcher for CPU work
-            if (dates.isNotEmpty()) {
                 generateDayBoxes(dates)
-            } else {
-                emptyList()
-            }
         }
     }.stateIn(
         scope = viewModelScope,
@@ -127,7 +123,6 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun fetchAllSessionForHeatMapDates() {
-        val dates = mutableSetOf<LocalDate>()
 
         viewModelScope.launch {
             try {
