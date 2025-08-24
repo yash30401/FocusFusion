@@ -9,7 +9,7 @@ import java.time.LocalDate
 @RequiresApi(Build.VERSION_CODES.O)
 fun generateDayBoxes(
     sessionDates: Set<LocalDate>,
-    startDate: LocalDate = LocalDate.of(2025, 1, 6),
+    startDate: LocalDate = LocalDate.of(2024, 1, 1),
     endDate: LocalDate = LocalDate.now(),
 ): List<List<DayBox>> {
     // Ensure startDate aligns to Monday

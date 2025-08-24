@@ -194,9 +194,7 @@ fun HomeScreen(
     val heatMapScrollState = rememberLazyListState()
 
     LaunchedEffect(savedHeatmapScroll) {
-        if (weeksForHeatMap.isNotEmpty()) {
             heatMapScrollState.scrollToItem(savedHeatmapScroll)
-        }
     }
 
     LaunchedEffect(heatMapScrollState) {
