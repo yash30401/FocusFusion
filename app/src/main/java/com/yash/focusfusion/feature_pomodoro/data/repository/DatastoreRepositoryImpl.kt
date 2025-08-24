@@ -37,6 +37,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
     override val isSessionEndSoundEnabled: Flow<Boolean>
         get() = datastoreManager.isSessionEndSoundEnabled
 
+    override val heatmapScroll: Flow<Int>
+        get() = datastoreManager.heatmapScroll
+
     override suspend fun saveTimeLeft(time: Long) {
         datastoreManager.saveTimeLeft(time)
     }
@@ -75,5 +78,9 @@ class DatastoreRepositoryImpl(private val datastoreManager: DatastoreManager) :
 
     override suspend fun saveIsSessionEndSoundEnabled(value: Boolean) {
         datastoreManager.saveIsSessionEndSoundEnabled(value)
+    }
+
+    override suspend fun saveHeatmapScroll(position: Int) {
+        datastoreManager.saveHeatmapScrol(position)
     }
 }

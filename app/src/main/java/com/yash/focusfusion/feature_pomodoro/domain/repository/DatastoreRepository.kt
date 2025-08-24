@@ -15,6 +15,7 @@ interface DatastoreRepository {
     val focusTime: Flow<Int>
     val themeMode: Flow<ThemeMode>
     val isSessionEndSoundEnabled: Flow<Boolean>
+    val heatmapScroll: Flow<Int>
 
     suspend fun saveTimeLeft(time: Long)
     suspend fun saveExtraTime(extraTime: Int)
@@ -26,4 +27,5 @@ interface DatastoreRepository {
     suspend fun saveFocusTime(time: Int)
     suspend fun saveThemeMode(theme: ThemeMode)
     suspend fun saveIsSessionEndSoundEnabled(value: Boolean)
+    suspend fun saveHeatmapScroll(position:Int)
 }

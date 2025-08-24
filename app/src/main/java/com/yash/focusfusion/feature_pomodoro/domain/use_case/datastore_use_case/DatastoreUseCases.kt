@@ -19,5 +19,7 @@ data class DatastoreUseCases(
     val saveThemeModeUseCase: SaveThemeModeUseCase,
     val getThemeModeUseCase: GetThemeModeUseCase,
     val getIsSessionEndSoundEnabledUseCase: GetIsSessionEndSoundEnabledUseCase,
-    val saveIsSessionEndSoundEnabledUseCase: SaveIsSessionEndSoundEnabledUseCase
+    val saveIsSessionEndSoundEnabledUseCase: SaveIsSessionEndSoundEnabledUseCase,
+    val getHeatmapScrollUseCase: GetHeatmapScrollUseCase,
+    val saveHeatmapScrollUseCase: SaveHeatmapScrollUseCase
 )

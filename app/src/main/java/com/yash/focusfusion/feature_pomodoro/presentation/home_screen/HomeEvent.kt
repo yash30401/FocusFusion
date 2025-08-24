@@ -14,4 +14,6 @@ sealed class HomeEvent {
     ):HomeEvent()
 
     data class todaysHours(val date:Long):HomeEvent()
+
+    data class HeatmapScrollEvent(val position:Int): HomeEvent()
 }

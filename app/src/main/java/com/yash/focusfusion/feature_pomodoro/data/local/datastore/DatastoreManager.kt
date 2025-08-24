@@ -35,6 +35,7 @@ class DatastoreManager(private val context: Context) {
         val TIMER_START_TIME = longPreferencesKey("TIMER_START_TIME")
         val THEME_ORDINAL = intPreferencesKey("theme_ordinal")
         val IS_SESSION_END_SOUND_ENABLED = booleanPreferencesKey("IS_SESSION_END_SOUND_ENABLED")
+        val HEATMAP_SCROLL = intPreferencesKey("HEATMAP_SCROLL")
     }
 
     val timeLeftFlow: Flow<Long> = context.dataStore.data
@@ -86,6 +87,10 @@ class DatastoreManager(private val context: Context) {
 
     val isSessionEndSoundEnabled = context.dataStore.data.map { preferences ->
         preferences[IS_SESSION_END_SOUND_ENABLED] ?: true
+    }
+
+    val heatmapScroll: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[HEATMAP_SCROLL] ?: 0
     }
 
     suspend fun saveTimeLeft(timeLeft: Long) {
@@ -197,6 +202,12 @@ class DatastoreManager(private val context: Context) {
     suspend fun saveIsSessionEndSoundEnabled(value: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[IS_SESSION_END_SOUND_ENABLED] = value
+        }
+    }
+
+    suspend fun saveHeatmapScrol(position: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[HEATMAP_SCROLL] = position
         }
     }
 }

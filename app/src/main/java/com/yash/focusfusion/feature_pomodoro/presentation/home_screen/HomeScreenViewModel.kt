@@ -12,14 +12,17 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.session_use_case.Se
 import com.yash.focusfusion.feature_pomodoro.presentation.insights.InsightsEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -49,6 +52,11 @@ class HomeScreenViewModel @Inject constructor(
     private val _heatMapDaysFlow = MutableStateFlow<Set<LocalDate>>(emptySet<LocalDate>())
     val heatMapDaysFlow: StateFlow<Set<LocalDate>> = _heatMapDaysFlow
 
+    val heatmapScroll: StateFlow<Int> = datastoreUseCases.getHeatmapScrollUseCase()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    private var heatmapScrollJob: Job? = null
+
     init {
         getStreak()
         fetchAllSessionForHeatMapDates()
@@ -70,6 +78,11 @@ class HomeScreenViewModel @Inject constructor(
             is HomeEvent.todaysHours -> {
                 getCurrentDayTotalHours(event.date)
 
+            }
+
+            is HomeEvent.HeatmapScrollEvent -> {
+                heatmapScrollJob?.cancel()
+                heatmapScrollJob = saveHeatmapScrollPosition(event.position)
             }
         }
     }
@@ -126,6 +139,18 @@ class HomeScreenViewModel @Inject constructor(
 
     }
 
+    private fun saveHeatmapScrollPosition(position: Int) = viewModelScope.launch {
+        try {
+            datastoreUseCases.saveHeatmapScrollUseCase(position)
+        } catch (e: Exception) {
+            Log.e(
+                "HomeScreenViewModel",
+                "Error fetching heatmap scroll position",
+                e
+            )
+        }
+    }
+
     private fun fetchSessionsForLastWeek(
         startTimestamp: Long,
         endTimestamp: Long,
@@ -166,5 +191,10 @@ class HomeScreenViewModel @Inject constructor(
             _streak.value = it
             Log.d("STREAKWORK", "Viewmodel Streak Count:- $it")
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        heatmapScrollJob?.cancel()
     }
 }

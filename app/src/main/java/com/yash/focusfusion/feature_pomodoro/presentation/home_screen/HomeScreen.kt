@@ -38,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,8 +86,15 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.component1
 import kotlin.collections.component2
 import androidx.compose.ui.platform.LocalConfiguration
+import com.google.firebase.inject.Deferred
 import com.yash.focusfusion.core.util.generateDayBoxes
+import com.yash.focusfusion.feature_pomodoro.domain.model.DayBox
 import com.yash.focusfusion.feature_pomodoro.presentation.home_screen.components.HeatMap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -103,6 +111,7 @@ fun HomeScreen(
     val currentDayTotalHours by homeScreenViewModel.currentDayHours.collectAsState()
     var minutesFocused by remember { mutableStateOf<List<Float>>(emptyList()) }
     val sessionDatesHeatMapDay by homeScreenViewModel.heatMapDaysFlow.collectAsStateWithLifecycle()
+    val savedHeatmapScroll by homeScreenViewModel.heatmapScroll.collectAsStateWithLifecycle()
 
     val streak by homeScreenViewModel.streak.collectAsStateWithLifecycle()
 
@@ -183,7 +192,16 @@ fun HomeScreen(
         mutableStateOf(generateDayBoxes(sessionDatesHeatMapDay))
     }
 
-    val scrollState = rememberLazyListState()
+    val heatMapScrollState = rememberLazyListState()
+
+    LaunchedEffect(savedHeatmapScroll) {
+        heatMapScrollState.scrollToItem(savedHeatmapScroll)
+    }
+
+    LaunchedEffect(heatMapScrollState.firstVisibleItemIndex) {
+        delay(2000)
+        homeScreenViewModel.onEvent(HomeEvent.HeatmapScrollEvent(heatMapScrollState.firstVisibleItemIndex))
+    }
 
     Box(
         modifier = Modifier
@@ -194,7 +212,7 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(bottom =30.dp)
+                .padding(bottom = 30.dp)
         ) {
             GreetingHead(userName, modifier = Modifier)
             HomeScreenWaveLineChart(
@@ -219,14 +237,13 @@ fun HomeScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
-            HeatMap(weeksForHeatMap, scrollState)
+            HeatMap(weeksForHeatMap, heatMapScrollState)
 
         }
     }
 
 
 }
-
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun fetchLastWeekSessions(
@@ -294,7 +311,7 @@ private fun HomeScreenPreview() {
         LocalDate.now()
     )
 
-    val weeks = generateDayBoxes(sessionDates)
+//    val weeks = generateDayBoxes(sessionDates)
     val scrollsState = rememberLazyListState()
     val navController = rememberNavController()
 
@@ -333,7 +350,7 @@ private fun HomeScreenPreview() {
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                HeatMap(weeks, scrollsState)
+//                HeatMap(weeks, scrollsState)
 
             }
         }

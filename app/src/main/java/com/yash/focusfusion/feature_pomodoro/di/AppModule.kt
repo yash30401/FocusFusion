@@ -22,9 +22,11 @@ import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveExtraTimeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.CalculateAndSaveStreakUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetFocusTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetHeatmapScrollUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetIsSessionEndSoundEnabledUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.GetThemeModeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveFocusTimeUseCase
+import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveHeatmapScrollUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveIsSessionEndSoundEnabledUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveThemeModeUseCase
 import com.yash.focusfusion.feature_pomodoro.domain.use_case.datastore_use_case.SaveTimeLeftUseCase
@@ -129,7 +131,9 @@ object AppModule {
             saveThemeModeUseCase = SaveThemeModeUseCase(datastoreRepository),
             getThemeModeUseCase = GetThemeModeUseCase(datastoreRepository),
             getIsSessionEndSoundEnabledUseCase = GetIsSessionEndSoundEnabledUseCase(datastoreRepository),
-            saveIsSessionEndSoundEnabledUseCase = SaveIsSessionEndSoundEnabledUseCase(datastoreRepository)
+            saveIsSessionEndSoundEnabledUseCase = SaveIsSessionEndSoundEnabledUseCase(datastoreRepository),
+            getHeatmapScrollUseCase = GetHeatmapScrollUseCase(datastoreRepository),
+            saveHeatmapScrollUseCase = SaveHeatmapScrollUseCase(datastoreRepository)
         )
     }
 
